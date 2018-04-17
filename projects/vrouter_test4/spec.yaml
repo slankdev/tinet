@@ -1,0 +1,50 @@
+
+# Description: Testing attach physical netif to Container
+# INIT:
+#    cns init | sudo sh
+#    cns conf | sudo sh
+#    cns test | sudo sh
+# FINI:
+#    cns fini | sudo sh
+# TOPO:
+#    refer the README.md
+
+postinit:
+  - cmds:
+    - cmd: ovs-vsctl add-port ovs0 C0net0 tag=10
+    - cmd: ovs-vsctl add-port ovs0 C1net0 tag=20
+
+postfini:
+  - cmds:
+    - cmd: ovs-vsctl del-port ovs0 C0net0
+    - cmd: ovs-vsctl del-port ovs0 C1net0
+
+nodes:
+  - name: C0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: veth, opts: C0net0 }
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: veth, opts: C1net0 }
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: echo C0 config
+      - cmd: ip addr add 10.0.0.2/24 dev net0
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.0.1
+
+  - name: C1
+    cmds:
+      - cmd: echo C1 config
+      - cmd: ip addr add 10.0.1.2/24 dev net0
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.1.1
+
+test:
+  - cmds:
+    - cmd: echo each link test
+

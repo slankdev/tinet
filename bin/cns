@@ -1,0 +1,391 @@
+#!/usr/bin/env python3
+
+import sys
+import yaml
+import pprint
+import argparse
+
+def generate_mount_docker_netns():
+    p = print
+    p('mount_docker_netns () {                          ')
+    p('  if [ $# -ne 2 ]; then                          ')
+    p('    echo "Usage: $0 <container> <netns>"         ')
+    p('    exit 1                                       ')
+    p('  fi                                             ')
+    p('  mkdir -p /var/run/netns                        ')
+    p('  PID=`docker inspect $1 -f "{{.State.Pid}}"`    ')
+    p('  ln -s /proc/$PID/ns/net /var/run/netns/$2      ')
+    p('}                                                ')
+
+def generate_kokobr():
+    p = print
+    p('kokobr () {                                         ')
+    p('  if [ $# -ne 3 ]; then                             ')
+    p('    echo "Usage: $0 <bridge> <container> <ifname>"  ')
+    p('    exit 1                                          ')
+    p('  fi                                                ')
+    p('  mount_docker_netns $2 $2                          ')
+    p('  ip link add name $3 type veth peer name $2$3')
+    p('  ip link set dev $3 netns $2                       ')
+    p('  ip link set $2$3 up                               ')
+    p('  ip netns exec $2 ip link set $3 up                ')
+    p('  ip netns del $2                                   ')
+    p('  ovs-vsctl add-port $1 $2$3                        ')
+    p('}                                                   ')
+
+def generate_koko_physnet():
+    p = print
+    p('koko_physnet () {                       ')
+    p('  if [ $# -ne 2 ]; then                 ')
+    p('    echo "Usage: $0 <container> <netif>"')
+    p('    exit 1                              ')
+    p('  fi                                    ')
+    p('  mount_docker_netns $1 $1              ')
+    p('  ip link set dev $2 netns $1           ')
+    p('  ip netns exec $1 ip link set $2 up    ')
+    p('  ip netns del $1                       ')
+    p('}                                       ')
+
+def generate_detach_physif_from_docker():
+    p = print
+    p('detach_physif_from_docker () {          ')
+    p('  if [ $# -ne 2 ]; then                 ')
+    p('    echo "Usage: $0 <container> <netif>"')
+    p('    exit 1                              ')
+    p('  fi                                    ')
+    p('  mount_docker_netns $1 $1              ')
+    p('  ip netns exec $1 ip link set $2 netns 1')
+    p('  ip netns del $1                       ')
+    p('}                                       ')
+
+def tpl():
+    p = print
+    p('nodes:                                             ')
+    p('  - name: C0                                       ')
+    p('    image: slankdev/ubuntu:16.04                   ')
+    p('    interfaces:                                    ')
+    p('      - { name: net0, type: direct, opts: C1#net0 }')
+    p('  - name: C0                                       ')
+    p('    image: slankdev/ubuntu:16.04                   ')
+    p('    interfaces:                                    ')
+    p('      - { name: net0, type: direct, opts: C0#net0 }')
+    p('                                                   ')
+    p('switches:                                          ')
+    p('  - name: B0                                       ')
+    p('    interfaces:                                    ')
+    p('      - { name: net0, type: container, opts: C0 }  ')
+    p('                                                   ')
+    p('node_configs:                                      ')
+    p('  - name: C0                                       ')
+    p('    cmds:                                          ')
+    p('      - cmd: ip link set dev net0 up               ')
+    p('      - cmd: >-                                    ')
+    p('          vtysh -c "conf t"                        ')
+    p('          -c "router bgp 100                  "    ')
+    p('          -c "  bgp router-id 2.2.2.2         "    ')
+    p('                                                   ')
+    p('  - name: C0                                       ')
+    p('    cmds:                                          ')
+    p('      - cmd: echo slankdev slankdev                ')
+    p('test:                                              ')
+    p('  - cmds:                                          ')
+    p('    - cmd: docker exec C0 ping -c2 10.0.0.2        ')
+
+
+def preinit(data):
+    print('\n#####################')
+    print('# PRE-INIT COMMANDS #')
+    print('#####################')
+    if 'preinit' in data:
+        for node in data['preinit']:
+            for cmd in node['cmds']:
+                print('{}'.format(cmd['cmd']))
+
+def postinit(data):
+    print('\n#####################')
+    print('# POST-INIT COMMANDS #')
+    print('#####################')
+    if 'postinit' in data:
+        for node in data['postinit']:
+            for cmd in node['cmds']:
+                print('{}'.format(cmd['cmd']))
+
+def init(data):
+    print('\n#####################')
+    print('# INIT COMMANDS #')
+    print('#####################')
+
+    # CREATE NODES
+    if 'nodes' in data:
+        for node in data['nodes']:
+            print('docker run -td --hostname {} --name {} --rm --privileged {}'
+                    .format(node['name'], node['name'], node['image']))
+
+    # CREATE SWITCHES
+    if 'switches' in data:
+        for sw in data['switches']:
+            print('ovs-vsctl add-br {} && ip link set {} up'.format(sw['name'], sw['name']));
+
+    links = []
+    # CREATE Node to Node LINKS
+    class n2n_link:
+        left_node_name = None
+        left_iface_name = None
+        left_isset = False
+        right_node_name = None
+        right_iface_name = None
+        right_isset = False
+        def __init__(self, ln_name, ln_iface, rn_name=None, rn_iface=None):
+            self.left_node_name = ln_name
+            self.left_iface_name = ln_iface
+            self.right_node_name = rn_name
+            self.right_iface_name = rn_iface
+            self.left_isset = True
+        def koko(self):
+            # EXAMPLE:
+            #    sudo ip link add net0 netns C0 type veth \
+            #        peer name net0 netns C1
+            print('mount_docker_netns {} {}'.format(
+                self.left_node_name, self.left_node_name))
+            print('mount_docker_netns {} {}'.format(
+                self.right_node_name, self.right_node_name))
+            print('ip link add {} netns {} type veth peer name {} netns {}'.format(
+                self.left_iface_name,
+                self.left_node_name,
+                self.right_iface_name,
+                self.right_node_name))
+            print('ip netns exec {} ip link set {} up'.format(
+                self.left_node_name, self.left_iface_name))
+            print('ip netns exec {} ip link set {} up'.format(
+                self.right_node_name, self.right_iface_name))
+            print('ip netns del {}'.format(self.left_node_name))
+            print('ip netns del {}'.format(self.right_node_name))
+        def check(self):
+            if not (self.right_isset and self.left_isset):
+                Exception('n2n_link state is not correct')
+
+    if 'nodes' in data:
+        for node in data['nodes']:
+            for i in range(len(node['interfaces'])):
+                iface = node['interfaces'][i]
+                if (iface['type']=='direct'):
+                    r_nname = iface['opts'].split('#')[0]
+                    r_ifname = iface['opts'].split('#')[1]
+                    peer_found = False
+                    for link in links:
+                        if link.right_isset == False:
+                            b0 = link.left_node_name == r_nname
+                            b1 = link.left_iface_name == r_ifname
+                            if b0 and b1: # found peer
+                                link.right_node_name = node['name']
+                                link.right_iface_name = iface['name']
+                                link.right_isset = True
+                                peer_found = True
+                    if peer_found == False:
+                        new_link = n2n_link(node['name'], iface['name'], r_nname, r_ifname)
+                        links.append(new_link)
+        for link in links:
+            link.check()
+            link.koko()
+
+    links = []
+    # CREATE Node to Switch LINKS
+    class s2n_link:
+        node_name = None
+        node_iface = None
+        node_isset = False
+        switch_name = None
+        switch_isset = False
+        def __init__(self, n_name, n_iface, s_name):
+            self.node_name = n_name
+            self.node_iface = n_iface
+            self.switch_name = s_name
+
+        def koko(self):
+            print('kokobr {} {} {}'.format(self.switch_name, self.node_name, self.node_iface))
+
+        def check(self):
+            if not (self.node_isset and self.switch_isset):
+                Exception('s2n_link state is not correct')
+
+    if ('nodes' in data) and ('switches' in data):
+        for node in data['nodes']:
+            for i in range(len(node['interfaces'])):
+                iface = node['interfaces'][i]
+                if (iface['type']=='bridge'):
+                    new_link = s2n_link(node['name'], iface['name'], iface['opts'])
+                    new_link.node_isset = True
+                    new_link.switch_isset = False
+                    links.append(new_link)
+        for sw in data['switches']:
+            for i in range(len(sw['interfaces'])):
+                iface = sw['interfaces'][i]
+                for link in links:
+                    if link.switch_isset == False:
+                        b0 = iface['opts'] == link.node_name
+                        b1 = iface['name'] == link.node_iface
+                        b2 = sw['name'] == link.switch_name
+                        if b0 and b1 and b2:
+                            link.switch_isset = True
+        for link in links:
+            link.check()
+            link.koko()
+
+    # Attach PhysNetIf to Conitaner
+    if 'nodes' in data:
+        for node in data['nodes']:
+            for i in range(len(node['interfaces'])):
+                iface = node['interfaces'][i]
+                if (iface['type']=='phys'):
+                    print('koko_physnet {} {}'.format(node['name'], iface['name']))
+
+    # Attach raw veth to Conitaner
+    if 'nodes' in data:
+        for node in data['nodes']:
+            for i in range(len(node['interfaces'])):
+                iface = node['interfaces'][i]
+                if (iface['type']=='veth'):
+                    print('ip link add {} type veth peer name {}'.format(
+                        iface['name'], iface['opts']))
+                    print('koko_physnet {} {}'.format(node['name'], iface['name']))
+                    print('ip link set {} up'.format(iface['opts']))
+
+def fini(data):
+    print('\n################')
+    print('# FINI Commands  #')
+    print('################')
+    if 'nodes' in data:
+        for node in data['nodes']:
+            for i in range(len(node['interfaces'])):
+                iface = node['interfaces'][i]
+                if (iface['type']=='phys'):
+                    print('detach_physif_from_docker {} {}'.format(node['name'], iface['name']))
+        for node in data['nodes']:
+            print('docker stop {}'.format(node['name']))
+    if 'switches' in data:
+        for sw in data['switches']:
+            print('ovs-vsctl del-br {}'.format(sw['name']));
+
+def postfini(data):
+    print('\n#####################')
+    print('# POST-FINI COMMANDS #')
+    print('#####################')
+    if 'postfini' in data:
+        for node in data['postfini']:
+            for cmd in node['cmds']:
+                print('{}'.format(cmd['cmd']))
+
+def config(data):
+    print('\n################')
+    print('# NODE CONFIG  #')
+    print('################')
+    if 'node_configs' in data:
+        for node in data['node_configs']:
+            print('echo {}::[config]::start'.format(node['name']))
+            for cmd in node['cmds']:
+                print('docker exec {} {}'.format(node['name'], cmd['cmd']))
+            print('echo {}::[config]::fin'.format(node['name']))
+
+def pull(data):
+    print('\n######################')
+    print('# PULL DOCKER IMAGES #')
+    print('######################')
+    if 'nodes' in data:
+        for node in data['nodes']:
+            print('docker pull {}'.format(node['image']))
+
+def test(data):
+    print('\n#####################')
+    print('# INTEGRATION TEST  #')
+    print('#####################')
+    if 'test' in data:
+        print('set -eu')
+        for node in data['test']:
+            for cmd in node['cmds']:
+                cmd_str = cmd['cmd']
+                print('echo -n execute [{}]...'.format(cmd_str))
+                print('{} >> /dev/null'.format(cmd_str))
+                print('echo done')
+        print('echo')
+
+def main():
+
+    parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('option',
+            choices=['func', 'init', 'fini', 'reset', 'conf', 'test', 'reconf', 'tpl', 'pull'],
+            help='func       just generate helper funcs \n'
+                 'init       generate setup script \n'
+                 'fini       generate destroy script \n'
+                 'test       generate test script \n'
+                 'conf       generate configuration script \n'
+                 'reset      generate destroy and setup script \n'
+                 'reconf     generate destroy, setup and config script \n'
+                 'tpl        generate template yaml file \n'
+                 'pull       generate docker image pulling script \n'
+                 )
+    parser.add_argument('-f', '--specfile', default='spec.yaml')
+    args = parser.parse_args()
+    specfile = args.specfile
+    option = args.option
+
+
+    if (option == 'func'):
+        generate_mount_docker_netns()
+        generate_kokobr()
+        generate_koko_physnet()
+    elif (option == 'init'):
+        data = yaml.load(open(specfile, "r+"))
+        generate_mount_docker_netns()
+        generate_kokobr()
+        generate_koko_physnet()
+        preinit(data)
+        init(data)
+        postinit(data)
+    elif (option == 'fini'):
+        generate_mount_docker_netns()
+        generate_detach_physif_from_docker()
+        data = yaml.load(open(specfile, "r+"))
+        fini(data)
+        postfini(data)
+    elif (option == 'reset'):
+        generate_mount_docker_netns()
+        generate_detach_physif_from_docker()
+        data = yaml.load(open(specfile, "r+"))
+        fini(data)
+        postfini(data)
+        generate_mount_docker_netns()
+        generate_kokobr()
+        generate_koko_physnet()
+        preinit(data)
+        init(data)
+        postinit(data)
+    elif (option == 'reconf'):
+        generate_mount_docker_netns()
+        generate_detach_physif_from_docker()
+        data = yaml.load(open(specfile, "r+"))
+        fini(data)
+        postfini(data)
+        generate_mount_docker_netns()
+        generate_kokobr()
+        generate_koko_physnet()
+        preinit(data)
+        init(data)
+        postinit(data)
+        config(data)
+    elif (option == 'conf'):
+        data = yaml.load(open(specfile, "r+"))
+        config(data)
+    elif (option == 'pull'):
+        data = yaml.load(open(specfile, "r+"))
+        pull(data)
+    elif (option == 'test'):
+        data = yaml.load(open(specfile, "r+"))
+        test(data)
+    elif (option == 'tpl'):
+        print('# http://www.asciiflow.com')
+        tpl()
+    else:
+        parser.print_help()
+
+main()

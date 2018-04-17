@@ -1,0 +1,33 @@
+# http://www.asciiflow.com
+#
+nodes:
+  - name: C0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: ens20f0, type: phys }
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: ens20f1, type: phys }
+  - name: C2
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: ens28f0, type: phys }
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: ip link set dev ens20f0 up
+      - cmd: ip addr add 10.0.0.2/24 dev ens20f0
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.0.1
+  - name: C1
+    cmds:
+      - cmd: ip link set dev ens20f1 up
+      - cmd: ip addr add 10.0.1.2/24 dev ens20f1
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.1.1
+  - name: C2
+    cmds:
+      - cmd: ip link set dev ens28f0 up
+

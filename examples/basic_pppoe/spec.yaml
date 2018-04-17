@@ -1,0 +1,45 @@
+# http://www.asciiflow.com
+
+nodes:
+  - name: R0
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: bridge, opts: B0 }
+      - { name: net1, type: direct, opts: S0#net0 }
+  - name: S0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: direct, opts: R0#net1 }
+  - name: S1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: bridge, opts: B0 }
+  - name: S2
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: bridge, opts: B0 }
+
+switches:
+  - name: B0
+    interfaces:
+      - { name: net0, type: container, opts: R1 }
+      - { name: net0, type: container, opts: S1 }
+      - { name: net0, type: container, opts: S2 }
+
+node_configs:
+  - name: S1
+    cmds:
+      - cmd: echo slankdev slankdev
+      - cmd: echo slankdev slankdev
+      - cmd: echo slankdev slankdev
+  - name: S2
+    cmds:
+      - cmd: echo slankdev slankdev
+      - cmd: echo slankdev slankdev
+      - cmd: echo slankdev slankdev
+
+test:
+  - cmds:
+    - cmd: docker exec S1 echo slankdev slankdev
+    - cmd: docker exec S2 echo slankdev slankdev
+

@@ -1,0 +1,73 @@
+
+# Description: Testing attach physical netif to Container
+# INIT:
+#    cns init | sudo sh
+#    cns conf | sudo sh
+#    cns test | sudo sh
+# FINI:
+#    cns fini | sudo sh
+# TOPO:
+#    refer the README.md
+
+preinit:
+  - cmds:
+    - cmd: ovs-vsctl add-br ovs0
+    - cmd: ovs-ofctl del-flows ovs0
+    - cmd: ovs-ofctl add-flow ovs0 priority=0,actions=normal
+
+postinit:
+  - cmds:
+    - cmd: ovs-vsctl add-port ovs0 C0net0 tag=10
+    - cmd: ovs-vsctl add-port ovs0 C1net0 tag=20
+    - cmd: ovs-vsctl add-port ovs0 C2net0 tag=30
+
+postfini:
+  - cmds:
+    - cmd: ovs-vsctl del-port ovs0 C0net0
+    - cmd: ovs-vsctl del-port ovs0 C1net0
+    - cmd: ovs-vsctl del-port ovs0 C2net0
+
+postconf:
+  - cmds:
+    - cmd: ovs-vsctl set port port-0-6-0 tag=10
+    - cmd: ovs-vsctl set port port-0-7-0 tag=20
+    - cmd: ovs-vsctl set port port-0-8-0 tag=30
+
+nodes:
+  - name: C0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: veth, opts: C0net0 }
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: veth, opts: C1net0 }
+  - name: C2
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: veth, opts: C2net0 }
+
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: echo C0 config
+      - cmd: ip addr add 10.0.0.2/24 dev net0
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.0.1
+
+  - name: C1
+    cmds:
+      - cmd: echo C1 config
+      - cmd: ip addr add 10.0.1.2/24 dev net0
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.1.1
+
+  - name: C2
+    cmds:
+      - cmd: echo C2 config
+
+test:
+  - cmds:
+    - cmd: echo each link test
+

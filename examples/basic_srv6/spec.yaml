@@ -1,0 +1,168 @@
+# http://www.asciiflow.com
+
+
+nodes:
+  - name: S0
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: direct, opts: R0#net1 }
+  - name: S1
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: direct, opts: R3#net1 }
+
+  - name: R0
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: direct, opts: R1#net0 }
+    - { name: net1, type: direct, opts: S0#net0 }
+  - name: R1
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: direct, opts: R0#net0 }
+    - { name: net1, type: direct, opts: R2#net0 }
+    - { name: net2, type: bridge, opts: SW0 }
+  - name: R2
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: direct, opts: R1#net1 }
+    - { name: net1, type: direct, opts: S1#net0 }
+  - name: R3
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: bridge, opts: SW0 }
+  - name: R4
+    image: cnsnode
+    interfaces:
+    - { name: net0, type: bridge, opts: SW0 }
+
+switches:
+  - name: SW0
+    interfaces:
+    - { name: net2, type: container, opts: R1 }
+    - { name: net0, type: container, opts: R3 }
+    - { name: net0, type: container, opts: R4 }
+
+node_configs:
+  - name: S0
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:a::2/64 dev net0
+      - cmd: ip -6 route add fc00:12::/64 via fc00:a::1
+      - cmd: ip -6 route add fc00:23::/64 via fc00:a::1
+      - cmd: ip -6 route add fc00:b::/64 via fc00:a::1
+      - cmd: ip -6 route add fc00:c::/64 via fc00:a::1
+  - name: S1
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:c::2/64 dev net0
+      - cmd: ip -6 route add fc00:12::/64 via fc00:c::1
+      - cmd: ip -6 route add fc00:23::/64 via fc00:c::1
+      - cmd: ip -6 route add fc00:a::/64 via fc00:c::1
+      - cmd: ip -6 route add fc00:b::/64 via fc00:c::1
+  - name: R0
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:12::2/64 dev net0
+      - cmd: ip -6 addr add fc00:a::1/64 dev net1
+      - cmd: ip -6 route add fc00:23::/64 via fc00:12::1
+      - cmd: ip -6 route add fc00:b::/64 via fc00:12::1
+      - cmd: ip -6 route add fc00:c::/64 via fc00:12::1
+      # SRv6 operation
+      - cmd: >-
+          ip -6 r replace fc00:c::/64 encap seg6
+          mode encap segs fc00:b::10,fc00:b::20,fc00:23::2 dev net1
+
+  - name: R1
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net2.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:12::1/64 dev net0
+      - cmd: ip -6 addr add fc00:23::1/64 dev net1
+      - cmd: ip -6 addr add fc00:b::1/64 dev net2
+      - cmd: ip -6 route add fc00:a::/64 via fc00:12::2
+      - cmd: ip -6 route add fc00:c::/64 via fc00:23::2
+  - name: R2
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:23::2/64 dev net0
+      - cmd: ip -6 addr add fc00:c::1/64 dev net1
+      - cmd: ip -6 route add fc00:12::/64 via fc00:12::1
+      - cmd: ip -6 route add fc00:a::/64 via fc00:23::1
+      - cmd: ip -6 route add fc00:b::/64 via fc00:23::1
+      # SRv6 operation
+      - cmd: >-
+          ip -6 r replace fc00:a::/64 encap seg6
+          mode encap segs fc00:b::20,fc00:b::10,fc00:12::2 dev net1
+  - name: R3
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:b::10/64 dev net0
+      - cmd: ip -6 route add fc00:12::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:23::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:a::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:c::/64 via fc00:b::1
+  - name: R4
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: ip -6 addr add fc00:b::20/64 dev net0
+      - cmd: ip -6 route add fc00:12::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:23::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:a::/64 via fc00:b::1
+      - cmd: ip -6 route add fc00:c::/64 via fc00:b::1
+
+test:
+  - cmds:
+    ## Basic P2P-Link's Test
+    # - cmd: docker exec S0 ping6 -c2 fc00:a::1
+    # - cmd: docker exec S1 ping6 -c2 fc00:c::1
+    # - cmd: docker exec R0 ping6 -c2 fc00:a::2
+    # - cmd: docker exec R0 ping6 -c2 fc00:12::1
+    # - cmd: docker exec R1 ping6 -c2 fc00:12::2
+    # - cmd: docker exec R1 ping6 -c2 fc00:23::2
+    # - cmd: docker exec R1 ping6 -c2 fc00:b::10
+    # - cmd: docker exec R1 ping6 -c2 fc00:b::20
+    # - cmd: docker exec R2 ping6 -c2 fc00:c::2
+    # - cmd: docker exec R2 ping6 -c2 fc00:23::1
+    # - cmd: docker exec R3 ping6 -c2 fc00:b::1
+    # - cmd: docker exec R3 ping6 -c2 fc00:b::20
+    # - cmd: docker exec R4 ping6 -c2 fc00:b::1
+    # - cmd: docker exec R4 ping6 -c2 fc00:b::10
+    ## Basic Routing Test
+    # - cmd: docker exec S0 ping6 -c2 fc00:c::2
+    # - cmd: docker exec S0 ping6 -c2 fc00:b::10
+    # - cmd: docker exec S0 ping6 -c2 fc00:b::20
+    # - cmd: docker exec S1 ping6 -c2 fc00:a::2
+    # - cmd: docker exec S1 ping6 -c2 fc00:b::10
+    # - cmd: docker exec S1 ping6 -c2 fc00:b::20
+
+

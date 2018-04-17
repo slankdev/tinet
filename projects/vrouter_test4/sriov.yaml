@@ -1,0 +1,26 @@
+
+
+nodes:
+  - name: C0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: enp24s0f1, type: phys, opts: none }
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: enp59s0f1, type: phys, opts: none }
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: echo C0 config
+      - cmd: ip addr add 10.0.0.2/24 dev enp24s0f1
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.0.1
+  - name: C1
+    cmds:
+      - cmd: echo C1 config
+      - cmd: ip addr add 10.0.1.2/24 dev enp59s0f1
+      - cmd: ip route del default
+      - cmd: ip route add default via 10.0.1.1
+
