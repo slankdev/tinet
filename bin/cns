@@ -4,6 +4,7 @@ import sys
 import yaml
 import pprint
 import argparse
+import pydot
 
 def generate_mount_docker_netns():
     p = print
@@ -294,6 +295,20 @@ def pull(data):
         for node in data['nodes']:
             print('docker pull {}'.format(node['image']))
 
+def generate_img(data, imgfile):
+    graph = pydot.Dot(graph_type='graph', overlap=False, splines=True)
+    for i in range(len(data['nodes'])):
+        node_name = data["nodes"][i]["name"]
+        graph.add_node(pydot.Node(node_name, label=node_name))
+        iface_info = data["nodes"][i]["interfaces"]
+        for j in range(len(iface_info)):
+            iface_name = node_name+"#"+iface_info[j]['name']
+            opts_name = iface_info[j]['opts']
+            graph.add_node(pydot.Node(iface_name, label=iface_name, shape="box", fixedsize=True, height=0.2))
+            graph.add_edge(pydot.Edge(node_name, iface_name))
+            graph.add_edge(pydot.Edge(iface_name, opts_name))
+    graph.write_png(imgfile, prog='sfdp')
+
 def test(data):
     print('\n#####################')
     print('# INTEGRATION TEST  #')
@@ -313,7 +328,7 @@ def main():
     parser = argparse.ArgumentParser(
             formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('option',
-            choices=['func', 'init', 'fini', 'reset', 'conf', 'test', 'reconf', 'tpl', 'pull'],
+            choices=['func', 'init', 'fini', 'reset', 'conf', 'test', 'reconf', 'tpl', 'pull', 'img'],
             help='func       just generate helper funcs \n'
                  'init       generate setup script \n'
                  'fini       generate destroy script \n'
@@ -323,10 +338,13 @@ def main():
                  'reconf     generate destroy, setup and config script \n'
                  'tpl        generate template yaml file \n'
                  'pull       generate docker image pulling script \n'
+                 'img        generate network topology png file\n'
                  )
     parser.add_argument('-f', '--specfile', default='spec.yaml')
+    parser.add_argument('-v', '--imgfile', default='spec.png')
     args = parser.parse_args()
     specfile = args.specfile
+    imgfile = args.imgfile
     option = args.option
 
 
@@ -385,6 +403,9 @@ def main():
     elif (option == 'tpl'):
         print('# http://www.asciiflow.com')
         tpl()
+    elif (option == 'img'):
+        data = yaml.load(open(specfile, "r+"))
+        generate_img(data, imgfile)
     else:
         parser.print_help()
 
