@@ -1,10 +1,10 @@
 
 ## Quick Start
 
-Please refer the following commands. This quick start section is
-setup the basic IP network using BGP. Before starting this section,
-please setup CNS basic env according **Setup and Usage** section
-on [readme](README.md).
+Please refer to the following commands. This quick start guide is
+to setup the basic IP network using BGP. Before starting this section,
+please setup the CNS basic environment according to the
+**Setup and Usage** section in [readme](README.md).
 
 setup the virtual network.
 ```
@@ -14,8 +14,8 @@ $ cns conf | sudo sh
 $ docker ps   # you can check the each network node as-a Container.
 ```
 
-In this example, you setup the basic eBGP network using FRR container.
-Topology is like-a following figure.
+In this example, you can setup the basic eBGP network using FRR container.
+The topology is depicted in the following figure.
 
 ```
 
@@ -37,9 +37,10 @@ Topology is like-a following figure.
 
 ```
 
-So, you can test to execute ping command on C0 container
-with following command. This shows eBGP can advertise
-network preffix to each-routers. and established ip-connection
+You can execute the ping command on C0 container
+with the following command. It shows that in the eBGP configuration
+you can advertise the network prefix to each routers, and
+successfully established the IP reachability
 between C0 container and C1 container.
 
 ```
@@ -50,7 +51,8 @@ PING 10.4.0.2 (10.4.0.2) 56(84) bytes of data.
 ...
 ```
 
-finally, destroy the virtual network.
+When you finish, you can destroy the virtual network by the
+following command.
 ```
 $ cns fini | sudo sh
 ```
