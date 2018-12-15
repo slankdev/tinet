@@ -2,39 +2,39 @@
 
 nodes:
   - name: S0
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, opts: R0#net1 }
   - name: R0
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net1, type: direct, opts: S0#net0 }
       - { name: net0, type: bridge, opts: B0 }
   - name: R1
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: bridge, opts: B0 }
       - { name: net1, type: direct, opts: S1#net0 }
   - name: S1
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, opts: R1#net1 }
   - name: R2
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: bridge, opts: B0 }
       - { name: net1, type: direct, opts: S2#net0 }
   - name: S2
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, opts: R2#net1 }
   - name: R3
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: bridge, opts: B0 }
       - { name: net1, type: direct, opts: S3#net0 }
   - name: S3
-    image: tmp
+    image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, opts: R3#net1 }
 

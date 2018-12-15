@@ -7,7 +7,7 @@ index c2c0bd2..79ab538 100644
        - { name: net0, type: direct, opts: R3#net1 }
  
 +  - name: R4
-+    image: tmp
++    image: slankdev/frr
 +    interfaces:
 +      - { name: net0, type: bridge, opts: B0 }
 +      - { name: net1, type: direct, opts: S4#net0 }

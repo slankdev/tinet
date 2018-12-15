@@ -34,6 +34,20 @@ def generate_kokobr():
     p('  ovs-vsctl add-port $1 $2$3                        ')
     p('}                                                   ')
 
+def generate_kokobr_netns():
+    p = print
+    p('kokobr_netns () {                                   ')
+    p('  if [ $# -ne 3 ]; then                             ')
+    p('    echo "Usage: $0 <bridge> <netns> <ifname>"      ')
+    p('    exit 1                                          ')
+    p('  fi                                                ')
+    p('  ip link add name $3 type veth peer name $2$3')
+    p('  ip link set dev $3 netns $2                       ')
+    p('  ip link set $2$3 up                               ')
+    p('  ip netns exec $2 ip link set $3 up                ')
+    p('  ovs-vsctl add-port $1 $2$3                        ')
+    p('}                                                   ')
+
 def generate_koko_physnet():
     p = print
     p('koko_physnet () {                       ')
@@ -111,16 +125,35 @@ def postinit(data):
             for cmd in node['cmds']:
                 print('{}'.format(cmd['cmd']))
 
+def preconf(data):
+    print('\n#####################')
+    print('# PRE-CONF COMMANDS #')
+    print('#####################')
+    if 'preconf' in data:
+        for node in data['preconf']:
+            for cmd in node['cmds']:
+                print('{}'.format(cmd['cmd']))
+
 def init(data):
     print('\n#####################')
     print('# INIT COMMANDS #')
     print('#####################')
 
     # CREATE NODES
+    print('\n# generate nodes')
     if 'nodes' in data:
         for node in data['nodes']:
-            print('docker run -td --hostname {} --name {} --rm --privileged {}'
-                    .format(node['name'], node['name'], node['image']))
+            nodetype = node.get('type', 'docker')
+            if nodetype == 'docker':
+                print('docker run -td --hostname {} '
+                      '--name {} --rm --privileged {}'
+                      .format(node['name'], node['name'],
+                      node['image']))
+            elif nodetype == 'netns':
+                print('ip netns add {}'.format(node['name']))
+            else:
+                print('unknown node-type {}'.format(node['type']))
+                sys.exit(1)
 
     # CREATE SWITCHES
     if 'switches' in data:
@@ -133,9 +166,11 @@ def init(data):
         left_node_name = None
         left_iface_name = None
         left_isset = False
+        left_node_type = None
         right_node_name = None
         right_iface_name = None
         right_isset = False
+        right_node_type = None
         def __init__(self, ln_name, ln_iface, rn_name=None, rn_iface=None):
             self.left_node_name = ln_name
             self.left_iface_name = ln_iface
@@ -146,10 +181,13 @@ def init(data):
             # EXAMPLE:
             #    sudo ip link add net0 netns C0 type veth \
             #        peer name net0 netns C1
-            print('mount_docker_netns {} {}'.format(
-                self.left_node_name, self.left_node_name))
-            print('mount_docker_netns {} {}'.format(
-                self.right_node_name, self.right_node_name))
+            print('\n# connect {} to {}'.format(self.left_node_name, self.right_node_name))
+            if self.left_node_type == 'docker':
+                print('mount_docker_netns {} {}'.format(
+                    self.left_node_name, self.left_node_name))
+            if self.right_node_type == 'docker':
+                print('mount_docker_netns {} {}'.format(
+                    self.right_node_name, self.right_node_name))
             print('ip link add {} netns {} type veth peer name {} netns {}'.format(
                 self.left_iface_name,
                 self.left_node_name,
@@ -159,8 +197,10 @@ def init(data):
                 self.left_node_name, self.left_iface_name))
             print('ip netns exec {} ip link set {} up'.format(
                 self.right_node_name, self.right_iface_name))
-            print('ip netns del {}'.format(self.left_node_name))
-            print('ip netns del {}'.format(self.right_node_name))
+            if self.left_node_type == 'docker':
+                print('ip netns del {}'.format(self.left_node_name))
+            if self.right_node_type == 'docker':
+                print('ip netns del {}'.format(self.right_node_name))
         def check(self):
             if not (self.right_isset and self.left_isset):
                 Exception('n2n_link state is not correct')
@@ -180,10 +220,12 @@ def init(data):
                             if b0 and b1: # found peer
                                 link.right_node_name = node['name']
                                 link.right_iface_name = iface['name']
+                                link.right_node_type = node.get('type', 'docker')
                                 link.right_isset = True
                                 peer_found = True
                     if peer_found == False:
                         new_link = n2n_link(node['name'], iface['name'], r_nname, r_ifname)
+                        new_link.left_node_type = node.get('type', 'docker')
                         links.append(new_link)
         for link in links:
             link.check()
@@ -195,15 +237,22 @@ def init(data):
         node_name = None
         node_iface = None
         node_isset = False
+        node_type = None
         switch_name = None
         switch_isset = False
-        def __init__(self, n_name, n_iface, s_name):
+        def __init__(self, n_name, n_iface, n_type, s_name):
             self.node_name = n_name
             self.node_iface = n_iface
+            self.node_type = n_type
             self.switch_name = s_name
 
         def koko(self):
-            print('kokobr {} {} {}'.format(self.switch_name, self.node_name, self.node_iface))
+            if self.node_type == 'docker':
+                print('kokobr {} {} {}'.format(self.switch_name, self.node_name, self.node_iface))
+            elif self.node_type == 'netns':
+                print('kokobr_netns {} {} {}'.format(self.switch_name, self.node_name, self.node_iface))
+            else:
+                print('unknown node-type {}'.format(self.node_type))
 
         def check(self):
             if not (self.node_isset and self.switch_isset):
@@ -214,7 +263,10 @@ def init(data):
             for i in range(len(node['interfaces'])):
                 iface = node['interfaces'][i]
                 if (iface['type']=='bridge'):
-                    new_link = s2n_link(node['name'], iface['name'], iface['opts'])
+                    print('\n# connect {} and {}'
+                        .format(node['name'], iface['opts']))
+                    new_link = s2n_link(node['name'], iface['name'], 
+                            node.get('type', 'docker'), iface['opts'])
                     new_link.node_isset = True
                     new_link.switch_isset = False
                     links.append(new_link)
@@ -262,7 +314,14 @@ def fini(data):
                 if (iface['type']=='phys'):
                     print('detach_physif_from_docker {} {}'.format(node['name'], iface['name']))
         for node in data['nodes']:
-            print('docker stop {}'.format(node['name']))
+            nodetype = node.get('type', 'docker')
+            if nodetype=='docker': 
+                print('docker stop {}'.format(node['name']))
+            elif nodetype=='netns':
+                print('ip netns del {}'.format(node['name']))
+            else:
+                print('unknown nodetype {}'.format(nodetype))
+                sys.exit(1)
     if 'switches' in data:
         for sw in data['switches']:
             print('ovs-vsctl del-br {}'.format(sw['name']));
@@ -276,6 +335,14 @@ def postfini(data):
             for cmd in node['cmds']:
                 print('{}'.format(cmd['cmd']))
 
+def get_node_type_from_nodes(data, name, default):
+    if 'nodes' in data:
+        for node in data['nodes']:
+            if node['name'] == name:
+                return node.get('type', default)
+    print('not found node {}'.format(name))
+    sys.exit(1)
+
 def config(data):
     print('\n################')
     print('# NODE CONFIG  #')
@@ -283,8 +350,14 @@ def config(data):
     if 'node_configs' in data:
         for node in data['node_configs']:
             print('echo {}::[config]::start'.format(node['name']))
+            nodetype = get_node_type_from_nodes(data, node['name'], 'docker')
             for cmd in node['cmds']:
-                print('docker exec {} {}'.format(node['name'], cmd['cmd']))
+                if nodetype=='docker':
+                    print('docker exec {} {}'.format(node['name'], cmd['cmd']))
+                elif nodetype=='netns':
+                    print('ip netns exec {} {}'.format(node['name'], cmd['cmd']))
+                else:
+                    print('unknown node-type {}'.format(nodetype))
             print('echo {}::[config]::fin'.format(node['name']))
 
 def pull(data):
@@ -295,18 +368,33 @@ def pull(data):
         for node in data['nodes']:
             print('docker pull {}'.format(node['image']))
 
-def generate_img(data, imgfile):
+def is_exist(graph, me):
+    edge_list = graph.get_edge_list()
+    for edge in edge_list:
+        pair = edge.obj_dict['points']
+        me_pair = me.obj_dict['points']
+        b0 = (pair[0]==me_pair[0] and pair[1]==me_pair[1])
+        b1 = (pair[1]==me_pair[0] and pair[0]==me_pair[1])
+        if (b0 or b1):
+            return True
+    return False
+
+def img(data, imgfile):
     graph = pydot.Dot(graph_type='graph', overlap=False, splines=True)
     for i in range(len(data['nodes'])):
         node_name = data["nodes"][i]["name"]
         graph.add_node(pydot.Node(node_name, label=node_name))
         iface_info = data["nodes"][i]["interfaces"]
         for j in range(len(iface_info)):
-            iface_name = node_name+"#"+iface_info[j]['name']
-            opts_name = iface_info[j]['opts']
-            graph.add_node(pydot.Node(iface_name, label=iface_name, shape="box", fixedsize=True, height=0.2))
-            graph.add_edge(pydot.Edge(node_name, iface_name))
-            graph.add_edge(pydot.Edge(iface_name, opts_name))
+            opts_name = iface_info[j]['opts'].split("#")[0]
+            new_edge = pydot.Edge(node_name, opts_name)
+            new_edge = pydot.Edge(node_name, opts_name)
+            iface_name_label = iface_info[j]['name']
+            new_edge.set_headlabel(iface_info[j]['opts'].split("#")[1])
+            new_edge.set_taillabel(iface_info[j]['name'])
+            new_edge.set_fontsize(8)
+            if not is_exist(graph, new_edge):
+                graph.add_edge(new_edge)
     graph.write_png(imgfile, prog='sfdp')
 
 def test(data):
@@ -341,7 +429,7 @@ def main():
                  'img        generate network topology png file\n'
                  )
     parser.add_argument('-f', '--specfile', default='spec.yaml')
-    parser.add_argument('-v', '--imgfile', default='spec.png')
+    parser.add_argument('-v', '--imgfile', default='topo.png')
     args = parser.parse_args()
     specfile = args.specfile
     imgfile = args.imgfile
@@ -351,11 +439,13 @@ def main():
     if (option == 'func'):
         generate_mount_docker_netns()
         generate_kokobr()
+        generate_kokobr_netns()
         generate_koko_physnet()
     elif (option == 'init'):
         data = yaml.load(open(specfile, "r+"))
         generate_mount_docker_netns()
         generate_kokobr()
+        generate_kokobr_netns()
         generate_koko_physnet()
         preinit(data)
         init(data)
@@ -374,6 +464,7 @@ def main():
         postfini(data)
         generate_mount_docker_netns()
         generate_kokobr()
+        generate_kokobr_netns()
         generate_koko_physnet()
         preinit(data)
         init(data)
@@ -386,13 +477,16 @@ def main():
         postfini(data)
         generate_mount_docker_netns()
         generate_kokobr()
+        generate_kokobr_netns()
         generate_koko_physnet()
         preinit(data)
         init(data)
         postinit(data)
+        preconf(data)
         config(data)
     elif (option == 'conf'):
         data = yaml.load(open(specfile, "r+"))
+        preconf(data)
         config(data)
     elif (option == 'pull'):
         data = yaml.load(open(specfile, "r+"))
@@ -405,7 +499,7 @@ def main():
         tpl()
     elif (option == 'img'):
         data = yaml.load(open(specfile, "r+"))
-        generate_img(data, imgfile)
+        img(data, imgfile)
     else:
         parser.print_help()
 

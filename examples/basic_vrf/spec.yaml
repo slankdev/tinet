@@ -32,20 +32,20 @@ nodes:
       - { name: net2, type: direct, opts: C11#net0 }
 
   - name: C00
-    image: slankdev/ubuntu:16.04
+    image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, opts: R0#net1 }
   - name: C01
-    image: slankdev/ubuntu:16.04
+    image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, opts: R1#net1 }
 
   - name: C10
-    image: slankdev/ubuntu:16.04
+    image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, opts: R0#net2 }
   - name: C11
-    image: slankdev/ubuntu:16.04
+    image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, opts: R1#net2 }
 
@@ -53,82 +53,83 @@ node_configs:
 
   - name: R0
     cmds:
-
-      - cmd: ip link add vrf0 type vrf table 10
-      - cmd: ip link set dev vrf0 up
+      - cmd: ip link add vrf10 type vrf table 10
+      - cmd: ip link set dev vrf10 up
       - cmd: ip addr add 192.168.10.1/24 dev net1
-      - cmd: ip link set dev net1 master vrf0
+      - cmd: ip link set dev net1 master vrf10
       - cmd: ip link set dev net1 up
       - cmd: ip link add link net0 name net0.10 type vlan id 10
-      - cmd: ip link set dev net0.10 master vrf0
+      - cmd: ip link set dev net0.10 master vrf10
       - cmd: ip link set dev net0.10 up
       - cmd: ip addr add 10.0.10.1/24 dev net0.10
-      - cmd: ip route add default via 10.0.10.2 vrf vrf0
-      - cmd: echo slankdev
+      - cmd: ip route add default via 10.0.10.2 vrf vrf10
 
-      - cmd: ip link add vrf1 type vrf table 11
-      - cmd: ip link set dev vrf1 up
+      - cmd: ip link add vrf11 type vrf table 11
+      - cmd: ip link set dev vrf11 up
       - cmd: ip addr add 192.168.10.1/24 dev net2
-      - cmd: ip link set dev net2 master vrf1
+      - cmd: ip link set dev net2 master vrf11
       - cmd: ip link set dev net2 up
-      - cmd: ip link add link net0 name net0.20 type vlan id 20
-      - cmd: ip link set dev net0.20 master vrf1
-      - cmd: ip link set dev net0.20 up
-      - cmd: ip addr add 10.0.20.1/24 dev net0.20
-      - cmd: ip route add default via 10.0.20.2 vrf vrf1
+      - cmd: ip link add link net0 name net0.11 type vlan id 11
+      - cmd: ip link set dev net0.11 master vrf11
+      - cmd: ip link set dev net0.11 up
+      - cmd: ip addr add 10.0.11.1/24 dev net0.11
+      - cmd: ip route add default via 10.0.11.2 vrf vrf11
 
   - name: R1
     cmds:
-
-      - cmd: ip link add vrf0 type vrf table 10
-      - cmd: ip link set dev vrf0 up
+      - cmd: ip link add vrf10 type vrf table 10
+      - cmd: ip link set dev vrf10 up
       - cmd: ip addr add 192.168.20.1/24 dev net1
-      - cmd: ip link set dev net1 master vrf0
+      - cmd: ip link set dev net1 master vrf10
       - cmd: ip link set dev net1 up
       - cmd: ip link add link net0 name net0.10 type vlan id 10
-      - cmd: ip link set dev net0.10 master vrf0
+      - cmd: ip link set dev net0.10 master vrf10
       - cmd: ip link set dev net0.10 up
       - cmd: ip addr add 10.0.10.2/24 dev net0.10
-      - cmd: ip route add default via 10.0.10.1 vrf vrf0
+      - cmd: ip route add default via 10.0.10.1 vrf vrf10
 
-      - cmd: ip link add vrf1 type vrf table 11
-      - cmd: ip link set dev vrf1 up
+      - cmd: ip link add vrf11 type vrf table 11
+      - cmd: ip link set dev vrf11 up
       - cmd: ip addr add 192.168.20.1/24 dev net2
-      - cmd: ip link set dev net2 master vrf1
+      - cmd: ip link set dev net2 master vrf11
       - cmd: ip link set dev net2 up
-      - cmd: ip link add link net0 name net0.20 type vlan id 20
-      - cmd: ip link set dev net0.20 master vrf1
-      - cmd: ip link set dev net0.20 up
-      - cmd: ip addr add 10.0.20.2/24 dev net0.20
-      - cmd: ip route add default via 10.0.20.1 vrf vrf1
+      - cmd: ip link add link net0 name net0.11 type vlan id 11
+      - cmd: ip link set dev net0.11 master vrf11
+      - cmd: ip link set dev net0.11 up
+      - cmd: ip addr add 10.0.11.2/24 dev net0.11
+      - cmd: ip route add default via 10.0.11.1 vrf vrf11
 
   - name: C00
     cmds:
       - cmd: echo slankdev0199
       - cmd: ip addr add 192.168.10.2/24 dev net0
-      - cmd: ip route del default
-      - cmd: ip route add default via 192.168.10.1
+      - cmd: ip route replace default via 192.168.10.1
+      - cmd: sh -c "echo C00 > index.html"
+      - cmd: nohup python3 -m http.server 80 &
 
   - name: C10
     cmds:
       - cmd: echo slankdev012
       - cmd: ip addr add 192.168.10.2/24 dev net0
-      - cmd: ip route del default
-      - cmd: ip route add default via 192.168.10.1
+      - cmd: ip route replace default via 192.168.10.1
+      - cmd: sh -c "echo C10 > index.html"
+      - cmd: nohup python3 -m http.server 80 &
 
   - name: C01
     cmds:
       - cmd: echo slankdev00
       - cmd: ip addr add 192.168.20.2/24 dev net0
-      - cmd: ip route del default
-      - cmd: ip route add default via 192.168.20.1
+      - cmd: ip route replace default via 192.168.20.1
+      - cmd: sh -c "echo C01 > index.html"
+      - cmd: nohup python3 -m http.server 80 &
 
   - name: C11
     cmds:
       - cmd: echo slankdev
       - cmd: ip addr add 192.168.20.2/24 dev net0
-      - cmd: ip route del default
-      - cmd: ip route add default via 192.168.20.1
+      - cmd: ip route replace default via 192.168.20.1
+      - cmd: sh -c "echo C11 > index.html"
+      - cmd: nohup python3 -m http.server 80 &
 
 test:
   - cmds:
@@ -138,4 +139,5 @@ test:
     - cmd: docker exec C11 ping -c2 192.168.20.1
     - cmd: docker exec C00 ping -c2 192.168.20.2
     - cmd: docker exec C10 ping -c2 192.168.20.2
+
 
