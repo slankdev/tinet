@@ -2,27 +2,27 @@
 # Yaml Format
 
 
-## Service Definition
+## Node Definition
 
 ```
-services:
+nodes:
   - name: Node0
     image: ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: R0#net1 }
+      - { name: net0, type: direct, args: R0#net1 }
 ```
 
 ### Node type
 
-- name: service name. It will be container-name or netns-name.
-- type: service type (default: docker)
-	- docker: service is docker container
-	- netns: service is just network namespace
+- name: node name. It will be container-name or netns-name.
+- type: node type (default: docker)
+	- docker: node is docker container
+	- netns: node is just network namespace
 - image: specify docker-image
 - build: specify Dockerfile's path
 
 ```
-services:
+nodes:
   - name: Node0
     image: ubuntu:18.04
   - name: Node1
@@ -36,11 +36,11 @@ services:
 - type
 	- direct: p2p connect to other container
 	- bridge: bridge connection
-	- phys  : host's network interface 
+	- phys  : host's network interface
 - mac: specify mac address
 
 ```
-services:
+nodes:
   - name: Node0
     image: ubuntu:18.04
     interfaces:
@@ -52,8 +52,8 @@ services:
 
 ### Bridge Definition
 
-If you use the bridge interface type, you need to 
-define the Bridge-Instance. It'll be created as a 
+If you use the bridge interface type, you need to
+define the Bridge-Instance. It'll be created as a
 OvS-instance.
 
 - name: interface name

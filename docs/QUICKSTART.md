@@ -3,14 +3,14 @@
 
 Please refer to the following commands. This quick start guide is
 to setup the basic IP network using BGP. Before starting this section,
-please setup the CNS basic environment according to the
-**Setup and Usage** section in [readme](README.md).
+please setup the TiNet basic environment according to the
+**Setup and Usage** section in [readme](../README.md).
 
 setup the virtual network.
 ```
-$ cd cns/examples/basic_ebgp
-$ cns init | sudo sh
-$ cns conf | sudo sh
+$ cd tinet/examples/basic_ebgp
+$ tn up | sudo sh
+$ tn conf | sudo sh
 $ docker ps   # you can check the each network node as-a Container.
 ```
 
@@ -54,5 +54,9 @@ PING 10.4.0.2 (10.4.0.2) 56(84) bytes of data.
 When you finish, you can destroy the virtual network by the
 following command.
 ```
-$ cns fini | sudo sh
+$ tn down | sudo sh
 ```
+
+More infomation is written at [yaml-spec](specification_yml.md),
+and [cli-spec](specification_cli.md). If you have any question,
+please open new issue. Thanks.

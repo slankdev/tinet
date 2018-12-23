@@ -3,11 +3,11 @@ nodes:
   - name: C0                                       
     image: slankdev/ubuntu:18.04                   
     interfaces:                                    
-      - { name: net0, type: direct, opts: C1#net0 }
+      - { name: net0, type: direct, args: C1#net0 }
   - name: C1                                       
     image: slankdev/ubuntu:18.04                   
     interfaces:                                    
-      - { name: net0, type: direct, opts: C0#net0 }
+      - { name: net0, type: direct, args: C0#net0 }
                                                    
 node_configs:                                      
   - name: C0                                       

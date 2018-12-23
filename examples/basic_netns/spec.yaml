@@ -3,16 +3,16 @@ nodes:
   - name: H0
     type: netns
     interfaces:
-      - { name: net0, type: direct, opts: C0#net0 }
-      - { name: net1, type: direct, opts: C1#net0 }
+      - { name: net0, type: direct, args: C0#net0 }
+      - { name: net1, type: direct, args: C1#net0 }
   - name: C0
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: H0#net0 }
+      - { name: net0, type: direct, args: H0#net0 }
   - name: C1
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: H0#net1 }
+      - { name: net0, type: direct, args: H0#net1 }
 
 node_configs:
   - name: H0

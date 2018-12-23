@@ -1,0 +1,37 @@
+
+nodes:
+  - name: C0
+    type: docker #optional (default:docker)
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: bridge, args: B0 }
+      - { name: net2, type: phys }
+  - name: C1
+    type: netns #optional (default:docker)
+    interfaces:
+      - { name: net0, type: direct, args: C0#net0 }
+      - { name: net1, type: bridge, args: B0 }
+
+switches:
+  - name: B0
+    interfaces:
+      - { name: net0, type: docker, args: C0 }
+      - { name: net0, type: netns, args: C0 }
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: ip link set dev net0 up
+  - name: C1
+    cmds:
+      - cmd: echo slankdev slankdev
+      - cmd: >-
+          echo slankdev &&
+          echo slnakdev
+
+test:
+  - cmds:
+    - cmd: docker exec C0 ping -c2 10.0.0.2
+    - cmd: echo slankdev slankdev
+

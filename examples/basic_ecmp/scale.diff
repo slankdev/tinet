@@ -4,26 +4,26 @@ index c2c0bd2..79ab538 100644
 +++ b/examples/basic_ecmp/spec.yaml
 @@ -38,6 +38,16 @@ nodes:
      interfaces:
-       - { name: net0, type: direct, opts: R3#net1 }
+       - { name: net0, type: direct, args: R3#net1 }
  
 +  - name: R4
 +    image: slankdev/frr
 +    interfaces:
-+      - { name: net0, type: bridge, opts: B0 }
-+      - { name: net1, type: direct, opts: S4#net0 }
++      - { name: net0, type: bridge, args: B0 }
++      - { name: net1, type: direct, args: S4#net0 }
 +  - name: S4
 +    image: tmp
 +    interfaces:
-+      - { name: net0, type: direct, opts: R4#net1 }
++      - { name: net0, type: direct, args: R4#net1 }
 +
  switches:
    - name: B0
      interfaces:
 @@ -45,6 +55,7 @@ switches:
-       - { name: net0, type: container, opts: R1 }
-       - { name: net0, type: container, opts: R2 }
-       - { name: net0, type: container, opts: R3 }
-+      - { name: net0, type: container, opts: R4 }
+       - { name: net0, type: container, args: R1 }
+       - { name: net0, type: container, args: R2 }
+       - { name: net0, type: container, args: R3 }
++      - { name: net0, type: container, args: R4 }
  
  node_configs:
    - name: S0

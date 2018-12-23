@@ -4,47 +4,47 @@ nodes:
   - name: S0
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R0#net1 }
+      - { name: net0, type: direct, args: R0#net1 }
   - name: R0
     image: slankdev/frr
     interfaces:
-      - { name: net1, type: direct, opts: S0#net0 }
-      - { name: net0, type: bridge, opts: B0 }
+      - { name: net1, type: direct, args: S0#net0 }
+      - { name: net0, type: bridge, args: B0 }
   - name: R1
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: S1#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: S1#net0 }
   - name: S1
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R1#net1 }
+      - { name: net0, type: direct, args: R1#net1 }
   - name: R2
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: S2#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: S2#net0 }
   - name: S2
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R2#net1 }
+      - { name: net0, type: direct, args: R2#net1 }
   - name: R3
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: S3#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: S3#net0 }
   - name: S3
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R3#net1 }
+      - { name: net0, type: direct, args: R3#net1 }
 
 switches:
   - name: B0
     interfaces:
-      - { name: net0, type: container, opts: R0 }
-      - { name: net0, type: container, opts: R1 }
-      - { name: net0, type: container, opts: R2 }
-      - { name: net0, type: container, opts: R3 }
+      - { name: net0, type: container, args: R0 }
+      - { name: net0, type: container, args: R1 }
+      - { name: net0, type: container, args: R2 }
+      - { name: net0, type: container, args: R3 }
 
 node_configs:
   - name: S0

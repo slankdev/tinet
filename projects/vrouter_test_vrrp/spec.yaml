@@ -31,13 +31,13 @@ nodes:
   - name: R0
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: veth, opts: R0net0 } # to_kamuee1
-      - { name: net1, type: veth, opts: R0net1 } # to_kamuee2
+      - { name: net0, type: veth, args: R0net0 } # to_kamuee1
+      - { name: net1, type: veth, args: R0net1 } # to_kamuee2
 
   - name: C0
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: veth, opts: C0net0 }
+      - { name: net0, type: veth, args: C0net0 }
 
 node_configs:
   - name: R0

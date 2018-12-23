@@ -30,30 +30,30 @@ nodes:
     # image: slankdev/frr
     image: tmp
     interfaces:
-      - { name: net0, type: direct, opts: S0#net0 }
-      - { name: net1, type: bridge, opts: B0 }
+      - { name: net0, type: direct, args: S0#net0 }
+      - { name: net1, type: bridge, args: B0 }
   - name: R1
     # image: slankdev/frr
     image: tmp
     interfaces:
-      - { name: net0, type: direct, opts: S0#net1 }
-      - { name: net1, type: bridge, opts: B0 }
+      - { name: net0, type: direct, args: S0#net1 }
+      - { name: net1, type: bridge, args: B0 }
   - name: S0
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R0#net0 }
-      - { name: net1, type: direct, opts: R1#net0 }
+      - { name: net0, type: direct, args: R0#net0 }
+      - { name: net1, type: direct, args: R1#net0 }
   - name: C0
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
+      - { name: net0, type: bridge, args: B0 }
 
 switches:
   - name: B0
     interfaces:
-      - { type: container, opts: R0, name: net1 }
-      - { type: container, opts: R1, name: net1 }
-      - { type: container, opts: C0, name: net0 }
+      - { type: container, args: R0, name: net1 }
+      - { type: container, args: R1, name: net1 }
+      - { type: container, args: C0, name: net0 }
 
 node_configs:
   - name: R0

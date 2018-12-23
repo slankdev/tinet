@@ -20,9 +20,9 @@ nodes:
   - name: DUT
     image: slankdev/frr
     interfaces:
-      - { name: port-0-6-0, type: veth, opts: pp6 }
-      - { name: port-0-7-0, type: veth, opts: pp7 }
-      - { name: port-0-8-0, type: veth, opts: pp8 }
+      - { name: port-0-6-0, type: veth, args: pp6 }
+      - { name: port-0-7-0, type: veth, args: pp7 }
+      - { name: port-0-8-0, type: veth, args: pp8 }
 
 node_configs:
   - name: DUT

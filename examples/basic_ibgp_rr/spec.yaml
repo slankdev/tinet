@@ -27,45 +27,45 @@ nodes:
   - name: RR0
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
+      - { name: net0, type: bridge, args: B0 }
 
   - name: R0
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: C0#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: C0#net0 }
   - name: C0
     image: slankdev/ubuntu:16.04
     interfaces:
-      - { name: net0, type: direct, opts: R0#net1 }
+      - { name: net0, type: direct, args: R0#net1 }
 
   - name: R1
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: C1#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: C1#net0 }
   - name: C1
     image: slankdev/ubuntu:16.04
     interfaces:
-      - { name: net0, type: direct, opts: R1#net1 }
+      - { name: net0, type: direct, args: R1#net1 }
 
   - name: R2
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: bridge, opts: B0 }
-      - { name: net1, type: direct, opts: C2#net0 }
+      - { name: net0, type: bridge, args: B0 }
+      - { name: net1, type: direct, args: C2#net0 }
   - name: C2
     image: slankdev/ubuntu:16.04
     interfaces:
-      - { name: net0, type: direct, opts: R2#net1 }
+      - { name: net0, type: direct, args: R2#net1 }
 
 switches:
   - name: B0
     interfaces:
-      - { name: net0, type: container, opts: RR0 }
-      - { name: net0, type: container, opts: R0 }
-      - { name: net0, type: container, opts: R1 }
-      - { name: net0, type: container, opts: R2 }
+      - { name: net0, type: container, args: RR0 }
+      - { name: net0, type: container, args: R0 }
+      - { name: net0, type: container, args: R1 }
+      - { name: net0, type: container, args: R2 }
 
 node_configs:
   - name: RR0

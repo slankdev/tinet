@@ -42,34 +42,34 @@ nodes:
   - name: R1
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: C1#net0 }
-      - { name: net1, type: direct, opts: R2#net0 }
-      - { name: net2, type: direct, opts: R3#net0 }
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: direct, args: R2#net0 }
+      - { name: net2, type: direct, args: R3#net0 }
   - name: R2
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R1#net1 }
-      - { name: vnet1, type: direct, opts: DUT#ens6 }
+      - { name: net0, type: direct, args: R1#net1 }
+      - { name: vnet1, type: direct, args: DUT#ens6 }
   - name: R3
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R1#net2 }
-      - { name: vnet2, type: direct, opts: DUT#ens7 }
+      - { name: net0, type: direct, args: R1#net2 }
+      - { name: vnet2, type: direct, args: DUT#ens7 }
   - name: C1
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: R1#net0 }
+      - { name: net0, type: direct, args: R1#net0 }
   - name: C2
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: vnet3, type: direct, opts: DUT#ens8 }
+      - { name: vnet3, type: direct, args: DUT#ens8 }
 
   - name: DUT
     image: slankdev/frr
     interfaces:
-      - { name: ens6, type: direct, opts: R2#vnet1}
-      - { name: ens7, type: direct, opts: R3#vnet2 }
-      - { name: ens8, type: direct, opts: C2#vnet3 }
+      - { name: ens6, type: direct, args: R2#vnet1}
+      - { name: ens7, type: direct, args: R3#vnet2 }
+      - { name: ens8, type: direct, args: C2#vnet3 }
 
 node_configs:
 

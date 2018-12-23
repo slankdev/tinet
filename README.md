@@ -22,18 +22,37 @@ $ sudo cp bin/tn /usr/local/tn
 $ tn version
 ```
 
-Usage:
 ```
-$ cd <working_dir>
-$ tn                  // show usage
-$ tn -h               // show help
-$ tn init             // generate init shell-script to stdout
-$ tn fini             // generate fini shell-script to stdout
-$ tn init | sudo sh   // generate and execute init shell-script
-$ tn fini | sudo sh   // generate and execute fnit shell-script
-$ tn conf | sudo sh   // generate and execute config shell-script
-$ tn tpl              // generate template
-$ tn img              // generate network topology image file
+Usage: 
+  tn [-f <arg>...] [options] [COMMAND] [ARGS...]
+  tn -h|--help
+
+Options:
+  --verbose             Generate verbose shell
+  --dry-run             Print the recipes that are needed to execute the
+                        targets up to date, but not actually execute them.
+  --project-name NAME   Specify an alternate project name
+                        (default: none)
+  --H, --host HOST      Daemon socket to connect to
+
+COMMAND:
+  ps         List services
+  start      Start services
+  stop       Stop services
+  create     Create services
+  rm         Remove stopped containers
+  up         Create and start containers
+  down       Stop and remove containers
+  pull       Pull service images
+  exec       Execute a command in a running container
+  build      Generate a Docker bundle from the spec file
+  conf       Execute config-cmd in a running container
+  reconf     Remove, create, start and config
+  restart    Remove, create, start
+  version    Show the tinet version information
+  test       Execute tests
+  init       Generate template spec file
+  img        Generate topology png file
 ```
 
 Running on VM

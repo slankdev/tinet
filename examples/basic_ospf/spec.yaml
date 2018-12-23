@@ -13,38 +13,38 @@ nodes:
   - name: R1
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R2#net0 }
-      - { name: net1, type: direct, opts: R3#net0 }
-      - { name: net2, type: direct, opts: S1#net0 }
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R3#net0 }
+      - { name: net2, type: direct, args: S1#net0 }
   - name: R2
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R1#net0 }
-      - { name: net1, type: direct, opts: R4#net0 }
+      - { name: net0, type: direct, args: R1#net0 }
+      - { name: net1, type: direct, args: R4#net0 }
   - name: R3
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R1#net1 }
-      - { name: net1, type: direct, opts: R4#net1 }
-      - { name: net2, type: direct, opts: S3#net0 }
+      - { name: net0, type: direct, args: R1#net1 }
+      - { name: net1, type: direct, args: R4#net1 }
+      - { name: net2, type: direct, args: S3#net0 }
   - name: R4
     image: slankdev/frr
     interfaces:
-      - { name: net0, type: direct, opts: R2#net1 }
-      - { name: net1, type: direct, opts: R3#net1 }
-      - { name: net2, type: direct, opts: S4#net0 }
+      - { name: net0, type: direct, args: R2#net1 }
+      - { name: net1, type: direct, args: R3#net1 }
+      - { name: net2, type: direct, args: S4#net0 }
   - name: S1
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: R1#net2 }
+      - { name: net0, type: direct, args: R1#net2 }
   - name: S3
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: R3#net2 }
+      - { name: net0, type: direct, args: R3#net2 }
   - name: S4
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, opts: R4#net2 }
+      - { name: net0, type: direct, args: R4#net2 }
 
 node_configs:
   - name: S1
