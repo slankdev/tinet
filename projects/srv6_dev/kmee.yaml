@@ -1,0 +1,67 @@
+
+postinit:
+  - cmds:
+    - cmd: ovs-vsctl set port R1port-0-6-0 tag=60
+    - cmd: ovs-vsctl set port R1port-0-7-0 tag=70
+    - cmd: ovs-vsctl set port R1port-0-8-0 tag=80
+    - cmd: ovs-vsctl set port R1port-0-9-0 tag=90
+
+nodes:
+  - name: R1
+    type: docker
+    image: slankdev/frr
+    interfaces:
+      - { name: port-0-6-0, type: bridge, args: ovs0 }
+      - { name: port-0-7-0, type: bridge, args: ovs0 }
+      - { name: port-0-8-0, type: bridge, args: ovs0 }
+      - { name: port-0-9-0, type: bridge, args: ovs0 }
+
+switches:
+  - name: ovs0
+    interfaces:
+      - { name: port-0-6-0, type: docker, args: R1 }
+      - { name: port-0-7-0, type: docker, args: R1 }
+      - { name: port-0-8-0, type: docker, args: R1 }
+      - { name: port-0-9-0, type: docker, args: R1 }
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.default.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port-0-6-0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port-0-6-0.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port-0-7-0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port-0-7-0.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port-0-8-0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port-0-8-0.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port-0-9-0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port-0-9-0.rp_filter=0'
+      - cmd: ip addr add fc00:1::1/64 dev lo
+      - cmd: ip addr add 2001:12::1/64 dev port-0-6-0
+      - cmd: ip addr add 2001:13::1/64 dev port-0-7-0
+      - cmd: ip addr add 2001:14::1/64 dev port-0-8-0
+      - cmd: ip addr add 2001:15::1/64 dev port-0-9-0
+      - cmd: ip -6 route add fc00:2::/64 via 2001:12::2
+      - cmd: ip -6 route add fc00:3::/64 via 2001:13::2
+      - cmd: ip -6 route add fc00:4::/64 via 2001:14::2
+      - cmd: ip -6 route add fc00:5::/64 via 2001:15::2
+
+test:
+  # - name: p2p
+  #   cmds:
+  #   - cmd: docker exec C0 ping -c2 10.0.0.2
+  #   - cmd: echo slankdev slankdev
+  # - name: lo
+  #   cmds:
+  #   - cmd: docker exec C0 ping -c2 10.255.0.1
+  #   - cmd: echo slankdev slankdev
+

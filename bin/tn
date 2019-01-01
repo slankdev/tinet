@@ -37,7 +37,8 @@ nodes:
     interfaces:
       - { name: net0, type: direct, args: C1#net0 }
       - { name: net1, type: bridge, args: B0 }
-      - { name: net2, type: phys }
+      - { name: net2, type: veth  , args: peer0 }
+      - { name: net3, type: phys }
   - name: C1
     type: netns #optional (default:docker)
     interfaces:
