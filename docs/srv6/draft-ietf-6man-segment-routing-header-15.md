@@ -1,31 +1,22 @@
 
 
+# IPv6 Segment Routing Header (SRH) draft-ietf-6man-segment-routing-header-15
+
+- Authors
+	- C. Filsfils, Ed.  Cisco Systems, Inc.
+	- S. Previdi Huawei J. Leddy Individual
+	- S. Matsushima Softbank
+	- D. Voyer, Ed.  Bell Canada
 
 
-Network Working Group                                   C. Filsfils, Ed.
-Internet-Draft                                       Cisco Systems, Inc.
-Intended status: Standards Track                              S. Previdi
-Expires: April 25, 2019                                           Huawei
-                                                                J. Leddy
-                                                              Individual
-                                                           S. Matsushima
-                                                                Softbank
-                                                           D. Voyer, Ed.
-                                                             Bell Canada
-                                                        October 22, 2018
-
-
-                   IPv6 Segment Routing Header (SRH)
-               draft-ietf-6man-segment-routing-header-15
-
-Abstract
+## Abstract
 
    Segment Routing can be applied to the IPv6 data plane using a new
    type of Routing Extension Header.  This document describes the
    Segment Routing Extension Header and how it is used by Segment
    Routing capable nodes.
 
-Requirements Language
+## Requirements Language
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
@@ -33,7 +24,7 @@ Requirements Language
    14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-Status of This Memo
+## Status of This Memo
 
    This Internet-Draft is submitted in full conformance with the
    provisions of BCP 78 and BCP 79.
@@ -50,15 +41,7 @@ Status of This Memo
 
    This Internet-Draft will expire on April 25, 2019.
 
-
-
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 1]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-Copyright Notice
+## Copyright Notice
 
    Copyright (c) 2018 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
@@ -73,7 +56,7 @@ Copyright Notice
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-Table of Contents
+## Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
    2.  Segment Routing Extension Header  . . . . . . . . . . . . . .   4
@@ -109,10 +92,6 @@ Table of Contents
 
 
 
-Filsfils, et al.         Expires April 25, 2019                 [Page 2]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
 
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
      7.1.  Source Routing Attacks  . . . . . . . . . . . . . . . . .  21
@@ -136,7 +115,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
      12.2.  Informative References . . . . . . . . . . . . . . . . .  26
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  27
 
-1.  Introduction
+## 1.  Introduction
 
    Segment Routing can be applied to the IPv6 data plane using a new
    type of Routing Extension Header (SRH).  This document describes the
@@ -164,13 +143,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 3]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-2.  Segment Routing Extension Header
+## 2.  Segment Routing Extension Header
 
    Routing Headers are defined in [RFC8200].  The Segment Routing Header
    has a new Routing Type (suggested value 4) to be assigned by IANA.
@@ -219,13 +192,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    o  Last Entry: contains the index (zero based), in the Segment List,
       of the last element of the Segment List.
 
-
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 4]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
    o  Flags: 8 bits of flags.  Following flags are defined:
 
 
@@ -252,7 +218,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    o  Type Length Value (TLV) are described in Section 2.1.
 
-2.1.  SRH TLVs
+### 2.1.  SRH TLVs
 
    This section defines TLVs of the Segment Routing Header.
 
@@ -274,12 +240,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    Type Length Value (TLV) contain OPTIONAL information that may be used
    by the node identified in the Destination Address (DA) of the packet.
 
-
-
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 5]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    Each TLV has its own length, format and semantic.  The code-point
@@ -315,7 +275,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    Additional TLVs may be defined in the future.
 
-2.1.1.  Padding TLVs
+#### 2.1.1.  Padding TLVs
 
    There are two types of padding TLVs, pad0 and padN, the following
    applies to both:
@@ -332,12 +292,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 6]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
       When present, a PadN TLV MUST have a length from 0 to 5 in order
       to align the SRH total length on a 8-octet boundary.
 
@@ -346,7 +300,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
       Padding TLVs are ignored during ICV calculation.
 
-2.1.1.1.  PAD0
+##### 2.1.1.1.  PAD0
 
      0 1 2 3 4 5 6 7
      +-+-+-+-+-+-+-+-+
@@ -359,7 +313,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    required.  If more than one byte of padding is required a Pad0 TLV
    MUST NOT be used, the PadN TLV MUST be used.
 
-2.1.1.2.  PADN
+##### 2.1.1.2.  PADN
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -380,18 +334,12 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    The PadN TLV MUST be used when more than one byte of padding is
    required.
 
-2.1.2.  HMAC TLV
+#### 2.1.2.  HMAC TLV
 
    The keyed Hashed Message Authentication Code (HMAC) TLV is OPTIONAL
    and has the following format:
 
 
-
-
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 7]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
     0                   1                   2                   3
@@ -425,7 +373,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    use the current segment in the destination address of the packet, and
    ensure the segment list is not modified in transit.
 
-2.1.2.1.  HMAC generation
+##### 2.1.2.1.  HMAC generation
 
    The HMAC field is the output of the HMAC computation as defined in
    [RFC2104], using:
@@ -445,11 +393,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-Filsfils, et al.         Expires April 25, 2019                 [Page 8]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
       *  SRH: Segments Left (1 octet)
 
       *  SRH: Last Entry (1 octet)
@@ -467,7 +410,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    is placed in the lowest order octets of the HMAC field.  Remaining
    octets MUST be set to zero.
 
-2.1.2.2.  HMAC Verification
+##### 2.1.2.2.  HMAC Verification
 
    Local policy determines when to check for an HMAC and potentially a
    requirement on where the HMAC TLV must appear (e.g.  first TLV).
@@ -483,7 +426,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    error code 0, pointing to the HMAC TLV) SHOULD be generated (but rate
    limited) and SHOULD be logged.
 
-2.1.2.3.  HMAC Pre-Shared Key Algorithm
+##### 2.1.2.3.  HMAC Pre-Shared Key Algorithm
 
    The HMAC Key ID field allows for the simultaneous existence of
    several hash algorithms (SHA-256, SHA3-256 ... or future ones) as
@@ -497,13 +440,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    At the HMAC TLV verification node the Key ID uniquely identifies the
    pre-shared key and HMAC algorithm.
 
-
-
-
-
-Filsfils, et al.         Expires April 25, 2019                 [Page 9]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    At the HMAC TLV generating node the Key ID and destination address
@@ -530,7 +466,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    o  dynamically using a trusted key distribution protocol such as
       [RFC6407]
 
-3.  SR Nodes
+## 3.  SR Nodes
 
    There are different types of nodes that may be involved in segment
    routing networks: source SR nodes originate packets with a segment in
@@ -539,7 +475,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    nodes that process a local segment in the destination address of an
    IPv6 header.
 
-3.1.  Source SR Node
+### 3.1.  Source SR Node
 
    A Source SR Node is any node that originates an IPv6 packet with a
    segment (i.e.  SRv6 SID) in the destination address of the IPv6
@@ -557,30 +493,26 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-Filsfils, et al.         Expires April 25, 2019                [Page 10]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
-
-3.2.  Transit Node
+### 3.2.  Transit Node
 
    A transit node is any node forwarding an IPv6 packet where the
    destination address of that packet is not locally configured as a
    segment nor a local interface.  A transit node is not required to be
    capable of processing a segment nor SRH.
 
-3.3.  SR Segment Endpoint Node
+### 3.3.  SR Segment Endpoint Node
 
    A SR segment endpoint node is any node receiving an IPv6 packet where
    the destination address of that packet is locally configured as a
    segment or local interface.
 
-4.  Packet Processing
+## 4.  Packet Processing
 
    This section describes SRv6 packet processing at the SR source,
    Transit and SR segment endpoint nodes.
 
-4.1.  Source SR Node
+### 4.1.  Source SR Node
 
    A Source node steers a packet into an SR Policy.  If the SR Policy
    results in a segment list containing a single segment, and there is
@@ -612,13 +544,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
       (the first segment).
 
 
-
-Filsfils, et al.         Expires April 25, 2019                [Page 11]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-4.1.1.  Reduced SRH
+#### 4.1.1.  Reduced SRH
 
    When a source does not require the entire SID list to be preserved in
    the SRH, a reduced SRH may be used.
@@ -628,7 +554,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    header), and the Last Entry field is set to n-2 where n is the number
    of elements in the SR Policy.
 
-4.2.  Transit Node
+### 4.2.  Transit Node
 
    As specified in [RFC8200], the only node allowed to inspect the
    Routing Extension Header (and therefore the SRH), is the node
@@ -643,7 +569,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    example, [RFC5308] or [RFC5340] may be used to advertise a prefix
    covering the SIDs on a node.
 
-4.3.  SR Segment Endpoint Node
+### 4.3.  SR Segment Endpoint Node
 
    Without constraining the details of an implementation, the SR segment
    endpoint node creates Forwarding Information Base (FIB) entries for
@@ -659,19 +585,13 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
        A FIB entry that represents a non-local route
        No Match
 
-4.3.1.  FIB Entry Is Locally Instantiated SRv6 END SID
+#### 4.3.1.  FIB Entry Is Locally Instantiated SRv6 END SID
 
    This document, and section, defines a single SRv6 SID called END.
    Future documents may define additional SRv6 SIDs.  In which case, the
    entire content of this section will be defined in that document.
 
 
-
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 12]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    If the FIB entry represents a locally instantiated SRv6 SID, process
@@ -681,7 +601,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    The following sections describe the actions to take while processing
    next header fields.
 
-4.3.1.1.  SRH Processing
+##### 4.3.1.1.  SRH Processing
 
    When an SRH is processed {
      If Segments Left is equal to zero {
@@ -723,14 +643,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 13]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-4.3.1.1.1.  TLV Processing
+###### 4.3.1.1.1.  TLV Processing
 
    Local policy determines how TLV's are to be processed when the Active
    Segment is a local END SID.  The definition of local policy is
@@ -752,7 +665,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
        Discard the packet
      }
 
-4.3.1.2.  Upper-layer Header or No Next Header
+##### 4.3.1.2.  Upper-layer Header or No Next Header
 
    Send an ICMP parameter problem message to the Source Address and
    discard the packet.  Error code (TBD by IANA) "SR Upper-layer Header
@@ -761,7 +674,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    A unique error code allows an SR Source node to recognize an error in
    SID processing at an endpoint.
 
-4.3.2.  FIB Entry is a Local Interface
+#### 4.3.2.  FIB Entry is a Local Interface
 
    If the FIB entry represents a local interface, not locally
    instantiated as an SRv6 SID, the SRH is processed as follows:
@@ -779,22 +692,15 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 14]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-4.3.3.  FIB Entry Is A Non-Local Route
+#### 4.3.3.  FIB Entry Is A Non-Local Route
 
    Processing is not changed by this document.
 
-4.3.4.  FIB Entry Is A No Match
+#### 4.3.4.  FIB Entry Is A No Match
 
    Processing is not changed by this document.
 
-4.3.5.  Load Balancing and ECMP
+#### 4.3.5.  Load Balancing and ECMP
 
    Within an SR domain, an SR source node encapsulates a packet in an
    outer IPv6 header for transport to an endpoint.  The SR source node
@@ -811,12 +717,12 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    defined in [RFC6438] to calculate any ECMP hash used to forward the
    processed packet to the next segment.
 
-5.  Illustrations
+## 5.  Illustrations
 
    This section provides illustrations of SRv6 packet processing at SR
    source, transit and SR segment endpoint nodes.
 
-5.1.  Abstract Representation of an SRH
+### 5.1.  Abstract Representation of an SRH
 
    For a node k, its IPv6 address is represented as Ak, its SRv6 SID is
    represented as Sk.
@@ -834,12 +740,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    o  Source Address is SA, Destination Addresses is DA, and next-header
       is SRH.
 
-
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 15]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    o  SRH with SID list <S1, S2, S3> with SegmentsLeft = SL.
@@ -864,7 +764,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
        Segment List[1]=S2
        Segment List[2]=S1
 
-5.2.  Example Topology
+### 5.2.  Example Topology
 
    The following topology is used in examples below:
 
@@ -893,30 +793,26 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-Filsfils, et al.         Expires April 25, 2019                [Page 16]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
 
    o  1 and 2 are hosts outside the SR Domain
 
-5.3.  Source SR Node
+### 5.3.  Source SR Node
 
-5.3.1.  Intra SR Domain Packet
+#### 5.3.1.  Intra SR Domain Packet
 
    When host 8 sends a packet to host 9 via an SR Policy <S7,A9> the
    packet is
 
    P1: (A8,S7)(A9,S7; SL=1)
 
-5.3.1.1.  Reduced Variant
+##### 5.3.1.1.  Reduced Variant
 
    When host 8 sends a packet to host 9 via an SR Policy <S7,A9> and it
    wants to use a reduced SRH, the packet is
 
    P2: (A8,S7)(A9; SL=1)
 
-5.3.2.  Transit Packet Through SR Domain
+#### 5.3.2.  Transit Packet Through SR Domain
 
    When host 1 sends a packet to host 2, the packet is
 
@@ -934,7 +830,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    P5: (A3, S4)(A1, A2)
 
-5.3.2.1.  Reduced Variant
+##### 5.3.2.1.  Reduced Variant
 
    The SR Domain ingress router 3 receives P3 and steers it to SR Domain
    egress router 4 via an SR Policy <S7, S4>.  If router 3 wants to use
@@ -948,13 +844,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-Filsfils, et al.         Expires April 25, 2019                [Page 17]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-5.4.  Transit Node
+### 5.4.  Transit Node
 
    Nodes 5 acts as transit nodes for packet P1, and sends packet
 
@@ -962,7 +852,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    on the interface toward node 7.
 
-5.5.  SR Segment Endpoint Node
+### 5.5.  SR Segment Endpoint Node
 
    Node 7 receives packet P1 and, using the logic in section 4.3.1,
    sends packet
@@ -971,9 +861,9 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    on the interface toward router 6.
 
-6.  Deployment Models
+## 6.  Deployment Models
 
-6.1.  Nodes Within the SR domain
+### 6.1.  Nodes Within the SR domain
 
    SR Source Nodes within an SR Domain are trusted to generate IPv6
    packets with SRH.  SR segment endpoint nodes receiving packets on
@@ -986,7 +876,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    result in additional processing overhead that should be considered in
    a deployment.
 
-6.2.  Nodes Outside the SR Domain
+### 6.2.  Nodes Outside the SR Domain
 
    Nodes outside the SR Domain cannot be trusted.  SR Domain Ingress
    routers SHOULD discard packets destined to SIDs within the SR Domain
@@ -1005,11 +895,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-Filsfils, et al.         Expires April 25, 2019                [Page 18]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
    An Infrastructure Access List (IACL), applied to the external
    interfaces of SR Domain ingress nodes 3 and 4, that discards packets
    destined to a SID covered by Prefix-S is used to discard packets
@@ -1023,7 +908,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    exposes the SR domain to source routing attacks from nodes outside
    the SR Domain, as described and referenced in [RFC5095].
 
-6.2.1.  SR Source Nodes Not Directly Connected
+#### 6.2.1.  SR Source Nodes Not Directly Connected
 
    Nodes outside the SR Domain may request, by some trusted means
    outside the scope of this document, a complete SRH including an HMAC
@@ -1059,11 +944,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 19]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
                 + * * * * * * * * * * * * * * * * * * * * +
@@ -1106,7 +986,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    routing as documented in [SRN].  In that example, the HMAC is used to
    validate a source node is using a permitted segment list.
 
-7.  Security Considerations
+## 7.  Security Considerations
 
    This section reviews security considerations related to the SRH,
    given the SRH processing and deployment models discussed in this
@@ -1115,11 +995,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    As describe in Section 6, it is necessary to filter packets ingress
    to the SR Domain destined to segments within the SR Domain.  This
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 20]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    ingress filtering is via an IACL at SR Domain ingress border nodes.
@@ -1138,7 +1013,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    validity of ingress packets SRH, limiting access to the segments in
    the SR Domain to only those source nodes with permission.
 
-7.1.  Source Routing Attacks
+### 7.1.  Source Routing Attacks
 
    [RFC5095] deprecates the Type 0 Routing header due to a number of
    significant attacks that are referenced in that document.  Such
@@ -1164,18 +1039,13 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    DDOS, topology discovery, man-in-the-middle, traffic interception/
    siphoning), can occur from compromised nodes within an SR Domain.
 
-7.2.  Service Theft
+### 7.2.  Service Theft
 
    Service theft is defined as the use of a service offered by the SR
    Domain by a node not authorized to use the service.
 
 
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 21]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    Service theft is not a concern within the SR Domain as all SR Source
@@ -1199,7 +1069,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    used primarily to validate that the source is permitted to use the
    segment list in the SRH.
 
-7.3.  Topology Disclosure
+### 7.3.  Topology Disclosure
 
    The SRH may contains SIDs of some intermediate SR-nodes in the path
    towards the destination, this reveals those addresses to attackers if
@@ -1218,7 +1088,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    used primarily to validate that the source is permitted to use the
    segment list in the SRH.
 
-7.4.  ICMP Generation
+### 7.4.  ICMP Generation
 
    The generation of ICMPv6 error messages may be used to attempt
    denial-of-service attacks by sending an error-causing destination
@@ -1228,13 +1098,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-
-Filsfils, et al.         Expires April 25, 2019                [Page 22]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-8.  IANA Considerations
+## 8.  IANA Considerations
 
    This document makes the following registrations in the Internet
    Protocol Version 6 (IPv6) Parameters "Routing Type" registry
@@ -1248,7 +1112,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    This document request IANA to create and maintain a new Registry:
    "Segment Routing Header TLVs"
 
-8.1.  Segment Routing Header Flags Register
+### 8.1.  Segment Routing Header Flags Register
 
    This document requests the creation of a new IANA managed registry to
    identify SRH Flags Bits.  The registration procedure is "Expert
@@ -1261,7 +1125,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    -----------------------------------------------------
       4           HMAC                      This document
 
-8.2.  Segment Routing Header TLVs Register
+### 8.2.  Segment Routing Header TLVs Register
 
    This document requests the creation of a new IANA managed registry to
    identify SRH TLVs.  The registration procedure is "Expert Review" as
@@ -1277,20 +1141,14 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
       128         Pad0 TLV                  This document
       129         PadN TLV                  This document
 
-9.  Implementation Status
+## 9.  Implementation Status
 
    This section is to be removed prior to publishing as an RFC.
 
 
 
 
-
-Filsfils, et al.         Expires April 25, 2019                [Page 23]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-9.1.  Linux
+### 9.1.  Linux
 
    Name: Linux Kernel v4.14
 
@@ -1301,7 +1159,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    Details: https://irtf.org/anrw/2017/anrw17-final3.pdf and
    [I-D.filsfils-spring-srv6-interop]
 
-9.2.  Cisco Systems
+### 9.2.  Cisco Systems
 
    Name: IOS XR and IOS XE
 
@@ -1311,7 +1169,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    Details: [I-D.filsfils-spring-srv6-interop]
 
-9.3.  FD.io
+### 9.3.  FD.io
 
    Name: VPP/Segment Routing for IPv6
 
@@ -1322,7 +1180,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    Details: https://wiki.fd.io/view/VPP/Segment_Routing_for_IPv6 and
    [I-D.filsfils-spring-srv6-interop]
 
-9.4.  Barefoot
+### 9.4.  Barefoot
 
    Name: Barefoot Networks Tofino NPU
 
@@ -1332,7 +1190,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    Details: [I-D.filsfils-spring-srv6-interop]
 
-9.5.  Juniper
+### 9.5.  Juniper
 
    Name: Juniper Networks Trio and vTrio NPU's
 
@@ -1341,15 +1199,10 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
 
-Filsfils, et al.         Expires April 25, 2019                [Page 24]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
    Implementation: SRH insertion mode, Process SID where SID is an
    interface address, no TLV processing
 
-9.6.  Huawei
+### 9.6.  Huawei
 
    Name: Huawei Systems VRP Platform
 
@@ -1357,7 +1210,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
    Implementation: adds SRH, performs END processing, no TLV processing
 
-10.  Contributors
+## 10.  Contributors
 
    Kamran Raza, Darren Dukes, Brian Field, Daniel Bernier, Ida Leung,
    Jen Linkova, Ebben Aries, Tomoya Kosugi, Eric Vyncke, David Lebrun,
@@ -1366,15 +1219,15 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
    Maglione, James Connolly, Aloys Augustin contributed to the content
    of this document.
 
-11.  Acknowledgements
+## 11.  Acknowledgements
 
    The authors would like to thank Ole Troan, Bob Hinden, Ron Bonica,
    Fred Baker, Brian Carpenter, Alexandru Petrescu, Punit Kumar Jaiswal,
    and David Lebrun for their comments to this document.
 
-12.  References
+## 12.  References
 
-12.1.  Normative References
+### 12.1.  Normative References
 
    [FIPS180-4]
               National Institute of Standards and Technology, "FIPS
@@ -1391,16 +1244,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
               of Type 0 Routing Headers in IPv6", RFC 5095,
               DOI 10.17487/RFC5095, December 2007,
               <https://www.rfc-editor.org/info/rfc5095>.
-
-
-
-
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 25]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
 
    [RFC6407]  Weis, B., Rowles, S., and T. Hardjono, "The Group Domain
               of Interpretation", RFC 6407, DOI 10.17487/RFC6407,
@@ -1420,7 +1263,7 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
               Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
               July 2018, <https://www.rfc-editor.org/info/rfc8402>.
 
-12.2.  Informative References
+### 12.2.  Informative References
 
    [I-D.filsfils-spring-srv6-interop]
               Filsfils, C., Clad, F., Camarillo, P., Abdelsalam, A.,
@@ -1451,11 +1294,6 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
               <https://www.rfc-editor.org/info/rfc3032>.
 
 
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 26]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
 
 
    [RFC4302]  Kent, S., "IP Authentication Header", RFC 4302,
@@ -1500,69 +1338,11 @@ Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
               <https://inl.info.ucl.ac.be/system/files/
               sosr18-final15-embedfonts.pdf>.
 
-Authors' Addresses
+## Authors' Addresses
 
+- Clarence Filsfils (editor) Cisco Systems, Inc.  Brussels BE Email: cfilsfil@cisco.com
+- Stefano Previdi Huawei Italy Email: stefano@previdi.net
+- John Leddy Individual US Email: john@leddy.net
+- Satoru Matsushima Softbank Email: satoru.matsushima@g.softbank.co.jp
+- Daniel Voyer (editor) Bell Canada Email: daniel.voyer@bell.ca
 
-
-
-
-
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 27]
-
-Internet-Draft      IPv6 Segment Routing Header (SRH)       October 2018
-
-
-   Clarence Filsfils (editor)
-   Cisco Systems, Inc.
-   Brussels
-   BE
-
-   Email: cfilsfil@cisco.com
-
-
-   Stefano Previdi
-   Huawei
-   Italy
-
-   Email: stefano@previdi.net
-
-
-   John Leddy
-   Individual
-   US
-
-   Email: john@leddy.net
-
-
-   Satoru Matsushima
-   Softbank
-
-   Email: satoru.matsushima@g.softbank.co.jp
-
-
-   Daniel Voyer (editor)
-   Bell Canada
-
-   Email: daniel.voyer@bell.ca
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Filsfils, et al.         Expires April 25, 2019                [Page 28]
