@@ -639,10 +639,6 @@
    }
 
 
-
-
-
-
 ###### 4.3.1.1.1.  TLV Processing
 
    Local policy determines how TLV's are to be processed when the Active
