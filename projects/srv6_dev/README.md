@@ -1,7 +1,7 @@
 
 # Test Environment for SRv6-dev
 - Hiroki Shirokura <slankdev@coe.ad.jp>
-- 2019.01.01
+- 2019.01.02
 
 ![](topo.jpeg)
 ```
@@ -18,6 +18,13 @@ $ docker exec -it R2 \
 $ docker exec -it R2 ping -I fc00:2::1 fc00:5::1
 ...
 ```
+
+## Machine Environment
+
+```
+```
+
+## For Debugger
 
 For Debugger, please execute `$ tmux source-file debug.tmux`.
 Then, you can check each interface in/out packets like a following.

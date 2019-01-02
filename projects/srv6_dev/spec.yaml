@@ -6,10 +6,6 @@ postinit:
     - cmd: ovs-vsctl add-port ovs0 R3net0 tag=70
     - cmd: ovs-vsctl add-port ovs0 R4net0 tag=80
     - cmd: ovs-vsctl add-port ovs0 R5net0 tag=90
-    - cmd: ovs-vsctl set port R1port-0-6-0 tag=60
-    - cmd: ovs-vsctl set port R1port-0-7-0 tag=70
-    - cmd: ovs-vsctl set port R1port-0-8-0 tag=80
-    - cmd: ovs-vsctl set port R1port-0-9-0 tag=90
 
 postfini:
   - cmds:
