@@ -17,22 +17,48 @@ Please follow the `For SRv6 Debugger`.
 
 ## Evaluation on dev-env
 
+in hypervisor
 ```
-hypervisor# virsh start router
-hypervisor# virsh start tinet
-hypervisor# ovs-vsctl set port port-0-6-0 tag=60
-hypervisor# ovs-vsctl set port port-0-7-0 tag=70
-hypervisor# ovs-vsctl set port port-0-8-0 tag=80
-hypervisor# ovs-vsctl set port port-0-9-0 tag=90
-hypervisor# ovs-vsctl set port tinet6 tag=60
-hypervisor# ovs-vsctl set port tinet7 tag=70
-hypervisor# ovs-vsctl set port tinet8 tag=80
-hypervisor# ovs-vsctl set port tinet9 tag=90
-tinet# ovs-vsctl add-br ovs0 && ip link set ovs0 up
-tinet# tn -f spec.yaml upconf | sh
-router# ovs-vsctl add-br ovs0 && ip link set ovs0 up
-tinet# tn -f kmee.yaml upconf | sh
+virsh start router
+virsh start tinet
+ovs-vsctl set port port-0-6-0 tag=60
+ovs-vsctl set port port-0-7-0 tag=70
+ovs-vsctl set port port-0-8-0 tag=80
+ovs-vsctl set port port-0-9-0 tag=90
+ovs-vsctl set port tinet6 tag=60
+ovs-vsctl set port tinet7 tag=70
+ovs-vsctl set port tinet8 tag=80
+ovs-vsctl set port tinet9 tag=90
+
+in tinet-vm
 ```
+ovs-vsctl add-br ovs0 && ip link set ovs0 up
+ovs-vsctl add-port ovs0 ens6 tag=60
+ovs-vsctl add-port ovs0 ens7 tag=70
+ovs-vsctl add-port ovs0 ens8 tag=80
+ovs-vsctl add-port ovs0 ens9 tag=90
+ip link set ens6 up
+ip link set ens7 up
+ip link set ens8 up
+ip link set ens9 up
+tn -f spec.yaml upconf | sh
+```
+
+in router-vm, please execute your custom router.
+Off course, you can execute tinet's router on docker.
+```
+ovs-vsctl add-br ovs0 && ip link set ovs0 up
+ovs-vsctl add-port ovs0 ens6 tag=60
+ovs-vsctl add-port ovs0 ens7 tag=70
+ovs-vsctl add-port ovs0 ens8 tag=80
+ovs-vsctl add-port ovs0 ens9 tag=90
+ip link set ens6 up
+ip link set ens7 up
+ip link set ens8 up
+ip link set ens9 up
+tn -f kmee.yaml upconf | sh
+```
+
 Please follow the `For SRv6 Debugger`.
 
 ## For SRv6 Debugger
