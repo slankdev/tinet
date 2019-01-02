@@ -4,11 +4,38 @@
 - 2019.01.02
 
 ![](topo.jpeg)
+
+## Evaluation on your laptop Rapidly
+
 ```
-$ cd <here>
-$ tn -f kmee.yaml upconf | sudo sh
-$ tn -f spec.yaml upconf | sudo sh
+# ovs-vsctl add-br ovs0 && ip link set ovs0 up
+# tn -f kmee.yaml upconf | sh
+# tn -f spec.yaml upconf | sh
 ```
+
+Please follow the `For SRv6 Debugger`.
+
+## Evaluation on dev-env
+
+```
+hypervisor# virsh start router
+hypervisor# virsh start tinet
+hypervisor# ovs-vsctl set port port-0-6-0 tag=60
+hypervisor# ovs-vsctl set port port-0-7-0 tag=70
+hypervisor# ovs-vsctl set port port-0-8-0 tag=80
+hypervisor# ovs-vsctl set port port-0-9-0 tag=90
+hypervisor# ovs-vsctl set port tinet6 tag=60
+hypervisor# ovs-vsctl set port tinet7 tag=70
+hypervisor# ovs-vsctl set port tinet8 tag=80
+hypervisor# ovs-vsctl set port tinet9 tag=90
+tinet# ovs-vsctl add-br ovs0 && ip link set ovs0 up
+tinet# tn -f spec.yaml upconf | sh
+router# ovs-vsctl add-br ovs0 && ip link set ovs0 up
+tinet# tn -f kmee.yaml upconf | sh
+```
+Please follow the `For SRv6 Debugger`.
+
+## For SRv6 Debugger
 
 TestOperation
 ```
@@ -18,13 +45,6 @@ $ docker exec -it R2 \
 $ docker exec -it R2 ping -I fc00:2::1 fc00:5::1
 ...
 ```
-
-## Machine Environment
-
-```
-```
-
-## For Debugger
 
 For Debugger, please execute `$ tmux source-file debug.tmux`.
 Then, you can check each interface in/out packets like a following.
