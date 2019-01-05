@@ -23,7 +23,7 @@ $ tn version
 ```
 
 ```
-Usage: 
+Usage:
   tn [-f <arg>...] [options] [COMMAND] [ARGS...]
   tn -h|--help
 
