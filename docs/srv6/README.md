@@ -2,6 +2,6 @@
 # Yonda
 
 - [x] srh
-- [ ] net prog (**WIP**)
+- [x] net prog
 - [ ] serv prog
 - [ ] sfc
