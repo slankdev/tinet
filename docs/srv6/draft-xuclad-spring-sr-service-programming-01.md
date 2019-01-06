@@ -519,11 +519,8 @@ represent the same interface.
    defined:
 
    o  Static proxy
-
    o  Dynamic proxy
-
    o  Shared-memory proxy
-
    o  Masquerading proxy
 ```
 
@@ -595,20 +592,13 @@ IPv4 or IPv6.
    parameters
 
    o  INNER-TYPE: Inner packet type
-
-   o  NH-ADDR: Next hop Ethernet address (only for inner type IPv4 and
-      IPv6)
-
+   o  NH-ADDR: Next hop Ethernet address (only for inner type IPv4 and IPv6)
    o  IFACE-OUT: Local interface for sending traffic towards the service
-
-   o  IFACE-IN: Local interface receiving the traffic coming back from
-      the service
-
+   o  IFACE-IN: Local interface receiving the traffic coming back from the service
    o  CACHE: SR information to be attached on the traffic coming back
       from the service, including at least
 
       *  CACHE.SA: IPv6 source address (SRv6 only)
-
       *  CACHE.LIST: Segment list expressed as MPLS labels or IPv6
          address
 ```
@@ -631,9 +621,8 @@ label stack for SR-MPLS or to the encapsulation IPv6 header with any
 attached extension header in the case of SRv6.
 
 The second part is an inbound policy attached to the proxy interface
-receiving the traffic returning from the service, IFACE-IN.  This
-
-policy attaches to the incoming traffic the cached SR information
+receiving the traffic returning from the service, IFACE-IN.  
+This policy attaches to the incoming traffic the cached SR information
 associated with the SR proxy segment.  If the proxy segment uses the
 SR-MPLS data plane, CACHE contains a stack of labels to be pushed on
 top of the packets.  With the SRv6 data plane, CACHE is defined as a
