@@ -177,6 +177,7 @@ def command_up(args):
         for cmd in node['cmds']:
           print('{}'.format(cmd['cmd']))
 
+  print("set -ue")
   generate_mount_docker_netns()
   generate_kokobr()
   generate_kokobr_netns()
@@ -461,6 +462,7 @@ def command_conf(args):
     print('not found node {}'.format(name))
     sys.exit(1)
 
+  print("set -ue")
   preconf(appinfo.data)
   print('\n################')
   print('# NODE CONFIG  #')
