@@ -13,15 +13,27 @@ node_configs:
   - name: R1
     cmds:
       - cmd: /usr/lib/frr/frr start
-      - cmd: ip addr add 10.255.0.1/32 dev lo
-      - cmd: ip addr add 10.0.0.1/30 dev net0
-      - cmd: ip route add 10.255.0.2/32 via 10.0.0.2
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int lo'
+          -c ' ip address 10.255.0.1/32'
+          -c ' exit'
+          -c 'int net0'
+          -c ' ip address 10.0.0.1/30'
+          -c ' exit'
+          -c 'ip route 10.255.0.2/32 10.0.0.2'
   - name: R2
     cmds:
       - cmd: /usr/lib/frr/frr start
-      - cmd: ip addr add 10.255.0.2/32 dev lo
-      - cmd: ip addr add 10.0.0.2/30 dev net0
-      - cmd: ip route add 10.255.0.1/32 via 10.0.0.1
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int lo'
+          -c ' ip address 10.255.0.2/32'
+          -c ' exit'
+          -c 'int net0'
+          -c ' ip address 10.0.0.2/30'
+          -c ' exit'
+          -c 'ip route 10.255.0.1/32 10.0.0.1'
 
 test:
   - name: p2p
