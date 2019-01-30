@@ -15,7 +15,7 @@ main()
  sock = socket(AF_INET, SOCK_DGRAM, 0);
  addr.sin_family = AF_INET;
  addr.sin_port = htons(12345);
- addr.sin_addr.s_addr = inet_addr("239.255.0.1");
+ addr.sin_addr.s_addr = inet_addr("239.1.1.5");
 
  ipaddr = inet_addr("127.0.0.1");
  if (setsockopt(sock,
@@ -26,7 +26,11 @@ main()
 	return 1;
  }
 
- sendto(sock, "HELLO", 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+ while (1) {
+   sendto(sock, "HELLO", 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+   printf("send\n");
+   sleep(1);
+ }
  close(sock);
  return 0;
 }

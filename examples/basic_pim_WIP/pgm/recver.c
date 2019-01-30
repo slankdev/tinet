@@ -23,7 +23,7 @@ main()
  bind(sock, (struct sockaddr *)&addr, sizeof(addr));
  memset(&mreq, 0, sizeof(mreq));
  mreq.imr_interface.s_addr = INADDR_ANY;
- mreq.imr_multiaddr.s_addr = inet_addr("239.255.0.1");
+ mreq.imr_multiaddr.s_addr = inet_addr("239.1.1.5");
 
  if (setsockopt(sock,
 	IPPROTO_IP,
