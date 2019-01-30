@@ -1,0 +1,39 @@
+
+nodes:
+  - name: R1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+  - name: R2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add 10.255.0.1/32 dev lo
+      - cmd: ip addr add 10.0.0.1/30 dev net0
+      - cmd: ip route add 10.255.0.2/32 via 10.0.0.2
+  - name: R2
+    cmds:
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add 10.255.0.2/32 dev lo
+      - cmd: ip addr add 10.0.0.2/30 dev net0
+      - cmd: ip route add 10.255.0.1/32 via 10.0.0.1
+
+test:
+  - name: p2p
+    cmds:
+    - cmd: docker exec R1 ping -c2 10.0.0.1
+    - cmd: docker exec R1 ping -c2 10.0.0.2
+    - cmd: docker exec R2 ping -c2 10.0.0.1
+    - cmd: docker exec R2 ping -c2 10.0.0.2
+  - name: lo
+    cmds:
+    - cmd: docker exec R1 ping -c2 10.255.0.1
+    - cmd: docker exec R1 ping -c2 10.255.0.2
+    - cmd: docker exec R2 ping -c2 10.255.0.1
+    - cmd: docker exec R2 ping -c2 10.255.0.2
+
