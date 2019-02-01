@@ -30,6 +30,12 @@ show ip pim rp-info
 show ip pim interface
 ```
 
+multicast test
+```
+iperf -s -u -B 239.1.1.5 -i 1
+iperf -c 239.1.1.5 -u -T 32 -t 10 -i 1 -b 1M
+```
+
 ## when add/del mroute
 
 add
