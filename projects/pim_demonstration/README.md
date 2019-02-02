@@ -23,5 +23,14 @@ iperf -u -c 239.1.1.5 -i 1 -T 10 -t 5
 ## ip mroute result
 
 ```
-# ip mroute
+docker exec -it R1 vtysh -c 'show ip pim rp-info'
+docker exec -it R2 vtysh -c 'show ip pim rp-info'
+docker exec -it R3 vtysh -c 'show ip pim rp-info'
+
+docker exec -it R1 vtysh -c 'show ip pim nei'
+docker exec -it R2 vtysh -c 'show ip pim nei'
+docker exec -it R3 vtysh -c 'show ip pim nei'
+```
+```
+ip mroute
 ```
