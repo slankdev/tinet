@@ -65,6 +65,7 @@ node_configs:
           -c ' neighbor 10.0.0.10 remote-as 100'
           -c ' neighbor 10.0.0.20 remote-as 100'
           -c ' neighbor 10.0.0.30 remote-as 100'
+      - cmd: vtysh -c "do write mem"
   - name: R1
     cmds:
       - cmd: /usr/lib/frr/frr start
