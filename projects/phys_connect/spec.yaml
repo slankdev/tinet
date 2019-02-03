@@ -7,31 +7,23 @@ nodes:
   - name: R2
     image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, args: R0#net0 }
-  - name: SW
-    image: slankdev/ubuntu:18.04
-    interfaces:
-      - { name: net0, type: direct, args: C0#net0 }
-      - { name: net1, type: bridge, args: B0 }
+      - { name: net0, type: direct, args: R1#net0 }
+  # - name: SW
+  #   image: slankdev/ubuntu:18.04
+  #   interfaces:
+  #     - { name: net0, type: direct, args: C0#net0 }
+  #     - { name: net1, type: bridge, args: B0 }
 
 node_configs:
-  - name: C0
+  - name: R1
     cmds:
-      - cmd: ip link set dev net0 up
-  - name: C1
+      - cmd: ip addr add 10.0.0.1/24 dev net0
+  - name: R2
     cmds:
-      - cmd: echo slankdev slankdev
-      - cmd: >-
-          echo slankdev &&
-          echo slnakdev
+      - cmd: ip addr add 10.0.0.2/24 dev net0
 
 test:
   - name: p2p
     cmds:
-    - cmd: docker exec C0 ping -c2 10.0.0.2
-    - cmd: echo slankdev slankdev
-  - name: lo
-    cmds:
-    - cmd: docker exec C0 ping -c2 10.255.0.1
-    - cmd: echo slankdev slankdev
+    - cmd: docker exec R1 ping -c2 10.0.0.2
 
