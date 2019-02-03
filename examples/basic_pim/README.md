@@ -3,8 +3,9 @@
 
 multicast test
 ```
-iperf -s -u -B 239.1.1.5 -i 1
-iperf -c 239.1.1.5 -u -T 32 -t 10 -i 1 -b 1M
+iperf -u -s -B 239.1.1.5 -i 1
+iperf -u -c 239.1.1.5 -i <interval> -T <ttl> -t <time>
+iperf -u -c 239.1.1.5 -i 1 -T 10 -t 5
 ```
 
 ## when add/del mroute

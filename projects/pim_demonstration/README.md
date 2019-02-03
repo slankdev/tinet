@@ -3,23 +3,6 @@
 
 ![](topo.jpeg)
 
-**R3**: configure as RP (Rendezvous Point)
-```
-conf t
- int lo
-  ip igmp
-	ip pim sm
- ip pim rp 10.255.0.3
-```
-
-**R6**: configure as FHR (First Hop Router)
-```
-```
-
-**R5**: configure as LHR (Last Hop Router)
-```
-```
-
 debug commands (vtysh)
 ```
 show ip mroute
@@ -32,45 +15,22 @@ show ip pim interface
 
 multicast test
 ```
-iperf -s -u -B 239.1.1.5 -i 1
-iperf -c 239.1.1.5 -u -T 32 -t 10 -i 1 -b 1M
+iperf -u -s -B 239.1.1.5 -i 1
+iperf -u -c 239.1.1.5 -i <interval> -T <ttl> -t <time>
+iperf -u -c 239.1.1.5 -i 1 -T 10 -t 5
 ```
 
-## when add/del mroute
+## ip mroute result
 
-add
 ```
-[ns0]ubuntu-bionic:~/git/netlinkd:) nlsniff -g all
-monitoring group(RTMGRP) is 0xffffffff ...
-RTM_NEWROUTE f=0x0000 s=0000000000 p=0000000000 :: fmly=128 dl=32 sl=32 tos=0 tab=253 pro=17 scope=0 type=5 f=0x0
-  0x000f RTA_TABLE        :: 253
-  0x0002 RTA_SRC          :: 0.0.0.0
-  0x0001 RTA_DST          :: 239.1.1.5
-  0x0003 RTA_IIF          :: 1
-  0x0009 RTA_MULTIPATH    :: unknown-fmt(rta_len=20,data=08000001...)
-  0x0011 RTA_MFC_STATS    :: unknown-fmt(rta_len=28,data=00000000...)
-  0x0017 RTA_EXPIRES      :: unknown-fmt(rta_len=12,data=00000000...)
-```
+docker exec -it R1 vtysh -c 'show ip pim rp-info'
+docker exec -it R2 vtysh -c 'show ip pim rp-info'
+docker exec -it R3 vtysh -c 'show ip pim rp-info'
 
-del
+docker exec -it R1 vtysh -c 'show ip pim nei'
+docker exec -it R2 vtysh -c 'show ip pim nei'
+docker exec -it R3 vtysh -c 'show ip pim nei'
 ```
-[ns0]ubuntu-bionic:~/git/netlinkd:) nlsniff -g all
-monitoring group(RTMGRP) is 0xffffffff ...
-RTM_NEWROUTE f=0x0000 s=0000000000 p=0000000000 :: fmly=128 dl=32 sl=32 tos=0 tab=253 pro=17 scope=0 type=5 f=0x0
-  0x000f RTA_TABLE        :: 253
-  0x0002 RTA_SRC          :: 0.0.0.0
-  0x0001 RTA_DST          :: 239.1.1.5
-  0x0003 RTA_IIF          :: 1
-  0x0009 RTA_MULTIPATH    :: unknown-fmt(rta_len=12,data=08000001...)
-  0x0011 RTA_MFC_STATS    :: unknown-fmt(rta_len=28,data=00000000...)
-  0x0017 RTA_EXPIRES      :: unknown-fmt(rta_len=12,data=00000000...)
-
-RTM_DELROUTE f=0x0000 s=0000000000 p=0000000000 :: fmly=128 dl=32 sl=32 tos=0 tab=253 pro=17 scope=0 type=5 f=0x0
-  0x000f RTA_TABLE        :: 253
-  0x0002 RTA_SRC          :: 0.0.0.0
-  0x0001 RTA_DST          :: 239.1.1.5
-  0x0003 RTA_IIF          :: 1
-  0x0009 RTA_MULTIPATH    :: unknown-fmt(rta_len=12,data=08000001...)
-  0x0011 RTA_MFC_STATS    :: unknown-fmt(rta_len=28,data=00000000...)
-  0x0017 RTA_EXPIRES      :: unknown-fmt(rta_len=12,data=00000000...)
+```
+ip mroute
 ```
