@@ -4,23 +4,28 @@ nodes:
     image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
-  - name: R2
-    image: slankdev/ubuntu:18.04
-    interfaces:
-      - { name: net0, type: direct, args: R1#net0 }
-  # - name: SW
+  # - name: R2
   #   image: slankdev/ubuntu:18.04
   #   interfaces:
-  #     - { name: net0, type: direct, args: C0#net0 }
-  #     - { name: net1, type: bridge, args: B0 }
+  #     - { name: net0, type: direct, args: R1#net0 }
+  - name: R2
+    image: slankdev/ovs
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+      - { name: pp0, type: phys } #IMPORTANT
 
 node_configs:
   - name: R1
     cmds:
       - cmd: ip addr add 10.0.0.1/24 dev net0
+  # - name: R2
+  #   cmds:
+  #     - cmd: ip addr add 10.0.0.2/24 dev net0
   - name: R2
     cmds:
-      - cmd: ip addr add 10.0.0.2/24 dev net0
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 pp0  tag=10
 
 test:
   - name: p2p
