@@ -19,16 +19,11 @@ node_configs:
           vtysh -c 'conf t'
           -c 'int lo'
           -c ' ip address 10.255.0.1/32'
-          -c ' ip pim sm'
-          -c ' ip igmp'
           -c ' exit'
           -c 'int net0'
           -c ' ip address 10.0.0.1/30'
-          -c ' ip pim sm'
-          -c ' ip igmp'
           -c ' exit'
           -c 'ip route 10.255.0.2/32 10.0.0.2'
-          -c 'ip pim rp 10.255.0.1 224.0.0.0/4'
 
   - name: R2
     cmds:
@@ -39,16 +34,11 @@ node_configs:
           vtysh -c 'conf t'
           -c 'int lo'
           -c ' ip address 10.255.0.2/32'
-          -c ' ip pim sm'
-          -c ' ip igmp'
           -c ' exit'
           -c 'int net0'
           -c ' ip address 10.0.0.2/30'
-          -c ' ip pim sm'
-          -c ' ip igmp'
           -c ' exit'
           -c 'ip route 10.255.0.1/32 10.0.0.1'
-          -c 'ip pim rp 10.255.0.1 224.0.0.0/4'
 
 test:
   - name: p2p
