@@ -50,6 +50,14 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.disable_ipv6=0'
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
@@ -64,6 +72,15 @@ node_configs:
           -c " network 10.0.0.4/30 area 0"
   - name: R2
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net2.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net2.disable_ipv6=0'
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
@@ -81,6 +98,15 @@ node_configs:
           -c " network 10.0.0.12/30 area 0"
   - name: R3
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net1.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net2.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.net2.disable_ipv6=0'
       # - cmd: /usr/lib/frr/frr start
       # - cmd: >-
       #     vtysh -c "conf t"
@@ -105,21 +131,45 @@ node_configs:
       - cmd: ovs-vsctl add-port ovs0 ens9 tag=3
   - name: R4
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.forwarding=1'
       - cmd: ip addr add 10.0.0.10/30 dev net0
       - cmd: ip route del default
       - cmd: ip route add default via 10.0.0.9
   - name: R5
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.forwarding=1'
       - cmd: ip addr add 10.0.0.14/30 dev net0
       - cmd: ip route del default
       - cmd: ip route add default via 10.0.0.13
   - name: R6
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.forwarding=1'
       - cmd: ip addr add 10.0.0.18/30 dev net0
       - cmd: ip route del default
       - cmd: ip route add default via 10.0.0.17
   - name: R7
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.forwarding=1'
       - cmd: ip addr add 10.0.0.22/30 dev net0
       - cmd: ip route del default
       - cmd: ip route add default via 10.0.0.21
