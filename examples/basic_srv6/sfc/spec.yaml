@@ -90,6 +90,11 @@ node_configs:
           -c ' interface net1 area 0.0.0.0'
           -c ' interface net2 area 0.0.0.0'
           -c 'exit'
+
+      # SRv6 Configuration
+      - cmd: ip route add 2001:3::10 encap seg6 mode inline segs fc00:10::1,fc00:3::1 via 2001:2::2
+      - cmd: ip route add 2001:3::11 encap seg6 mode inline segs fc00:11::1,fc00:3::1 via 2001:2::2
+
   - name: R3
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -117,6 +122,15 @@ node_configs:
           -c ' interface net0 area 0.0.0.0'
           -c ' interface net1 area 0.0.0.0'
           -c 'exit'
+
+      # SRv6 Configuration
+      - cmd: bash -c "echo 10 blue >> /etc/iproute2/rt_tables"
+      - cmd: bash -c "echo 11 green >> /etc/iproute2/rt_tables"
+      - cmd: ip -6 rule add from 2001:3::10 table blue
+      - cmd: ip -6 rule add from 2001:3::11 table green
+      - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:10::1,fc00:2::1 via 2001:2::1 dev net0 table blue
+      - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:11::1,fc00:2::1 via 2001:2::1 dev net0 table green
+
   - name: R4
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -196,7 +210,6 @@ test:
     cmds:
       - cmd: docker exec R1 ping -c2 2001:1::1
       - cmd: docker exec R1 ping -c2 2001:1::2
-
       - cmd: docker exec R2 ping -c2 2001:1::1
       - cmd: docker exec R2 ping -c2 2001:1::2
       - cmd: docker exec R2 ping -c2 2001:2::1
@@ -204,27 +217,22 @@ test:
       - cmd: docker exec R2 ping -c2 2001:4::1
       - cmd: docker exec R2 ping -c2 2001:4::10
       - cmd: docker exec R2 ping -c2 2001:4::11
-
       - cmd: docker exec R3 ping -c2 2001:2::1
       - cmd: docker exec R3 ping -c2 2001:2::2
       - cmd: docker exec R3 ping -c2 2001:3::1
       - cmd: docker exec R3 ping -c2 2001:3::2
       - cmd: docker exec R3 ping -c2 2001:3::10
       - cmd: docker exec R3 ping -c2 2001:3::11
-
       - cmd: docker exec R4 ping -c2 2001:3::1
       - cmd: docker exec R4 ping -c2 2001:3::2
       - cmd: docker exec R4 ping -c2 2001:3::10
       - cmd: docker exec R4 ping -c2 2001:3::11
-
       - cmd: docker exec R10 ping -c2 2001:4::1
       - cmd: docker exec R10 ping -c2 2001:4::10
       - cmd: docker exec R10 ping -c2 2001:4::11
-
       - cmd: docker exec R11 ping -c2 2001:4::1
       - cmd: docker exec R11 ping -c2 2001:4::10
       - cmd: docker exec R11 ping -c2 2001:4::11
-
   - name: remote
     cmds:
       - cmd: docker exec R4 ping -c2 -I 2001:3::10 2001:1::1
