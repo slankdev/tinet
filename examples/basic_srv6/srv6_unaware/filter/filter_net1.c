@@ -7,7 +7,6 @@
 __section("prog")
 int filter(struct xdp_md *ctx)
 {
-  /* return XDP_DROP;  */
-  return XDP_TX;
+  return XDP_PASS;
 }
 char __license[] __section("license") = "GPL";

@@ -12,7 +12,7 @@ all:
 clean:
 	rm *.o
 
-apply_filter:
+apply_filter: reset_filter
 	docker exec $(CONTAINER) ip link set net0 xdp obj /filter/net0
 	docker exec $(CONTAINER) ip link set net1 xdp obj /filter/net1
 
