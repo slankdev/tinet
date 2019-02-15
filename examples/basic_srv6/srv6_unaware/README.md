@@ -28,4 +28,15 @@ listening on net0, link-type EN10MB (Ethernet), capture size 262144 bytes
         0x0050:  6163 730a 656d 6163 730a 656d 6163 730a  acs.emacs.emacs.
 ```
 
+Config filter @F1
+```
+// Apply filter
+make -C filter
+docker exec F1 ip link set net0 xdp obj /filter/net0
+docker exec F1 ip link set net1 xdp obj /filter/net1
+
+// Reset filter
+docker exec F1 ip link set net0 xdp off
+docker exec F1 ip link set net1 xdp off
+```
 
