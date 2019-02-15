@@ -16,7 +16,7 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 
 check traffic at R2
 ```
-root@R2:/# tcpdump -ni net0 -XX
+root@R2:/# tcpdump -ni net0 -X icmp
 tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on net0, link-type EN10MB (Ethernet), capture size 262144 bytes
 14:04:45.602478 IP 10.0.0.2 > 10.0.0.1: ICMP echo reply, id 79, seq 3, length 64
