@@ -31,7 +31,7 @@ echo 10 blue >> /etc/iproute2/rt_tables
 echo 11 green >> /etc/iproute2/rt_tables
 ip -6 rule add from 2001:3::10 table blue
 ip -6 rule add from 2001:3::11 table green
-ip route add 2001:1::0/64 encap seg6 mode insert segs fc00:10::1,fc00:2::5 via 2001:2::1 dev net0 table blue
-ip route add 2001:1::0/64 encap seg6 mode insert segs fc00:11::1,fc00:2::5 via 2001:2::1 dev net0 table green
+ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:10::1,fc00:2::5 via 2001:2::1 dev net0 table blue
+ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:11::1,fc00:2::5 via 2001:2::1 dev net0 table green
 ```
 
