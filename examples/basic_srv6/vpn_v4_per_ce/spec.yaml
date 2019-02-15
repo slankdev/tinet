@@ -1,7 +1,7 @@
 
 postinit:
   - cmds:
-    - cmd: make -C /home/vagrant/git/srdump install_container2
+    - cmd: make -C /home/vagrant/git/srdump install_docker
 
 nodes:
   - name: R1

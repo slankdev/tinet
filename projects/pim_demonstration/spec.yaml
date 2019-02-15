@@ -13,22 +13,22 @@ nodes:
       - { name: net1, type: direct, args: R4#net0 }
       - { name: net2, type: direct, args: R5#net0 }
 
-  - name: R3
-    image: slankdev/ovs
-    interfaces:
-      - { name: ens7, type: phys }
-      - { name: ens8, type: phys }
-      - { name: ens9, type: phys }
-      - { name: net0, type: direct, args: R1#net1 }
-      - { name: net1, type: direct, args: R6#net0 }
-      - { name: net2, type: direct, args: R7#net0 }
-
   # - name: R3
-  #   image: slankdev/frr
+  #   image: slankdev/ovs
   #   interfaces:
+  #     - { name: ens7, type: phys }
+  #     - { name: ens8, type: phys }
+  #     - { name: ens9, type: phys }
   #     - { name: net0, type: direct, args: R1#net1 }
   #     - { name: net1, type: direct, args: R6#net0 }
   #     - { name: net2, type: direct, args: R7#net0 }
+
+  - name: R3
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net1 }
+      - { name: net1, type: direct, args: R6#net0 }
+      - { name: net2, type: direct, args: R7#net0 }
 
   - name: R4
     image: slankdev/frr
