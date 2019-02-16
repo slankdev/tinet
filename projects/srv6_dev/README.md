@@ -11,11 +11,12 @@ This env is development for End, End.X, End.DX2, End.DX4, End.DX6, End.DT4, End.
 
 TestOperation
 ```
-tn upconf | sh
-docker exec -it R2 \
-    ip -6 route replace fc00:5::1 encap seg6 mode encap \
-    segs fc00:1::1,fc00:3::1,fc00:1::1,fc00:4::1,fc00:1::1 dev net0
-docker exec -it R2 ping -I fc00:2::1 fc00:5::1
+tn upconf | sudo sh
+
+docker exec -it R2 bash
+ip -6 route del fc00:5::1 encap seg6 mode encap segs fc00:1::1,fc00:3::1,fc00:1::1,fc00:4::1,fc00:1::1 dev net0
+ip -6 route add fc00:5::1 encap seg6 mode encap segs fc00:1::1,fc00:3::1,fc00:1::1,fc00:4::1,fc00:1::1 dev net0
+ping -I fc00:2::1 fc00:5::1
 ...
 ```
 
