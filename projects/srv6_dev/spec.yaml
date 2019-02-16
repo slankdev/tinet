@@ -1,34 +1,71 @@
 
-postinit:
-  - cmds:
-    - cmd: make -C $HOME/git/srdump install_docker
-    - cmd: ovs-vsctl add-port ovs0 R2net0 tag=60
-    - cmd: ovs-vsctl add-port ovs0 R3net0 tag=70
-    - cmd: ovs-vsctl add-port ovs0 R4net0 tag=80
-    - cmd: ovs-vsctl add-port ovs0 R5net0 tag=90
-
-postfini:
-  - cmds:
-    - cmd: ovs-vsctl del-port ovs0 R2net0
-    - cmd: ovs-vsctl del-port ovs0 R3net0
-    - cmd: ovs-vsctl del-port ovs0 R4net0
-    - cmd: ovs-vsctl del-port ovs0 R5net0
+# postinit:
+#   - cmds:
+#     - cmd: make -C $HOME/git/srdump install_docker
+#     - cmd: ovs-vsctl add-port ovs0 R2net0 tag=60
+#     - cmd: ovs-vsctl add-port ovs0 R3net0 tag=70
+#     - cmd: ovs-vsctl add-port ovs0 R4net0 tag=80
+#     - cmd: ovs-vsctl add-port ovs0 R5net0 tag=90
+#
+# postfini:
+#   - cmds:
+#     - cmd: ovs-vsctl del-port ovs0 R2net0
+#     - cmd: ovs-vsctl del-port ovs0 R3net0
+#     - cmd: ovs-vsctl del-port ovs0 R4net0
+#     - cmd: ovs-vsctl del-port ovs0 R5net0
 
 nodes:
+  - name: R1
+    type: docker
+    image: slankdev/frr
+    interfaces:
+      - { name: port6, type: direct, args: R2#net0 }
+      - { name: port7, type: direct, args: R3#net0 }
+      - { name: port8, type: direct, args: R4#net0 }
+      - { name: port9, type: direct, args: R5#net0 }
   - name: R2
     image: slankdev/frr
-    interfaces: [ { name: net0, type: veth, args: R2net0 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#port6 } ]
   - name: R3
     image: slankdev/frr
-    interfaces: [ { name: net0, type: veth, args: R3net0 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#port7 } ]
   - name: R4
     image: slankdev/frr
-    interfaces: [ { name: net0, type: veth, args: R4net0 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#port8 } ]
   - name: R5
     image: slankdev/frr
-    interfaces: [ { name: net0, type: veth, args: R5net0 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#port9 } ]
 
 node_configs:
+  - name: R1
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.default.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port6.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port6.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port7.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port7.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port8.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port8.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.port9.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.port9.rp_filter=0'
+      - cmd: ip addr add fc00:1::1/64 dev lo
+      - cmd: ip addr add 2001:12::1/64 dev port6
+      - cmd: ip addr add 2001:13::1/64 dev port7
+      - cmd: ip addr add 2001:14::1/64 dev port8
+      - cmd: ip addr add 2001:15::1/64 dev port9
+      - cmd: ip -6 route add fc00:2::/64 via 2001:12::2
+      - cmd: ip -6 route add fc00:3::/64 via 2001:13::2
+      - cmd: ip -6 route add fc00:4::/64 via 2001:14::2
+      - cmd: ip -6 route add fc00:5::/64 via 2001:15::2
   - name: R2
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
