@@ -37,6 +37,8 @@ Then, you can check each interface in/out packets like a following.
 
 ## Service Chaing Demo (w/ End.X, End.AM)
 
+![](./encode_demo.jpeg)
+
 @R2
 ```
 ip addr add fc00:2::10/128 dev lo
