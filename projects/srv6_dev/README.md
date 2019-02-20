@@ -50,7 +50,7 @@ ip -6 rule add from fc00:2::20 table beta
 ip -6 rule add from fc00:2::30 table gamma
 ip route add fc00:5::1/128 encap seg6 mode inline segs fc00:1::3 dev net0 table alpha
 ip route add fc00:5::1/128 encap seg6 mode inline segs fc00:1::40 dev net0 table beta
-ip route add fc00:5::1/128 via 2001:12::1
+ip route add fc00:5::1/128 via 2001:12::1 table gamma
 ```
 
 @R1
