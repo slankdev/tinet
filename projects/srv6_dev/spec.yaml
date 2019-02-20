@@ -1,71 +1,66 @@
 
-# postinit:
-#   - cmds:
-#     - cmd: make -C $HOME/git/srdump install_docker
-#     - cmd: ovs-vsctl add-port ovs0 R2net0 tag=60
-#     - cmd: ovs-vsctl add-port ovs0 R3net0 tag=70
-#     - cmd: ovs-vsctl add-port ovs0 R4net0 tag=80
-#     - cmd: ovs-vsctl add-port ovs0 R5net0 tag=90
-#
-# postfini:
-#   - cmds:
-#     - cmd: ovs-vsctl del-port ovs0 R2net0
-#     - cmd: ovs-vsctl del-port ovs0 R3net0
-#     - cmd: ovs-vsctl del-port ovs0 R4net0
-#     - cmd: ovs-vsctl del-port ovs0 R5net0
-
 nodes:
   - name: R1
     type: docker
-    image: slankdev/frr
+    # image: slankdev/frr
+    image: slankdev/ovs
     interfaces:
-      - { name: port6, type: direct, args: R2#net0 }
-      - { name: port7, type: direct, args: R3#net0 }
-      - { name: port8, type: direct, args: R4#net0 }
-      - { name: port9, type: direct, args: R5#net0 }
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R3#net0 }
+      - { name: net2, type: direct, args: R4#net0 }
+      - { name: net3, type: direct, args: R5#net0 }
+      - { name: ens8f0, type: phys } #PP
+      - { name: ens8f1, type: phys } #PP
+      - { name: ens8f2, type: phys } #PP
+      - { name: ens8f3, type: phys } #PP
   - name: R2
     image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R1#port6 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#net0 } ]
   - name: R3
     image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R1#port7 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
   - name: R4
     image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R1#port8 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#net2 } ]
   - name: R5
     image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R1#port9 } ]
+    interfaces: [ { name: net0, type: direct, args: R1#net3 } ]
 
 node_configs:
   - name: R1
     cmds:
-      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
-      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
-      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
-      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
-      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.default.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.port6.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.port6.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.port7.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.port7.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.port8.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.port8.rp_filter=0'
-      - cmd: sysctl -w 'net.ipv6.conf.port9.seg6_enabled=1'
-      - cmd: sysctl -w 'net.ipv4.conf.port9.rp_filter=0'
-      - cmd: ip addr add fc00:1::1/64 dev lo
-      - cmd: ip addr add 2001:12::1/64 dev port6
-      - cmd: ip addr add 2001:13::1/64 dev port7
-      - cmd: ip addr add 2001:14::1/64 dev port8
-      - cmd: ip addr add 2001:15::1/64 dev port9
-      - cmd: ip -6 route add fc00:2::/64 via 2001:12::2
-      - cmd: ip -6 route add fc00:3::/64 via 2001:13::2
-      - cmd: ip -6 route add fc00:4::/64 via 2001:14::2
-      - cmd: ip -6 route add fc00:5::/64 via 2001:15::2
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: bash -c "ovs-vsctl add-port ovs0 net0 tag=80 && ovs-vsctl add-port ovs0 ens8f0 tag=80"
+      - cmd: bash -c "ovs-vsctl add-port ovs0 net1 tag=81 && ovs-vsctl add-port ovs0 ens8f1 tag=81"
+      - cmd: bash -c "ovs-vsctl add-port ovs0 net2 tag=82 && ovs-vsctl add-port ovs0 ens8f2 tag=82"
+      - cmd: bash -c "ovs-vsctl add-port ovs0 net3 tag=83 && ovs-vsctl add-port ovs0 ens8f3 tag=83"
+      # - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      # - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      # - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.default.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.port6.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.port6.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.port7.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.port7.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.port8.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.port8.rp_filter=0'
+      # - cmd: sysctl -w 'net.ipv6.conf.port9.seg6_enabled=1'
+      # - cmd: sysctl -w 'net.ipv4.conf.port9.rp_filter=0'
+      # - cmd: ip addr add fc00:1::1/64 dev lo
+      # - cmd: ip addr add 2001:12::1/64 dev port6
+      # - cmd: ip addr add 2001:13::1/64 dev port7
+      # - cmd: ip addr add 2001:14::1/64 dev port8
+      # - cmd: ip addr add 2001:15::1/64 dev port9
+      # - cmd: ip -6 route add fc00:2::/64 via 2001:12::2
+      # - cmd: ip -6 route add fc00:3::/64 via 2001:13::2
+      # - cmd: ip -6 route add fc00:4::/64 via 2001:14::2
+      # - cmd: ip -6 route add fc00:5::/64 via 2001:15::2
   - name: R2
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -84,6 +79,11 @@ node_configs:
       - cmd: ip -6 addr add 2001:12::2/64 dev net0
       - cmd: ip -6 route add default via 2001:12::1
       - cmd: ip sr tunsrc set fc00:2::1
+
+      - cmd: ip -4 addr add 10.255.0.2/32 dev lo
+      - cmd: ip -4 addr add 10.12.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.12.0.1
+
   - name: R3
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -102,6 +102,11 @@ node_configs:
       - cmd: ip -6 addr add 2001:13::2/64 dev net0
       - cmd: ip -6 route add default via 2001:13::1
       - cmd: ip sr tunsrc set fc00:3::1
+
+      - cmd: ip -4 addr add 10.255.0.3/32 dev lo
+      - cmd: ip -4 addr add 10.13.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.13.0.1
+
   - name: R4
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -120,6 +125,11 @@ node_configs:
       - cmd: ip -6 addr add 2001:14::2/64 dev net0
       - cmd: ip -6 route add default via 2001:14::1
       - cmd: ip sr tunsrc set fc00:4::1
+
+      - cmd: ip -4 addr add 10.255.0.4/32 dev lo
+      - cmd: ip -4 addr add 10.14.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.14.0.1
+
   - name: R5
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -138,6 +148,10 @@ node_configs:
       - cmd: ip -6 addr add 2001:15::2/64 dev net0
       - cmd: ip -6 route add default via 2001:15::1
       - cmd: ip sr tunsrc set fc00:5::1
+
+      - cmd: ip -4 addr add 10.255.0.5/32 dev lo
+      - cmd: ip -4 addr add 10.15.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.15.0.1
 
 test:
   - name: p2p
