@@ -41,17 +41,20 @@ Then, you can check each interface in/out packets like a following.
 ```
 ip addr add fc00:2::10/128 dev lo
 ip addr add fc00:2::20/128 dev lo
+ip addr add fc00:2::30/128 dev lo
 echo 10 alpha >> /etc/iproute2/rt_tables
 echo 20 beta  >> /etc/iproute2/rt_tables
+echo 30 gamma >> /etc/iproute2/rt_tables
 ip -6 rule add from fc00:2::10 table alpha
 ip -6 rule add from fc00:2::20 table beta
+ip -6 rule add from fc00:2::30 table gamma
 ip route add fc00:5::1/128 encap seg6 mode inline segs fc00:1::3 dev net0 table alpha
 ip route add fc00:5::1/128 encap seg6 mode inline segs fc00:1::40 dev net0 table beta
+ip route add fc00:5::1/128 via 2001:12::1
 ```
-
-## Encoder Demo (w/ T.Insert)
 
 @R1
 ```
 ```
+
 
