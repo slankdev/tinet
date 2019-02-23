@@ -193,8 +193,25 @@ test:
     - cmd: docker exec R8 ping -c2 20.4.0.1
     - cmd: docker exec R8 ping -c2 20.4.0.2
 
-  - name: lo
+  - name: remote
     cmds:
-    - cmd: docker exec C1 ping -c2 10.355.0.1
-    - cmd: echo slankdev slankdev
+    - cmd: docker exec R5 ping -c2 20.1.0.2
+    - cmd: docker exec R5 ping -c2 20.2.0.2
+    - cmd: docker exec R5 ping -c2 20.3.0.2
+    - cmd: docker exec R5 ping -c2 20.4.0.2
+
+    - cmd: docker exec R6 ping -c2 20.1.0.2
+    - cmd: docker exec R6 ping -c2 20.2.0.2
+    - cmd: docker exec R6 ping -c2 20.3.0.2
+    - cmd: docker exec R6 ping -c2 20.4.0.2
+
+    - cmd: docker exec R7 ping -c2 20.1.0.2
+    - cmd: docker exec R7 ping -c2 20.2.0.2
+    - cmd: docker exec R7 ping -c2 20.3.0.2
+    - cmd: docker exec R7 ping -c2 20.4.0.2
+
+    - cmd: docker exec R8 ping -c2 20.1.0.2
+    - cmd: docker exec R8 ping -c2 20.2.0.2
+    - cmd: docker exec R8 ping -c2 20.3.0.2
+    - cmd: docker exec R8 ping -c2 20.4.0.2
 
