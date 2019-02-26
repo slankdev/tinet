@@ -1,16 +1,21 @@
 
+postinit:
+  - cmds:
+      - cmd: make
+      - cmd: docker cp filter.o R2:/filter.o
+
 nodes:
   - name: R1
-    image: slankdev/frr
+    image: slankdev/ubuntu:18.10
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
   - name: R2
-    image: slankdev/frr
+    image: slankdev/ubuntu:18.10
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
   - name: R3
-    image: slankdev/frr
+    image: slankdev/ubuntu:18.10
     interfaces:
       - { name: net0, type: direct, args: R2#net1 }
 
@@ -31,7 +36,9 @@ node_configs:
       - cmd: ip -6 addr add 2001:12::2/64 dev net0
       - cmd: ip -6 addr add 2001:12::3/64 dev net0
       - cmd: ip -6 route replace default via 2001:12::1
-      - cmd: ip -6 route add 2001:23::2 encap seg6 mode encap segs fc00:2::1 dev net0
+      - cmd: >-
+          ip -6 route add 2001:23::2 encap seg6 mode encap
+          segs fc00:2::1,fc00:2::10,fc00:2::20,fc00:2::1 dev net0
   - name: R2
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
@@ -49,8 +56,11 @@ node_configs:
       - cmd: sysctl -w 'net.ipv4.conf.net1.rp_filter=0'
       - cmd: ip -6 addr add 2001:12::1/64 dev net0
       - cmd: ip -6 addr add 2001:23::1/64 dev net1
-      - cmd: ip -6 addr add fc00:2::1/64 dev lo
+      - cmd: ip -6 addr add fc00:2::1/128 dev lo
       - cmd: ip -6 route add fc00:2::10 encap seg6local action End dev lo
+      - cmd: >-
+          ip -6 route add fc00:2::20 encap seg6local action End.BPF
+          endpoint object /filter.o section prog dev lo
   - name: R3
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
