@@ -29,6 +29,7 @@ node_configs:
       - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
       - cmd: sysctl -w 'net.ipv4.conf.net0.rp_filter=0'
       - cmd: ip -6 addr add 2001:12::2/64 dev net0
+      - cmd: ip -6 addr add 2001:12::3/64 dev net0
       - cmd: ip -6 route replace default via 2001:12::1
   - name: R2
     cmds:
@@ -61,6 +62,7 @@ node_configs:
       - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
       - cmd: sysctl -w 'net.ipv4.conf.net0.rp_filter=0'
       - cmd: ip -6 addr add 2001:23::2/64 dev net0
+      - cmd: ip -6 addr add 2001:23::3/64 dev net0
       - cmd: ip -6 route replace default via 2001:23::1
 
 test:
