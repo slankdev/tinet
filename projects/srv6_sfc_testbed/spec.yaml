@@ -27,13 +27,28 @@ nodes:
     image: slankdev/frr
     interfaces:
       - { name: net0, type: bridge, args: SW }
+  - name: R7
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: bridge, args: SW }
+  - name: R8
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: bridge, args: SW }
+  - name: R9
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: bridge, args: SW }
 
 switches:
   - name: SW
     interfaces:
       - { name: net2, type: docker, args: R2 }
-      - { name: net0, type: docker, args: R10 }
-      - { name: net0, type: docker, args: R11 }
+      - { name: net0, type: docker, args: R5 }
+      - { name: net0, type: docker, args: R6 }
+      - { name: net0, type: docker, args: R7 }
+      - { name: net0, type: docker, args: R8 }
+      - { name: net0, type: docker, args: R9 }
 
 node_configs:
   - name: R1
@@ -53,7 +68,7 @@ node_configs:
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int lo' -c 'ipv6 addr fc00:1::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:1::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:12::1/64' -c 'exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.1'
           -c ' interface lo area 0.0.0.0'
@@ -80,9 +95,9 @@ node_configs:
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int lo' -c 'ipv6 addr fc00:2::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:1::2/64' -c 'exit'
-          -c 'int net1' -c 'ipv6 addr 2001:2::1/64' -c 'exit'
-          -c 'int net2' -c 'ipv6 addr 2001:4::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:12::2/64' -c 'exit'
+          -c 'int net1' -c 'ipv6 addr 2001:23::1/64' -c 'exit'
+          -c 'int net2' -c 'ipv6 addr 2001:ff::1/64' -c 'exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.2'
           -c ' interface lo area 0.0.0.0'
@@ -92,8 +107,8 @@ node_configs:
           -c 'exit'
 
       # SRv6 Configuration
-      - cmd: ip route add 2001:3::10 encap seg6 mode inline segs fc00:10::1,fc00:3::1 via 2001:2::2
-      - cmd: ip route add 2001:3::11 encap seg6 mode inline segs fc00:11::1,fc00:3::1 via 2001:2::2
+      # - cmd: ip route add 2001:3::10 encap seg6 mode inline segs fc00:10::1,fc00:3::1 via 2001:2::2
+      # - cmd: ip route add 2001:3::11 encap seg6 mode inline segs fc00:11::1,fc00:3::1 via 2001:2::2
 
   - name: R3
     cmds:
@@ -114,8 +129,8 @@ node_configs:
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int lo' -c 'ipv6 addr fc00:3::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:2::2/64' -c 'exit'
-          -c 'int net1' -c 'ipv6 addr 2001:3::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:23::2/64' -c 'exit'
+          -c 'int net1' -c 'ipv6 addr 2001:34::1/64' -c 'exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.3'
           -c ' interface lo area 0.0.0.0'
@@ -124,12 +139,10 @@ node_configs:
           -c 'exit'
 
       # SRv6 Configuration
-      - cmd: bash -c "echo 10 blue >> /etc/iproute2/rt_tables"
-      - cmd: bash -c "echo 11 green >> /etc/iproute2/rt_tables"
-      - cmd: ip -6 rule add from 2001:3::10 table blue
-      - cmd: ip -6 rule add from 2001:3::11 table green
-      - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:10::1,fc00:2::1 via 2001:2::1 dev net0 table blue
-      - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:11::1,fc00:2::1 via 2001:2::1 dev net0 table green
+      # - cmd: ip -6 rule add from 2001:3::10 table blue
+      # - cmd: ip -6 rule add from 2001:3::11 table green
+      # - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:10::1,fc00:2::1 via 2001:2::1 dev net0 table blue
+      # - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:11::1,fc00:2::1 via 2001:2::1 dev net0 table green
 
   - name: R4
     cmds:
@@ -149,16 +162,16 @@ node_configs:
           vtysh -c 'conf t'
           -c 'int lo' -c 'ipv6 addr fc00:4::1/64' -c 'exit'
           -c 'int net0'
-          -c ' ipv6 addr 2001:3::2/64'
-          -c ' ipv6 addr 2001:3::10/64'
-          -c ' ipv6 addr 2001:3::11/64'
+          -c ' ipv6 addr 2001:34::2/64'
+          -c ' ipv6 addr 2001:34::10/64'
+          -c ' ipv6 addr 2001:34::20/64'
           -c ' exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.4'
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
-  - name: R10
+  - name: R5
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
       - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
@@ -174,14 +187,14 @@ node_configs:
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:10::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:4::10/64' -c 'exit'
+          -c 'int lo' -c 'ipv6 addr fc00:5::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:ff::5/64' -c 'exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.10'
+          -c ' ospf6 router-id 10.255.0.5'
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
-  - name: R11
+  - name: R6
     cmds:
       - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
       - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
@@ -197,44 +210,90 @@ node_configs:
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:11::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:4::11/64' -c 'exit'
+          -c 'int lo' -c 'ipv6 addr fc00:6::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:ff::6/64' -c 'exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.11'
+          -c ' ospf6 router-id 10.255.0.6'
+          -c ' interface lo area 0.0.0.0'
+          -c ' interface net0 area 0.0.0.0'
+          -c 'exit'
+  - name: R7
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.net0.rp_filter=0'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int lo' -c 'ipv6 addr fc00:7::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:ff::7/64' -c 'exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.7'
+          -c ' interface lo area 0.0.0.0'
+          -c ' interface net0 area 0.0.0.0'
+          -c 'exit'
+  - name: R8
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.net0.rp_filter=0'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int lo' -c 'ipv6 addr fc00:8::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:ff::8/64' -c 'exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.8'
+          -c ' interface lo area 0.0.0.0'
+          -c ' interface net0 area 0.0.0.0'
+          -c 'exit'
+  - name: R9
+    cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.all.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.all.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.all.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.all.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.forwarding=1'
+      - cmd: sysctl -w 'net.ipv6.conf.default.disable_ipv6=0'
+      - cmd: sysctl -w 'net.ipv6.conf.default.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv6.conf.lo.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.lo.rp_filter=0'
+      - cmd: sysctl -w 'net.ipv6.conf.net0.seg6_enabled=1'
+      - cmd: sysctl -w 'net.ipv4.conf.net0.rp_filter=0'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int lo' -c 'ipv6 addr fc00:9::1/64' -c 'exit'
+          -c 'int net0' -c 'ipv6 addr 2001:ff::9/64' -c 'exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.9'
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
 
 test:
-  - name: p2p
-    cmds:
-      - cmd: docker exec R1 ping -c2 2001:1::1
-      - cmd: docker exec R1 ping -c2 2001:1::2
-      - cmd: docker exec R2 ping -c2 2001:1::1
-      - cmd: docker exec R2 ping -c2 2001:1::2
-      - cmd: docker exec R2 ping -c2 2001:2::1
-      - cmd: docker exec R2 ping -c2 2001:2::2
-      - cmd: docker exec R2 ping -c2 2001:4::1
-      - cmd: docker exec R2 ping -c2 2001:4::10
-      - cmd: docker exec R2 ping -c2 2001:4::11
-      - cmd: docker exec R3 ping -c2 2001:2::1
-      - cmd: docker exec R3 ping -c2 2001:2::2
-      - cmd: docker exec R3 ping -c2 2001:3::1
-      - cmd: docker exec R3 ping -c2 2001:3::2
-      - cmd: docker exec R3 ping -c2 2001:3::10
-      - cmd: docker exec R3 ping -c2 2001:3::11
-      - cmd: docker exec R4 ping -c2 2001:3::1
-      - cmd: docker exec R4 ping -c2 2001:3::2
-      - cmd: docker exec R4 ping -c2 2001:3::10
-      - cmd: docker exec R4 ping -c2 2001:3::11
-      - cmd: docker exec R10 ping -c2 2001:4::1
-      - cmd: docker exec R10 ping -c2 2001:4::10
-      - cmd: docker exec R10 ping -c2 2001:4::11
-      - cmd: docker exec R11 ping -c2 2001:4::1
-      - cmd: docker exec R11 ping -c2 2001:4::10
-      - cmd: docker exec R11 ping -c2 2001:4::11
   - name: remote
     cmds:
-      - cmd: docker exec R4 ping -c2 -I 2001:3::10 2001:1::1
-      - cmd: docker exec R4 ping -c2 -I 2001:3::11 2001:1::1
+      - cmd: docker exec R4 ping -c2 -I 2001:34::2 2001:12::1
+      - cmd: docker exec R4 ping -c2 -I 2001:34::2 2001:ff::5
+      - cmd: docker exec R4 ping -c2 -I 2001:34::2 fc00:5::1
+      - cmd: docker exec R4 ping -c2 -I 2001:34::10 2001:12::1
+      - cmd: docker exec R4 ping -c2 -I 2001:34::10 2001:ff::5
+      - cmd: docker exec R4 ping -c2 -I 2001:34::10 fc00:5::1
 
