@@ -1,48 +1,51 @@
 
 nodes:
   - name: R1
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
   - name: R2
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R3#net0 }
       - { name: net2, type: bridge, args: SW }
   - name: R3
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: direct, args: R2#net1 }
       - { name: net1, type: direct, args: R4#net0 }
       # - { name: ens8f0, type: phys } #PP
       # - { name: ens8f1, type: phys } #PP
   - name: R4
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: direct, args: R3#net1 }
   - name: R5
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: bridge, args: SW }
   - name: R6
-    image: slankdev/frr
+    image: slankdev/sandbox
     # image: slankdev/ovs
     interfaces:
       - { name: net0, type: bridge, args: SW }
+      - { name: net1, type: bridge, args: SW-unaware }
       # - { name: ens8f2, type: phys } #PP
+      # - { name: ens8f3, type: phys } #PP
   - name: R7
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
       - { name: net0, type: bridge, args: SW }
+      - { name: net1, type: bridge, args: SW-unaware }
   - name: R8
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: bridge, args: SW }
+      - { name: net0, type: bridge, args: SW-unaware }
   - name: R9
-    image: slankdev/frr
+    image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: bridge, args: SW }
+      - { name: net0, type: bridge, args: SW-unaware }
 
 switches:
   - name: SW
@@ -51,6 +54,10 @@ switches:
       - { name: net0, type: docker, args: R5 }
       - { name: net0, type: docker, args: R6 }
       - { name: net0, type: docker, args: R7 }
+  - name: SW-unaware
+    interfaces:
+      - { name: net1, type: docker, args: R6 }
+      - { name: net1, type: docker, args: R7 }
       - { name: net0, type: docker, args: R8 }
       - { name: net0, type: docker, args: R9 }
 
@@ -68,6 +75,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
@@ -121,6 +129,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R5
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
@@ -134,6 +143,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R6
     cmds:
       # - cmd: ovs-vsctl add-br ovs0
@@ -149,6 +159,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R7
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
@@ -162,6 +173,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R8
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
@@ -175,6 +187,7 @@ node_configs:
           -c ' interface lo area 0.0.0.0'
           -c ' interface net0 area 0.0.0.0'
           -c 'exit'
+
   - name: R9
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
