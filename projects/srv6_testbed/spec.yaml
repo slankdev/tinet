@@ -27,9 +27,10 @@ nodes:
       - { name: net0, type: bridge, args: SW }
   - name: R6
     image: slankdev/frr
+    # image: slankdev/ovs
     interfaces:
       - { name: net0, type: bridge, args: SW }
-      # - { name: ens8f0, type: phys } #PP
+      # - { name: ens8f2, type: phys } #PP
   - name: R7
     image: slankdev/frr
     interfaces:
@@ -135,7 +136,8 @@ node_configs:
           -c 'exit'
   - name: R6
     cmds:
-      # - cmd: bash -c "ovs-vsctl add-port ovs0 net0 tag=10 && ovs-vsctl add-port ovs0 ens8f0 tag=10"
+      # - cmd: ovs-vsctl add-br ovs0
+      # - cmd: bash -c "ovs-vsctl add-port ovs0 net0 tag=10 && ovs-vsctl add-port ovs0 ens8f2 tag=10"
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-

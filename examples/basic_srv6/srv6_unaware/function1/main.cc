@@ -32,7 +32,7 @@ struct policy {
 static void
 process_packet(uint8_t* pkt, size_t len, int inputfd)
 {
-  printf("%s\n", __func__);
+  // printf("%s\n", __func__);
   slankdev::ether* eh = reinterpret_cast<slankdev::ether*>(pkt);
   // slankdev::ip* ih = reinterpret_cast<slankdev::ip*>(eh + 1);
   // slankdev::icmp* ich = reinterpret_cast<slankdev::icmp*>(ih->get_next());
@@ -82,20 +82,13 @@ forward_frame(int sockA)
         }
 
         if(rll.sll_pkttype!=PACKET_OUTGOING) {
-          process_packet(buffer, frame_len, input_fd);
-          // memset(buffer, 0xff, 6);
-          buffer[0] = 0x52;
-          buffer[1] = 0x54;
-          buffer[2] = 0x00;
-          buffer[3] = 0x20;
-          buffer[4] = 0x00;
-          buffer[5] = 0x82;
-          buffer[6] = 0x52;
-          buffer[7] = 0x54;
-          buffer[8] = 0x00;
-          buffer[9] = 0x30;
-          buffer[10] = 0x00;
-          buffer[11] = 0x82;
+          // process_packet(buffer, frame_len, input_fd);
+          uint8_t dst[] = { 0x52, 0x54, 0x00, 0xb7, 0x54, 0x5b };
+          uint8_t src[] = { 0xc6, 0xca, 0xdf, 0x4b, 0x95, 0xba };
+          memcpy(buffer  , dst, 6);
+          memcpy(buffer+6, src, 6);
+
+          printf("REFLECT\n");
           ssize_t send_len = send(output_fd, &buffer, frame_len, 0);
           if (send_len < 0) {
             perror("send");
