@@ -31,12 +31,12 @@ docker exec R2 ip -6 route add 2001:34::10 encap seg6 mode inline segs fc00:5::1
 blue config
 ```
 docker exec R3 ip -6 rule add from 2001:34::10 table 10
-docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:5::1,fc00:2::1 dev net0 table 10
+docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:6::8,fc00:2::1 dev net0 table 10
 ```
 
 green config
 ```
-docker exec R3 ip -6 rule add from 2001:34::10 table 10
-docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:5::1,fc00:2::1 dev net0 table 10
+docker exec R3 ip -6 rule add from 2001:34::20 table 20
+docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:6::8,fc00:6::9,fc00:2::1 dev net0 table 20
 ```
 
