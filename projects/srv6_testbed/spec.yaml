@@ -109,10 +109,6 @@ node_configs:
           -c ' interface net2 area 0.0.0.0'
           -c 'exit'
 
-      # SRv6 Configuration
-      # - cmd: ip route add 2001:3::10 encap seg6 mode inline segs fc00:10::1,fc00:3::1 via 2001:2::2
-      # - cmd: ip route add 2001:3::11 encap seg6 mode inline segs fc00:11::1,fc00:3::1 via 2001:2::2
-
   - name: R3
     cmds:
       # - cmd: bash -c "ovs-vsctl add-port ovs0 net0 tag=10 && ovs-vsctl add-port ovs0 ens8f0 tag=10"
@@ -142,12 +138,6 @@ node_configs:
           -c ' interface net0 area 0.0.0.0'
           -c ' interface net1 area 0.0.0.0'
           -c 'exit'
-
-      # SRv6 Configuration
-      # - cmd: ip -6 rule add from 2001:3::10 table blue
-      # - cmd: ip -6 rule add from 2001:3::11 table green
-      # - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:10::1,fc00:2::1 via 2001:2::1 dev net0 table blue
-      # - cmd: ip route add 2001:1::0/64 encap seg6 mode inline segs fc00:11::1,fc00:2::1 via 2001:2::1 dev net0 table green
 
   - name: R4
     cmds:
