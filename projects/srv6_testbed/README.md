@@ -60,10 +60,10 @@ docker exec R9 ip -6 route add default via 2001:fe::7
 
 **Check proxy config**
 ```
-docker exec R3 ip -6 rule show
-docker exec R3 ip -6 route list table 10
-docker exec R3 ip -6 route list table 20
-docker exec R8 ip -6 route list default
+docker exec R3 ip -6 rule show && \
+docker exec R3 ip -6 route list table 10 && \
+docker exec R3 ip -6 route list table 20 && \
+docker exec R8 ip -6 route list default && \
 docker exec R9 ip -6 route list default
 ```
 
