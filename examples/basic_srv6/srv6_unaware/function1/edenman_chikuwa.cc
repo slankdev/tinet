@@ -26,8 +26,7 @@ struct policy {
   const char* match;
   const char* apply;
 } policies[] = {
-  { -1, -1, "ntt", "ipa" },
-  // { -1, -1, "kamuee", "manuke" },
+  { -1, -1, "edenman", "chikuwa" },
 };
 
 static int

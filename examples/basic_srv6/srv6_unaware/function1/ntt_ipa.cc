@@ -27,7 +27,6 @@ struct policy {
   const char* apply;
 } policies[] = {
   { -1, -1, "ntt", "ipa" },
-  // { -1, -1, "kamuee", "manuke" },
 };
 
 static int
