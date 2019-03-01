@@ -203,30 +203,16 @@ node_configs:
   - name: R8
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:8::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:fe::8/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.8'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+      - cmd: bash -c "disable_seg6_router.py | sh"
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: ip addr add 2001:fe::8/64 dev net0
 
   - name: R9
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:9::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:fe::9/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.9'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+      - cmd: bash -c "disable_seg6_router.py | sh"
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: ip addr add 2001:fe::9/64 dev net0
 
 test:
   - name: remote
