@@ -76,3 +76,8 @@ docker exec R3 ip -6 rule del table 20
 docker exec R8 ip -6 route del default
 docker exec R9 ip -6 route del default
 ```
+
+util
+```
+sudo srconf localsid add SID end.am ip IPv6-ADDR TARGETIF SOURCEIF
+```
