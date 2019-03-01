@@ -23,24 +23,24 @@ nodes:
       - { name: net0, type: direct, args: R3#net1 }
 
   - name: R5
-    image: slankdev/sandbox
-    # image: slankdev/ovs
+    # image: slankdev/sandbox
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: bridge, args: SW }
       - { name: net1, type: bridge, args: SW-unaware }
       - { name: ens8f2, type: phys } #PP
       - { name: ens8f3, type: phys } #PP
   - name: R6
-    image: slankdev/sandbox
-    # image: slankdev/ovs
+    # image: slankdev/sandbox
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: bridge, args: SW }
       - { name: net1, type: bridge, args: SW-unaware }
       - { name: ens8f4, type: phys } #PP
       - { name: ens8f5, type: phys } #PP
   - name: R7
-    image: slankdev/sandbox
-    # image: slankdev/ovs
+    # image: slankdev/sandbox
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: bridge, args: SW }
       - { name: net1, type: bridge, args: SW-unaware }
@@ -145,60 +145,60 @@ node_configs:
 
   - name: R5
     cmds:
-      # - cmd: ovs-vsctl add-br ovs0
-      # - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 ens8f2 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      # - cmd: ovs-vsctl add-port ovs0 ens8f3 tag=20
-      - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:5::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:ff::5/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.5'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f2 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
+      - cmd: ovs-vsctl add-port ovs0 ens8f3 tag=20
+      # - cmd: bash -c "enable_seg6_router.py | sh"
+      # - cmd: /usr/lib/frr/frr start
+      # - cmd: >-
+      #     vtysh -c 'conf t'
+      #     -c 'int lo' -c 'ipv6 addr fc00:5::1/64' -c 'exit'
+      #     -c 'int net0' -c 'ipv6 addr 2001:ff::5/64' -c 'exit'
+      #     -c 'router ospf6'
+      #     -c ' ospf6 router-id 10.255.0.5'
+      #     -c ' interface lo area 0.0.0.0'
+      #     -c ' interface net0 area 0.0.0.0'
+      #     -c 'exit'
 
   - name: R6
     cmds:
-      # - cmd: ovs-vsctl add-br ovs0
-      # - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 ens8f4 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      # - cmd: ovs-vsctl add-port ovs0 ens8f5 tag=20
-      - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:6::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:ff::6/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.6'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f4 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
+      - cmd: ovs-vsctl add-port ovs0 ens8f5 tag=20
+      # - cmd: bash -c "enable_seg6_router.py | sh"
+      # - cmd: /usr/lib/frr/frr start
+      # - cmd: >-
+      #     vtysh -c 'conf t'
+      #     -c 'int lo' -c 'ipv6 addr fc00:6::1/64' -c 'exit'
+      #     -c 'int net0' -c 'ipv6 addr 2001:ff::6/64' -c 'exit'
+      #     -c 'router ospf6'
+      #     -c ' ospf6 router-id 10.255.0.6'
+      #     -c ' interface lo area 0.0.0.0'
+      #     -c ' interface net0 area 0.0.0.0'
+      #     -c 'exit'
 
   - name: R7
     cmds:
-      # - cmd: ovs-vsctl add-br ovs0
-      # - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 ens8f6 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      # - cmd: ovs-vsctl add-port ovs0 ens8f7 tag=20
-      - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:7::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:ff::7/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.7'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f6 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
+      - cmd: ovs-vsctl add-port ovs0 ens8f7 tag=20
+      # - cmd: bash -c "enable_seg6_router.py | sh"
+      # - cmd: /usr/lib/frr/frr start
+      # - cmd: >-
+      #     vtysh -c 'conf t'
+      #     -c 'int lo' -c 'ipv6 addr fc00:7::1/64' -c 'exit'
+      #     -c 'int net0' -c 'ipv6 addr 2001:ff::7/64' -c 'exit'
+      #     -c 'router ospf6'
+      #     -c ' ospf6 router-id 10.255.0.7'
+      #     -c ' interface lo area 0.0.0.0'
+      #     -c ' interface net0 area 0.0.0.0'
+      #     -c 'exit'
 
   - name: R8
     cmds:
