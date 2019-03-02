@@ -23,17 +23,16 @@
 struct policy {
   int input_fd;
   int output_fd;
-  const char* match;
-  const char* apply;
+  char match[100];
+  char apply[100];
 } policies[] = {
-  { -1, -1, "ntt", "ipa" },
-  // { -1, -1, "kamuee", "manuke" },
+  { -1, -1, "DUMMYXXX", "DUMMYXXX" },
 };
+uint8_t hwaddr[6] = {0xff};
 
 static int
 process_packet(uint8_t* pkt, size_t len, int inputfd)
 {
-  // printf("%s\n", __func__);
   slankdev::ether* eh = reinterpret_cast<slankdev::ether*>(pkt);
   if (ntohs(eh->type) != 0x86dd) return -1;
 
@@ -52,7 +51,6 @@ process_packet(uint8_t* pkt, size_t len, int inputfd)
       const char* match = policies[i].match;
       const char* apply = policies[i].apply;
       for (size_t i=0; i<len-strlen(match); i++) {
-        // if (pkt[i] == 'n') printf("slank\n");
         int diff = memcmp(pkt+i, match, strlen(match));
         if (diff == 0) {
           printf("KAKIKAE!!!\n");
@@ -67,7 +65,9 @@ process_packet(uint8_t* pkt, size_t len, int inputfd)
 static void
 forward_frame(int sockA)
 {
-  // printf("start forwarding %d <--> %d\n", sockA, sockB);
+  printf("start filter and reflect action (%s --> %s)\n",
+      policies[0].match, policies[0].apply);
+
   slankdev::pollfd pfd;
   pfd.append_fd(sockA, POLLIN|POLLERR);
   while (true) {
@@ -95,10 +95,10 @@ forward_frame(int sockA)
           if (ret < 0)
             continue;
 
-          uint8_t dst[] = { 0x52, 0x54, 0x00, 0x86, 0x6a, 0xef };
-          uint8_t src[] = { 0xc6, 0xca, 0xdf, 0x4b, 0x95, 0xba };
-          memcpy(buffer  , dst, 6);
-          memcpy(buffer+6, src, 6);
+          // uint8_t dst[] = { 0x52, 0x54, 0x00, 0x86, 0x6a, 0xef };
+          // uint8_t src[] = { 0xc6, 0xca, 0xdf, 0x4b, 0x95, 0xba };
+          memcpy(buffer  , buffer+6, 6);
+          memcpy(buffer+6, hwaddr, 6);
 
           printf("REFLECT\n");
           ssize_t send_len = send(output_fd, &buffer, frame_len, 0);
@@ -111,6 +111,18 @@ forward_frame(int sockA)
 
     } // for
   }
+}
+
+static void
+get_hwaddr(const char* name, uint8_t addr[6])
+{
+ int fd = socket(AF_INET, SOCK_DGRAM, 0);
+ struct ifreq ifr;
+ ifr.ifr_addr.sa_family = AF_INET;
+ strncpy(ifr.ifr_name, name, IFNAMSIZ-1);
+ ioctl(fd, SIOCGIFHWADDR, &ifr);
+ close(fd);
+ memcpy(addr, ifr.ifr_hwaddr.sa_data, sizeof(uint8_t[6]));
 }
 
 static int
@@ -160,17 +172,19 @@ open_raw_sock(const char* devname)
 int
 main(int argc, char *argv[])
 {
-  if(argc < 2){
-    fprintf(stderr, "Usage: %s <interface1>\n", argv[0]);
+  if (argc < 4) {
+    fprintf(stderr, "Usage: %s <interface1> <matchstr> <applystr>\n", argv[0]);
     return 1;
   }
 
   int sockA = open_raw_sock(argv[1]);
   policies[0].input_fd = sockA;
   policies[0].output_fd = sockA;
+  strcpy(policies[0].match, argv[2]);
+  strcpy(policies[0].apply, argv[3]);
+  get_hwaddr(argv[1], hwaddr);
 
   printf("Interface1: %s\n", argv[1]);
-  // printf("Interface2: %s\n", argv[2]);
   forward_frame(sockA);
 }
 
