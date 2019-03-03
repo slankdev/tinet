@@ -13,15 +13,22 @@ tn test remote | sudo sh
 
 ![](./img/encoder.png)
 
-blue config
+**Using linux-encoder**
 ```
 docker exec R3 ip -6 rule add from 2001:34::10 table 10
 docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:5::1,fc00:2::1 dev net0 table 10
+docker exec R2 ip -6 route add 2001:34::10 encap seg6 mode inline segs fc00:5::1,fc00:3::1 dev net2
 ```
 
-green config
+**Using kamuee-encoder**
 ```
 docker exec R2 ip -6 route add 2001:34::10 encap seg6 mode inline segs fc00:5::1,fc00:3::1 dev net2
+
+kmsh ...
+```
+
+**Using vpp-encoder**
+```
 ```
 
 ## DEMO2: SRv6 Application Proxy
@@ -36,6 +43,10 @@ docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:5::8,
 docker exec R3 ip -6 route add 2001:12::1 encap seg6 mode inline segs fc00:5::8,fc00:5::9,fc00:2::1 dev net0 table 20
 docker exec R8 ip -6 route add default via 2001:fe::5
 docker exec R9 ip -6 route add default via 2001:fe::5
+
+#util
+srconf localsid add SID end.am ip IPv6-ADDR TARGETIF SOURCEIF
+srconf localsid show
 ```
 
 **Using kamuee-proxy**
@@ -77,7 +88,3 @@ docker exec R8 ip -6 route del default
 docker exec R9 ip -6 route del default
 ```
 
-util
-```
-sudo srconf localsid add SID end.am ip IPv6-ADDR TARGETIF SOURCEIF
-```
