@@ -1,0 +1,66 @@
+
+nodes:
+  - name: C1
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P1#net0 }
+  - name: P1
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: bridge, args: SW }
+  - name: S1
+    image: slankdev/sandbox
+    interfaces: [ { name: net0, type: bridge, args: SW } ]
+  - name: S2
+    image: slankdev/sandbox
+    interfaces: [ { name: net0, type: bridge, args: SW } ]
+  - name: S3
+    image: slankdev/sandbox
+    interfaces: [ { name: net0, type: bridge, args: SW } ]
+  - name: S4
+    image: slankdev/sandbox
+    interfaces: [ { name: net0, type: bridge, args: SW } ]
+
+switches:
+  - name: SW
+    interfaces:
+      - { name: net1, type: docker, args: P1 }
+      - { name: net0, type: docker, args: S1 }
+      - { name: net0, type: docker, args: S2 }
+      - { name: net0, type: docker, args: S3 }
+      - { name: net0, type: docker, args: S4 }
+
+node_configs:
+  - name: C1
+    cmds:
+      - cmd: ip addr add 10.0.0.2/24 dev net0
+  - name: P1
+    cmds:
+      - cmd: ip addr add 10.0.0.1/24 dev net0
+      - cmd: ip addr add 10.1.0.254/24 dev net1
+  - name: S1
+    cmds:
+      - cmd: ip addr add 10.1.0.1/24 dev net0
+  - name: S2
+    cmds:
+      - cmd: ip addr add 10.1.0.2/24 dev net0
+  - name: S3
+    cmds:
+      - cmd: ip addr add 10.1.0.3/24 dev net0
+  - name: S4
+    cmds:
+      - cmd: ip addr add 10.1.0.4/24 dev net0
+
+test:
+  - name: p2p
+    cmds:
+    - cmd: docker exec C1 ping -c2 10.0.0.1
+    - cmd: docker exec C1 ping -c2 10.0.0.2
+    - cmd: docker exec P1 ping -c2 10.0.0.1
+    - cmd: docker exec P1 ping -c2 10.0.0.2
+    - cmd: docker exec P1 ping -c2 10.1.0.1
+    - cmd: docker exec P1 ping -c2 10.1.0.2
+    - cmd: docker exec P1 ping -c2 10.1.0.3
+    - cmd: docker exec P1 ping -c2 10.1.0.4
+
