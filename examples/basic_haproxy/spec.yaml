@@ -42,15 +42,23 @@ node_configs:
   - name: S1
     cmds:
       - cmd: ip addr add 10.1.0.1/24 dev net0
+      - cmd: sh -c "cat /etc/hostname > index.html"
+      - cmd: nohup python3 -m http.server 80 &
   - name: S2
     cmds:
       - cmd: ip addr add 10.1.0.2/24 dev net0
+      - cmd: sh -c "cat /etc/hostname > index.html"
+      - cmd: nohup python3 -m http.server 80 &
   - name: S3
     cmds:
       - cmd: ip addr add 10.1.0.3/24 dev net0
+      - cmd: sh -c "cat /etc/hostname > index.html"
+      - cmd: nohup python3 -m http.server 80 &
   - name: S4
     cmds:
       - cmd: ip addr add 10.1.0.4/24 dev net0
+      - cmd: sh -c "cat /etc/hostname > index.html"
+      - cmd: nohup python3 -m http.server 80 &
 
 test:
   - name: p2p
