@@ -39,6 +39,24 @@ node_configs:
     cmds:
       - cmd: ip addr add 10.0.0.1/24 dev net0
       - cmd: ip addr add 10.1.0.254/24 dev net1
+      - cmd: bash -c "echo 'global                       ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  daemon                     ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '                             ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo 'defaults                     ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  log global                 ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  mode tcp                   ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '                             ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo 'frontend main                ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  bind *:80                  ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  default_backend static     ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '                             ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo 'backend static               ' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  server S1 10.1.0.1:80 check' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  server S2 10.1.0.2:80 check' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  server S3 10.1.0.3:80 check' >> /root/haproxy.conf"
+      - cmd: bash -c "echo '  server S4 10.1.0.4:80 check' >> /root/haproxy.conf"
+      - cmd: haproxy -f /root/haproxy.conf
+
   - name: S1
     cmds:
       - cmd: ip addr add 10.1.0.1/24 dev net0
