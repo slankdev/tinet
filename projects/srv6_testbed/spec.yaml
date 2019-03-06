@@ -11,7 +11,8 @@ nodes:
       - { name: net1, type: direct, args: R3#net0 }
       - { name: net2, type: bridge, args: SW }
   - name: R3
-    image: slankdev/sandbox
+    # image: slankdev/sandbox
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: direct, args: R2#net1 }
       - { name: net1, type: direct, args: R4#net0 }
@@ -106,24 +107,24 @@ node_configs:
 
   - name: R3
     cmds:
-      # - cmd: ovs-vsctl add-br ovs0
-      # - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 ens8f0 tag=10
-      # - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      # - cmd: ovs-vsctl add-port ovs0 ens8f1 tag=20
-      - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:3::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:23::2/64' -c 'exit'
-          -c 'int net1' -c 'ipv6 addr 2001:34::1/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.3'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c ' interface net1 area 0.0.0.0'
-          -c 'exit'
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
+      - cmd: ovs-vsctl add-port ovs0 ens8f1 tag=20
+      # - cmd: bash -c "enable_seg6_router.py | sh"
+      # - cmd: /usr/lib/frr/frr start
+      # - cmd: >-
+      #     vtysh -c 'conf t'
+      #     -c 'int lo' -c 'ipv6 addr fc00:3::1/64' -c 'exit'
+      #     -c 'int net0' -c 'ipv6 addr 2001:23::2/64' -c 'exit'
+      #     -c 'int net1' -c 'ipv6 addr 2001:34::1/64' -c 'exit'
+      #     -c 'router ospf6'
+      #     -c ' ospf6 router-id 10.255.0.3'
+      #     -c ' interface lo area 0.0.0.0'
+      #     -c ' interface net0 area 0.0.0.0'
+      #     -c ' interface net1 area 0.0.0.0'
+      #     -c 'exit'
 
   - name: R4
     cmds:
