@@ -30,26 +30,32 @@ node_configs:
   - name: R1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip -6 addr add 2001:111::2/64 dev net0
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address 2001:111::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.1'
           -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+          -c ' exit'
 
   - name: R2
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip -6 addr add 2001:222::2/64 dev net0
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address 2001:222::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.2'
           -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
+          -c ' exit'
 
   - name: R3
     cmds:
@@ -72,16 +78,22 @@ node_configs:
   - name: R4
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip -6 addr add 2001:f10::2/64 dev net0
-      - cmd: ip -6 addr add 2001:f11::2/64 dev net1
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address 2001:f10::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address 2001:f11::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.4'
           -c ' interface net0 area 0.0.0.0'
           -c ' interface net1 area 0.0.0.0'
-          -c 'exit'
+          -c ' exit'
 
 test:
   - name: p2p
