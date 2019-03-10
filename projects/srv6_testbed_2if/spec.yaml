@@ -159,4 +159,10 @@ test:
       - cmd: docker exec R20 ping -c2 beaf::2
       - cmd: docker exec C2  ping -c2 beaf::1
       - cmd: docker exec C2  ping -c2 beaf::2
+  - name: edge_to_proxy_p2p
+    cmd:
+      - cmd: echo slank
+  - name: proxy_func_p2p
+    cmd:
+      - cmd: echo slank
 
