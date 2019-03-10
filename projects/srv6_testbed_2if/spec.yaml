@@ -1,227 +1,162 @@
 
 nodes:
-  - name: R1
+  - name: C1
     image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: direct, args: R2#net0 }
-  - name: R2
+      - { name: net0, type: direct, args: R10#net0 }
+  - name: C2
     image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: direct, args: R1#net0 }
-      - { name: net1, type: direct, args: R3#net0 }
-      - { name: net2, type: bridge, args: SW }
-  - name: R3
-    # image: slankdev/sandbox
-    image: slankdev/ovs
-    interfaces:
-      - { name: net0, type: direct, args: R2#net1 }
-      - { name: net1, type: direct, args: R4#net0 }
-      - { name: ens8f0, type: phys } #PP
-      - { name: ens8f1, type: phys } #PP
-  - name: R4
-    image: slankdev/sandbox
-    interfaces:
-      - { name: net0, type: direct, args: R3#net1 }
+      - { name: net0, type: direct, args: R20#net0 }
 
-  - name: R5
-    # image: slankdev/sandbox
-    image: slankdev/ovs
-    interfaces:
-      - { name: net0, type: bridge, args: SW }
-      - { name: net1, type: bridge, args: SW-unaware }
-      - { name: ens8f2, type: phys } #PP
-      - { name: ens8f3, type: phys } #PP
-  - name: R6
-    # image: slankdev/sandbox
-    image: slankdev/ovs
-    interfaces:
-      - { name: net0, type: bridge, args: SW }
-      - { name: net1, type: bridge, args: SW-unaware }
-      - { name: ens8f4, type: phys } #PP
-      - { name: ens8f5, type: phys } #PP
-  - name: R7
-    # image: slankdev/sandbox
-    image: slankdev/ovs
-    interfaces:
-      - { name: net0, type: bridge, args: SW }
-      - { name: net1, type: bridge, args: SW-unaware }
-      - { name: ens8f6, type: phys } #PP
-      - { name: ens8f7, type: phys } #PP
-
-  - name: R8
+  - name: R10
     image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: bridge, args: SW-unaware }
-  - name: R9
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: direct, args: E1#net0 }
+  - name: R20
     image: slankdev/sandbox
     interfaces:
-      - { name: net0, type: bridge, args: SW-unaware }
+      - { name: net0, type: direct, args: C2#net0 }
+      - { name: net1, type: direct, args: E1#net1 }
 
-switches:
-  - name: SW
+  - name: E1
+    image: slankdev/sandbox
     interfaces:
-      - { name: net2, type: docker, args: R2 }
-      - { name: net0, type: docker, args: R5 }
-      - { name: net0, type: docker, args: R6 }
-      - { name: net0, type: docker, args: R7 }
-  - name: SW-unaware
+      - { name: net0, type: direct, args: R10#net1 }
+      - { name: net1, type: direct, args: R20#net1 }
+      - { name: port-1-0, type: direct, args: P1#net0 }
+      - { name: port-1-1, type: direct, args: P1#net1 }
+      - { name: port-1-2, type: direct, args: P1#net2 }
+      - { name: port-1-3, type: direct, args: P1#net3 }
+      - { name: port-2-0, type: direct, args: P2#net0 }
+      - { name: port-2-1, type: direct, args: P2#net1 }
+      - { name: port-2-2, type: direct, args: P2#net2 }
+      - { name: port-2-3, type: direct, args: P2#net3 }
+      - { name: port-3-0, type: direct, args: P3#net0 }
+      - { name: port-3-1, type: direct, args: P3#net1 }
+      - { name: port-3-2, type: direct, args: P3#net2 }
+      - { name: port-3-3, type: direct, args: P3#net3 }
+
+  - name: P1
+    image: slankdev/sandbox
     interfaces:
-      - { name: net1, type: docker, args: R5 }
-      - { name: net1, type: docker, args: R6 }
-      - { name: net1, type: docker, args: R7 }
-      - { name: net0, type: docker, args: R8 }
-      - { name: net0, type: docker, args: R9 }
+      - { name: net0, type: direct, args: E1#port-1-0 }
+      - { name: net1, type: direct, args: E1#port-1-1 }
+      - { name: net2, type: direct, args: E1#port-1-2 }
+      - { name: net3, type: direct, args: E1#port-1-3 }
+      - { name: net4, type: direct, args: F1-1#net0 }
+      - { name: net5, type: direct, args: F1-1#net1 }
+      - { name: net6, type: direct, args: F2-1#net0 }
+      - { name: net7, type: direct, args: F2-1#net1 }
+  - name: P2
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: E1#port-2-0 }
+      - { name: net1, type: direct, args: E1#port-2-1 }
+      - { name: net2, type: direct, args: E1#port-2-2 }
+      - { name: net3, type: direct, args: E1#port-2-3 }
+      - { name: net4, type: direct, args: F1-2#net0 }
+      - { name: net5, type: direct, args: F1-2#net1 }
+      - { name: net6, type: direct, args: F2-2#net0 }
+      - { name: net7, type: direct, args: F2-2#net1 }
+  - name: P3
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: E1#port-3-0 }
+      - { name: net1, type: direct, args: E1#port-3-1 }
+      - { name: net2, type: direct, args: E1#port-3-2 }
+      - { name: net3, type: direct, args: E1#port-3-3 }
+      - { name: net4, type: direct, args: F1-3#net0 }
+      - { name: net5, type: direct, args: F1-3#net1 }
+      - { name: net6, type: direct, args: F2-3#net0 }
+      - { name: net7, type: direct, args: F2-3#net1 }
+
+  - name: F1-1
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P1#net4 }
+      - { name: net1, type: direct, args: P1#net5 }
+  - name: F2-1
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P1#net6 }
+      - { name: net1, type: direct, args: P1#net7 }
+  - name: F1-2
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P2#net4 }
+      - { name: net1, type: direct, args: P2#net5 }
+  - name: F2-2
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P2#net6 }
+      - { name: net1, type: direct, args: P2#net7 }
+  - name: F1-3
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P3#net4 }
+      - { name: net1, type: direct, args: P3#net5 }
+  - name: F2-3
+    image: slankdev/sandbox
+    interfaces:
+      - { name: net0, type: direct, args: P3#net6 }
+      - { name: net1, type: direct, args: P3#net7 }
 
 node_configs:
-  - name: R1
+  - name: C1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:1::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:12::1/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.1'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
-
-  - name: R2
+      - cmd: ip addr add cafe::2/64 dev net0
+      - cmd: ip addr add cafe::10/64 dev net0
+      - cmd: ip addr add cafe::20/64 dev net0
+      - cmd: ip -6 route replace default via cafe::1
+  - name: C2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:2::1/64' -c 'exit'
-          -c 'int net0' -c 'ipv6 addr 2001:12::2/64' -c 'exit'
-          -c 'int net1' -c 'ipv6 addr 2001:23::1/64' -c 'exit'
-          -c 'int net2' -c 'ipv6 addr 2001:ff::1/64' -c 'exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.2'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c ' interface net1 area 0.0.0.0'
-          -c ' interface net2 area 0.0.0.0'
-          -c 'exit'
+      - cmd: ip addr add beaf::2/64 dev net0
+      - cmd: ip addr add beaf::10/64 dev net0
+      - cmd: ip addr add beaf::20/64 dev net0
+      - cmd: ip -6 route replace default via beaf::1
 
-  - name: R3
-    cmds:
-      - cmd: ovs-vsctl add-br ovs0
-      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 ens8f0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      - cmd: ovs-vsctl add-port ovs0 ens8f1 tag=20
-      # - cmd: bash -c "enable_seg6_router.py | sh"
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'int lo' -c 'ipv6 addr fc00:3::1/64' -c 'exit'
-      #     -c 'int net0' -c 'ipv6 addr 2001:23::2/64' -c 'exit'
-      #     -c 'int net1' -c 'ipv6 addr 2001:34::1/64' -c 'exit'
-      #     -c 'router ospf6'
-      #     -c ' ospf6 router-id 10.255.0.3'
-      #     -c ' interface lo area 0.0.0.0'
-      #     -c ' interface net0 area 0.0.0.0'
-      #     -c ' interface net1 area 0.0.0.0'
-      #     -c 'exit'
-
-  - name: R4
+  - name: R10
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo' -c 'ipv6 addr fc00:4::1/64' -c 'exit'
-          -c 'int net0'
-          -c ' ipv6 addr 2001:34::2/64'
-          -c ' ipv6 addr 2001:34::10/64'
-          -c ' ipv6 addr 2001:34::20/64'
-          -c ' exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.4'
-          -c ' interface lo area 0.0.0.0'
-          -c ' interface net0 area 0.0.0.0'
-          -c 'exit'
-
-  - name: R5
-    cmds:
-      - cmd: ovs-vsctl add-br ovs0
-      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 ens8f2 tag=10
-      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      - cmd: ovs-vsctl add-port ovs0 ens8f3 tag=20
-      # - cmd: bash -c "enable_seg6_router.py | sh"
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'int lo' -c 'ipv6 addr fc00:5::1/64' -c 'exit'
-      #     -c 'int net0' -c 'ipv6 addr 2001:ff::5/64' -c 'exit'
-      #     -c 'router ospf6'
-      #     -c ' ospf6 router-id 10.255.0.5'
-      #     -c ' interface lo area 0.0.0.0'
-      #     -c ' interface net0 area 0.0.0.0'
-      #     -c 'exit'
-
-  - name: R6
-    cmds:
-      - cmd: ovs-vsctl add-br ovs0
-      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 ens8f4 tag=10
-      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      - cmd: ovs-vsctl add-port ovs0 ens8f5 tag=20
-      # - cmd: bash -c "enable_seg6_router.py | sh"
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'int lo' -c 'ipv6 addr fc00:6::1/64' -c 'exit'
-      #     -c 'int net0' -c 'ipv6 addr 2001:ff::6/64' -c 'exit'
-      #     -c 'router ospf6'
-      #     -c ' ospf6 router-id 10.255.0.6'
-      #     -c ' interface lo area 0.0.0.0'
-      #     -c ' interface net0 area 0.0.0.0'
-      #     -c 'exit'
-
-  - name: R7
-    cmds:
-      - cmd: ovs-vsctl add-br ovs0
-      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 ens8f6 tag=10
-      - cmd: ovs-vsctl add-port ovs0 net1 tag=20
-      - cmd: ovs-vsctl add-port ovs0 ens8f7 tag=20
-      # - cmd: bash -c "enable_seg6_router.py | sh"
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'int lo' -c 'ipv6 addr fc00:7::1/64' -c 'exit'
-      #     -c 'int net0' -c 'ipv6 addr 2001:ff::7/64' -c 'exit'
-      #     -c 'router ospf6'
-      #     -c ' ospf6 router-id 10.255.0.7'
-      #     -c ' interface lo area 0.0.0.0'
-      #     -c ' interface net0 area 0.0.0.0'
-      #     -c 'exit'
-
-  - name: R8
+      - cmd: ip addr add cafe::1/64 dev net0
+      - cmd: ip addr add 2001:cafe::1/64 dev net1
+      - cmd: ip -6 route replace default via 2001:cafe::2
+  - name: R20
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: bash -c "disable_seg6_router.py | sh"
-      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
-      - cmd: ip addr add 2001:fe::8/64 dev net0
+      - cmd: ip addr add beaf::1/64 dev net0
+      - cmd: ip addr add 2001:beaf::1/64 dev net1
+      - cmd: ip -6 route replace default via 2001:beaf::2
 
-  - name: R9
+  - name: E1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: bash -c "disable_seg6_router.py | sh"
-      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
-      - cmd: ip addr add 2001:fe::9/64 dev net0
+      - cmd: ip addr add 2001:cafe::2/64 dev net0
+      - cmd: ip addr add 2001:beaf::2/64 dev net1
+      - cmd: ip -6 route replace cafe::/64 via 2001:cafe::1
+      - cmd: ip -6 route replace beaf::/64 via 2001:beaf::1
 
 test:
-  - name: remote
+  - name: inline_p2p
     cmds:
-      - cmd: docker exec R4 ping -c2 -I 2001:34::2 2001:12::1
-      - cmd: docker exec R4 ping -c2 -I 2001:34::2 2001:ff::5
-      - cmd: docker exec R4 ping -c2 -I 2001:34::2 fc00:5::1
-      - cmd: docker exec R4 ping -c2 -I 2001:34::10 2001:12::1
-      - cmd: docker exec R4 ping -c2 -I 2001:34::10 2001:ff::5
-      - cmd: docker exec R4 ping -c2 -I 2001:34::10 fc00:5::1
+      - cmd: docker exec C1  ping -c2 cafe::1
+      - cmd: docker exec C1  ping -c2 cafe::2
+      - cmd: docker exec R10 ping -c2 cafe::1
+      - cmd: docker exec R10 ping -c2 cafe::2
+      - cmd: docker exec R10 ping -c2 2001:cafe::1
+      - cmd: docker exec R10 ping -c2 2001:cafe::2
+      - cmd: docker exec E1  ping -c2 2001:cafe::1
+      - cmd: docker exec E1  ping -c2 2001:cafe::2
+      - cmd: docker exec E1  ping -c2 2001:beaf::1
+      - cmd: docker exec E1  ping -c2 2001:beaf::2
+      - cmd: docker exec R20 ping -c2 2001:beaf::1
+      - cmd: docker exec R20 ping -c2 2001:beaf::2
+      - cmd: docker exec R20 ping -c2 beaf::1
+      - cmd: docker exec R20 ping -c2 beaf::2
+      - cmd: docker exec C2  ping -c2 beaf::1
+      - cmd: docker exec C2  ping -c2 beaf::2
 
