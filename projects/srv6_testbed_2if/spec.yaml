@@ -132,6 +132,83 @@ node_configs:
       - cmd: ip addr add 2001:beaf::1/64 dev net1
       - cmd: ip -6 route replace default via 2001:beaf::2
 
+  - name: P1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:f:f11:0::1/64 dev net0
+      - cmd: ip addr add 2001:f:f11:1::1/64 dev net1
+      - cmd: ip addr add 2001:f:f21:0::1/64 dev net2
+      - cmd: ip addr add 2001:f:f21:1::1/64 dev net3
+      - cmd: ip addr add 2001:b:f11:0::1/64 dev net4
+      - cmd: ip addr add 2001:b:f11:1::1/64 dev net5
+      - cmd: ip addr add 2001:b:f21:0::1/64 dev net6
+      - cmd: ip addr add 2001:b:f21:1::1/64 dev net7
+  - name: P2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:f:f12:0::1/64 dev net0
+      - cmd: ip addr add 2001:f:f12:1::1/64 dev net1
+      - cmd: ip addr add 2001:f:f22:0::1/64 dev net2
+      - cmd: ip addr add 2001:f:f22:1::1/64 dev net3
+      - cmd: ip addr add 2001:b:f12:0::1/64 dev net4
+      - cmd: ip addr add 2001:b:f12:1::1/64 dev net5
+      - cmd: ip addr add 2001:b:f22:0::1/64 dev net6
+      - cmd: ip addr add 2001:b:f22:1::1/64 dev net7
+  - name: P3
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:f:f13:0::1/64 dev net0
+      - cmd: ip addr add 2001:f:f13:1::1/64 dev net1
+      - cmd: ip addr add 2001:f:f23:0::1/64 dev net2
+      - cmd: ip addr add 2001:f:f23:1::1/64 dev net3
+      - cmd: ip addr add 2001:b:f13:0::1/64 dev net4
+      - cmd: ip addr add 2001:b:f13:1::1/64 dev net5
+      - cmd: ip addr add 2001:b:f23:0::1/64 dev net6
+      - cmd: ip addr add 2001:b:f23:1::1/64 dev net7
+
+  - name: F1-1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f11:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f11:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f11:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f11:1::1
+  - name: F2-1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f21:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f21:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f21:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f21:1::1
+  - name: F1-2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f12:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f12:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f12:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f12:1::1
+  - name: F2-2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f22:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f22:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f22:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f22:1::1
+  - name: F1-3
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f13:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f13:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f13:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f13:1::1
+  - name: F2-3
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:b:f23:0::2/64 dev net0
+      - cmd: ip addr add 2001:b:f23:1::2/64 dev net1
+      - cmd: ip -6 route add cafe::/64 via 2001:b:f23:0::1
+      - cmd: ip -6 route add beaf::/64 via 2001:b:f23:1::1
+
   - name: E1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
