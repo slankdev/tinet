@@ -14,12 +14,14 @@ nodes:
     interfaces:
       - { name: net0, type: direct, args: R3#net1 }
   - name: R3
-    image: slankdev/bird
+    # image: slankdev/bird
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
       - { name: net2, type: direct, args: R4#net0 }
       - { name: net3, type: direct, args: R4#net1 }
+      - { name: ens8f0, type: phys } #PP
   - name: R4
     image: slankdev/bird
     interfaces:
@@ -33,6 +35,10 @@ node_configs:
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
+          -c 'int lo'
+          -c ' ipv6 address fc00:1::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
           -c 'int net0'
           -c ' ipv6 address 2001:111::2/64'
           -c ' ipv6 ospf6 network point-to-point'
@@ -40,6 +46,7 @@ node_configs:
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.1'
           -c ' interface net0 area 0.0.0.0'
+          -c ' interface lo area 0.0.0.0'
           -c ' exit'
 
   - name: R2
@@ -48,6 +55,10 @@ node_configs:
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
+          -c 'int lo'
+          -c ' ipv6 address fc00:2::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
           -c 'int net0'
           -c ' ipv6 address 2001:222::2/64'
           -c ' ipv6 ospf6 network point-to-point'
@@ -55,25 +66,44 @@ node_configs:
           -c 'router ospf6'
           -c ' ospf6 router-id 10.255.0.2'
           -c ' interface net0 area 0.0.0.0'
+          -c ' interface lo area 0.0.0.0'
           -c ' exit'
 
   - name: R3
     cmds:
-      - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip link add red type vrf table 10
-      - cmd: ip link add blu type vrf table 20
-      - cmd: ip link set dev red up
-      - cmd: ip link set dev blu up
-      - cmd: ip link set net0 vrf red
-      - cmd: ip link set net2 vrf red
-      - cmd: ip link set net1 vrf blu
-      - cmd: ip link set net3 vrf blu
-      - cmd: ip -6 addr add 2001:111::1/64 dev net0
-      - cmd: ip -6 addr add 2001:222::1/64 dev net1
-      - cmd: ip -6 addr add 2001:f10::1/64 dev net2
-      - cmd: ip -6 addr add 2001:f11::1/64 dev net3
-      - cmd: mkdir -p /run/bird
-      - cmd: bird6 -c /etc/bird/bird6.conf
+      - cmd: ip link add ens8f0.10 link ens8f0 type vlan id 10
+      - cmd: ip link add ens8f0.11 link ens8f0 type vlan id 11
+      - cmd: ip link add ens8f0.12 link ens8f0 type vlan id 12
+      - cmd: ip link add ens8f0.13 link ens8f0 type vlan id 13
+      - cmd: ip link set ens8f0.10 up
+      - cmd: ip link set ens8f0.11 up
+      - cmd: ip link set ens8f0.12 up
+      - cmd: ip link set ens8f0.13 up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.10 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=11
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.11 tag=11
+      - cmd: ovs-vsctl add-port ovs0 net2 tag=12
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.12 tag=12
+      - cmd: ovs-vsctl add-port ovs0 net3 tag=13
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.13 tag=13
+
+      # - cmd: sh -c "enable_seg6_router.py | sh"
+      # - cmd: ip link add red type vrf table 10
+      # - cmd: ip link add blu type vrf table 20
+      # - cmd: ip link set dev red up
+      # - cmd: ip link set dev blu up
+      # - cmd: ip link set net0 vrf red
+      # - cmd: ip link set net2 vrf red
+      # - cmd: ip link set net1 vrf blu
+      # - cmd: ip link set net3 vrf blu
+      # - cmd: ip -6 addr add 2001:111::1/64 dev net0
+      # - cmd: ip -6 addr add 2001:222::1/64 dev net1
+      # - cmd: ip -6 addr add 2001:f10::1/64 dev net2
+      # - cmd: ip -6 addr add 2001:f11::1/64 dev net3
+      # - cmd: mkdir -p /run/bird
+      # - cmd: bird6 -c /etc/bird/bird6.conf
 
   - name: R4
     cmds:
