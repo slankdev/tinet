@@ -6,22 +6,22 @@ postinit:
 
 nodes:
   - name: R1
-    image: tmp
+    image: slankdev/bird
     interfaces:
       - { name: net0, type: direct, args: R3#net0 }
   - name: R2
-    image: tmp
+    image: slankdev/bird
     interfaces:
       - { name: net0, type: direct, args: R3#net1 }
   - name: R3
-    image: tmp
+    image: slankdev/bird
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
       - { name: net2, type: direct, args: R4#net0 }
       - { name: net3, type: direct, args: R4#net1 }
   - name: R4
-    image: tmp
+    image: slankdev/bird
     interfaces:
       - { name: net0, type: direct, args: R3#net2 }
       - { name: net1, type: direct, args: R3#net3 }
