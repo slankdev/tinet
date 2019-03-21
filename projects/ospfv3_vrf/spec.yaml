@@ -14,12 +14,14 @@ nodes:
     interfaces:
       - { name: net0, type: direct, args: R3#net1 }
   - name: R3
-    image: slankdev/bird
+    # image: slankdev/bird
+    image: slankdev/ovs
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
       - { name: net2, type: direct, args: R4#net0 }
       - { name: net3, type: direct, args: R4#net1 }
+      - { name: ens8f0, type: phys }
   - name: R4
     image: slankdev/frr
     interfaces:
@@ -61,25 +63,46 @@ node_configs:
 
   - name: R3
     cmds:
-      - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip link add blu type vrf table 10
-      - cmd: ip link add red type vrf table 20
-      - cmd: ip link set dev blu up
-      - cmd: ip link set dev red up
-      - cmd: ip link set net0 vrf blu
-      - cmd: ip link set net2 vrf blu
-      - cmd: ip link set net1 vrf red
-      - cmd: ip link set net3 vrf red
-      - cmd: ip -6 addr add cafe::2/64 dev net0
-      - cmd: ip -6 addr add beaf::2/64 dev net1
-      - cmd: ip -6 addr add 2001:cafe::1/64 dev net2
-      - cmd: ip -6 addr add 2001:beaf::1/64 dev net3
-      # - cmd: mkdir -p /run/bird
-      # - cmd: bird6 -c /etc/bird/bird6.conf
-      - cmd: ip -6 route add 2001:beaf::/64 via 2001:cafe::2 vrf blu
-      - cmd: ip -6 route add beaf::/64      via 2001:cafe::2 vrf blu
-      - cmd: ip -6 route add 2001:cafe::/64 via 2001:beaf::2 vrf red
-      - cmd: ip -6 route add cafe::/64      via 2001:beaf::2 vrf red
+      - cmd: ip link add ens8f0.10 link ens8f0 type vlan id 10
+      - cmd: ip link add ens8f0.11 link ens8f0 type vlan id 11
+      - cmd: ip link add ens8f0.12 link ens8f0 type vlan id 12
+      - cmd: ip link add ens8f0.13 link ens8f0 type vlan id 13
+      - cmd: ip link set ens8f0 up
+      - cmd: ip link set ens8f0.10 up
+      - cmd: ip link set ens8f0.11 up
+      - cmd: ip link set ens8f0.12 up
+      - cmd: ip link set ens8f0.13 up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.10 tag=10
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=11
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.11 tag=11
+      - cmd: ovs-vsctl add-port ovs0 net2 tag=12
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.12 tag=12
+      - cmd: ovs-vsctl add-port ovs0 net3 tag=13
+      - cmd: ovs-vsctl add-port ovs0 ens8f0.13 tag=13
+      - cmd: ip link set ovs0 up
+
+      # - cmd: sh -c "enable_seg6_router.py | sh"
+      # - cmd: ip link add blu type vrf table 10
+      # - cmd: ip link add red type vrf table 20
+      # - cmd: ip link set dev blu up
+      # - cmd: ip link set dev red up
+      # - cmd: ip link set net0 vrf blu
+      # - cmd: ip link set net2 vrf blu
+      # - cmd: ip link set net1 vrf red
+      # - cmd: ip link set net3 vrf red
+      # - cmd: ip -6 addr add cafe::2/64 dev net0
+      # - cmd: ip -6 addr add beaf::2/64 dev net1
+      # - cmd: ip -6 addr add 2001:cafe::1/64 dev net2
+      # - cmd: ip -6 addr add 2001:beaf::1/64 dev net3
+      #
+      # - cmd: ip -6 route add 2001:beaf::/64 via 2001:cafe::2 vrf blu
+      # - cmd: ip -6 route add beaf::/64      via 2001:cafe::2 vrf blu
+      # - cmd: ip -6 route add 2001:cafe::/64 via 2001:beaf::2 vrf red
+      # - cmd: ip -6 route add cafe::/64      via 2001:beaf::2 vrf red
+      # # - cmd: mkdir -p /run/bird
+      # # - cmd: bird6 -c /etc/bird/bird6.conf
 
   - name: R4
     cmds:
