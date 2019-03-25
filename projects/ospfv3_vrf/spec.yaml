@@ -32,34 +32,36 @@ node_configs:
   - name: R1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:cafe::1/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
-          -c ' ipv6 address cafe::1/64'
+          -c ' ipv6 address cafe::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           # -c 'router ospf6'
           # -c ' ospf6 router-id 10.255.0.1'
           # -c ' interface net0 area 0.0.0.0'
           # -c ' exit'
-      - cmd: ip -6 route add default via cafe::2
+      - cmd: ip -6 route add default via cafe::1
 
   - name: R2
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:beaf::1/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
-          -c ' ipv6 address beaf::1/64'
+          -c ' ipv6 address beaf::2/65'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           # -c 'router ospf6'
           # -c ' ospf6 router-id 10.255.0.2'
           # -c ' interface net0 area 0.0.0.0'
           # -c ' exit'
-      - cmd: ip -6 route add default via beaf::2
+      - cmd: ip -6 route add default via beaf::1
 
   - name: R3
     cmds:
@@ -92,30 +94,32 @@ node_configs:
       # - cmd: ip link set net2 vrf blu
       # - cmd: ip link set net1 vrf red
       # - cmd: ip link set net3 vrf red
-      # - cmd: ip -6 addr add cafe::2/64 dev net0
-      # - cmd: ip -6 addr add beaf::2/64 dev net1
-      # - cmd: ip -6 addr add 2001:cafe::1/64 dev net2
-      # - cmd: ip -6 addr add 2001:beaf::1/64 dev net3
+      # - cmd: ip -6 addr add cafe::1/64 dev net0
+      # - cmd: ip -6 addr add beaf::1/64 dev net1
+      # - cmd: ip -6 addr add face::1/64 dev net2
+      # - cmd: ip -6 addr add dead::1/64 dev net3
       #
-      # - cmd: ip -6 route add 2001:beaf::/64 via 2001:cafe::2 vrf blu
-      # - cmd: ip -6 route add beaf::/64      via 2001:cafe::2 vrf blu
-      # - cmd: ip -6 route add 2001:cafe::/64 via 2001:beaf::2 vrf red
-      # - cmd: ip -6 route add cafe::/64      via 2001:beaf::2 vrf red
+      # - cmd: ip -6 route add dead::/64 via face::2 vrf blu
+      # - cmd: ip -6 route add beaf::/64 via face::2 vrf blu
+      # - cmd: ip -6 route add face::/64 via dead::2 vrf red
+      # - cmd: ip -6 route add cafe::/64 via dead::2 vrf red
       # # - cmd: mkdir -p /run/bird
       # # - cmd: bird6 -c /etc/bird/bird6.conf
 
   - name: R4
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001:face::1/64 dev lo
+      - cmd: ip addr add 2001:dead::1/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
-          -c ' ipv6 address 2001:cafe::2/64'
+          -c ' ipv6 address face::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'int net1'
-          -c ' ipv6 address 2001:beaf::2/64'
+          -c ' ipv6 address dead::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           # -c 'router ospf6'
@@ -123,8 +127,8 @@ node_configs:
           # -c ' interface net0 area 0.0.0.0'
           # -c ' interface net1 area 0.0.0.0'
           # -c ' exit'
-      - cmd: ip -6 route add cafe::/64 via 2001:cafe::1
-      - cmd: ip -6 route add beaf::/64 via 2001:beaf::1
+      - cmd: ip -6 route add cafe::/64 via face::1
+      - cmd: ip -6 route add beaf::/64 via dead::1
 
 test:
   - name: e2e
