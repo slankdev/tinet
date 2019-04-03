@@ -1,4 +1,8 @@
 
+postinit:
+  - cmds:
+      - cmd: docker cp /home/slankdev/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
+
 nodes:
 
   - name: P1
@@ -42,8 +46,108 @@ nodes:
 
 node_configs:
 
+  - name: P1
+    cmds:
+      - cmd: ip link set ens8f0 up
+      - cmd: ip link set ens8f1 up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ip link set ovs0 up
+      - cmd: ovs-vsctl add-port ovs0 ens8f0 trunks=110,111,120,121
+      - cmd: ovs-vsctl add-port ovs0 ens8f1 trunks=210,211,220,221
+      - cmd: ovs-vsctl add-port ovs0 to_R1_net0 tag=110
+      - cmd: ovs-vsctl add-port ovs0 to_R2_net0 tag=111
+      - cmd: ovs-vsctl add-port ovs0 to_R3_net0 tag=120
+      - cmd: ovs-vsctl add-port ovs0 to_R4_net0 tag=121
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net0 tag=210
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net1 tag=211
+      - cmd: ovs-vsctl add-port ovs0 to_F2_net0 tag=220
+      - cmd: ovs-vsctl add-port ovs0 to_F2_net1 tag=221
+
   - name: R1
     cmds:
-      - cmd: echo R2 config
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add cafe:110::2/64 dev net0
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.1'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+  - name: R2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add cafe:111::2/64 dev net0
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.2'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+  - name: R3
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add cafe:120::2/64 dev net0
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.3'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+  - name: R4
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add cafe:121::2/64 dev net0
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.4'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
 
+  - name: F1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip addr add cafe:210::2/64 dev net0
+      - cmd: ip addr add cafe:211::2/64 dev net1
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.0.100'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
+  - name: F2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
 
