@@ -31,8 +31,10 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      - cmd: ip addr add 10.10.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.10.0.1
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip addr add 2001:cafe::1/64 dev lo
+      - cmd: ip addr add 2001:cafe::2/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -45,11 +47,14 @@ node_configs:
           # -c ' interface net0 area 0.0.0.0'
           # -c ' exit'
       - cmd: ip -6 route add default via cafe::1
+      - cmd: ip route add beaf::3 encap seg6 mode inline segs fc00::1 dev net0
 
   - name: R2
     cmds:
+      - cmd: ip addr add 10.11.0.2/24 dev net0
+      - cmd: ip -4 route replace default via 10.11.0.1
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip addr add 2001:beaf::1/64 dev lo
+      - cmd: ip addr add 2001:beaf::2/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -62,6 +67,7 @@ node_configs:
           # -c ' interface net0 area 0.0.0.0'
           # -c ' exit'
       - cmd: ip -6 route add default via beaf::1
+      - cmd: ip addr add beaf::3/64 dev net0
 
   - name: R3
     cmds:
@@ -108,9 +114,11 @@ node_configs:
 
   - name: R4
     cmds:
+      - cmd: ip addr add 10.12.0.2/24 dev net0
+      - cmd: ip addr add 10.13.0.2/24 dev net1
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip addr add 2001:face::1/64 dev lo
-      - cmd: ip addr add 2001:dead::1/64 dev lo
+      - cmd: ip addr add 2001:face::2/64 dev lo
+      - cmd: ip addr add 2001:dead::2/64 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -129,6 +137,8 @@ node_configs:
           # -c ' exit'
       - cmd: ip -6 route add cafe::/64 via face::1
       - cmd: ip -6 route add beaf::/64 via dead::1
+      - cmd: ip -6 route add 2001:cafe::/64 via face::1
+      - cmd: ip -6 route add 2001:beaf::/64 via dead::1
 
 test:
   - name: e2e
