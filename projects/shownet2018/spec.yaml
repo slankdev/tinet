@@ -67,7 +67,10 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr flush dev net0
+      - cmd: ip addr add fe80::110:2/64 dev net0
       - cmd: ip addr add cafe:110::2/64 dev net0
+      - cmd: ip link set dev net0 address 52:54:00:01:10:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
@@ -81,7 +84,10 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr flush dev net0
+      - cmd: ip addr add fe80::111:2/64 dev net0
       - cmd: ip addr add cafe:111::2/64 dev net0
+      - cmd: ip link set dev net0 address 52:54:00:01:11:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
@@ -95,7 +101,10 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr flush dev net0
+      - cmd: ip addr add fe80::120:2/64 dev net0
       - cmd: ip addr add cafe:120::2/64 dev net0
+      - cmd: ip link set dev net0 address 52:54:00:01:20:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
@@ -108,7 +117,10 @@ node_configs:
   - name: R4
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr flush dev net0
+      - cmd: ip addr add fe80::121:2/64 dev net0
       - cmd: ip addr add cafe:121::2/64 dev net0
+      - cmd: ip link set dev net0 address 52:54:00:01:21:2
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -124,8 +136,14 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip addr flush dev net0
+      - cmd: ip addr add fe80::210:2/64 dev net0
       - cmd: ip addr add cafe:210::2/64 dev net0
+      - cmd: ip link set dev net0 address 52:54:00:02:10:2
+      - cmd: ip addr flush dev net1
+      - cmd: ip addr add fe80::211:2/64 dev net1
       - cmd: ip addr add cafe:211::2/64 dev net1
+      - cmd: ip link set dev net1 address 52:54:00:02:11:2
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
