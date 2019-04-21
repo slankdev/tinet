@@ -651,7 +651,7 @@ def main():
     try:
       filename = appinfo.specfile
       f = open(filename, "r+")
-      appinfo.data = yaml.load(f)
+      appinfo.data = yaml.load(f, Loader=yaml.FullLoader)
     except IOError:
       sys.stderr.write('IOError: file {} not found.\n'.format(appinfo.specfile))
       sys.exit(1)
