@@ -1,0 +1,27 @@
+
+nodes:
+  - name: C0
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: direct, args: C1#net0 }
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: direct, args: C0#net0 }
+
+node_configs:
+  - name: C0
+    cmds:
+      - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: ip addr add cafe::1/64 dev net0
+  - name: C1
+    cmds:
+      - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: ip addr add cafe::2/64 dev net0
+
+test:
+  - name: p2p
+    cmds:
+    - cmd: docker exec C0 ping -c2 10.0.0.2
+    - cmd: echo slankdev slankdev
+
