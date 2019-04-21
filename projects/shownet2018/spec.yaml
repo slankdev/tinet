@@ -1,7 +1,7 @@
 
 postinit:
   - cmds:
-      - cmd: docker cp /home/slankdev/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
+      - cmd: docker cp $HOME/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
 
 nodes:
 
@@ -16,8 +16,7 @@ nodes:
       - { name: to_F1_net1, type: direct, args: F1#net1 }
       - { name: to_F2_net0, type: direct, args: F2#net0 }
       - { name: to_F2_net1, type: direct, args: F2#net1 }
-      - { name: ens8f0, type: phys }
-      - { name: ens8f1, type: phys }
+      - { name: veth0, type: phys }
 
   - name: R1
     image: slankdev/frr
@@ -48,12 +47,10 @@ node_configs:
 
   - name: P1
     cmds:
-      - cmd: ip link set ens8f0 up
-      - cmd: ip link set ens8f1 up
+      - cmd: ip link set veth0 up
       - cmd: ovs-vsctl add-br ovs0
       - cmd: ip link set ovs0 up
-      - cmd: ovs-vsctl add-port ovs0 ens8f0 trunks=110,111,120,121
-      - cmd: ovs-vsctl add-port ovs0 ens8f1 trunks=210,211,220,221
+      - cmd: ovs-vsctl add-port ovs0 veth0 trunks=110,111,120,121,210,211,220,221
       - cmd: ovs-vsctl add-port ovs0 to_R1_net0 tag=110
       - cmd: ovs-vsctl add-port ovs0 to_R2_net0 tag=111
       - cmd: ovs-vsctl add-port ovs0 to_R3_net0 tag=120
