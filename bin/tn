@@ -473,9 +473,9 @@ def command_conf(args):
       nodetype = get_node_type_from_nodes(node['name'], 'docker')
       for cmd in node['cmds']:
         if nodetype=='docker':
-          print('docker exec {} {}'.format(node['name'], cmd['cmd']))
+          print('docker exec {} {} > /dev/null'.format(node['name'], cmd['cmd']))
         elif nodetype=='netns':
-          print('ip netns exec {} {}'.format(node['name'], cmd['cmd']))
+          print('ip netns exec {} {} > /dev/null'.format(node['name'], cmd['cmd']))
         else:
           print('unknown node-type {}'.format(nodetype))
       print('echo {}::[config]::fin'.format(node['name']))
