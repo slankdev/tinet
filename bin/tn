@@ -194,7 +194,7 @@ def command_up(args):
     for node in appinfo.data['nodes']:
       nodetype = node.get('type', 'docker')
       if nodetype == 'docker':
-        print('docker run -td --hostname {} '
+        print('docker run -td --hostname {} --net=none '
           '--name {} --rm --privileged {}'
           .format(node['name'], node['name'],
           node['image']))
