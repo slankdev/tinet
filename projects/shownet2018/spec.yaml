@@ -62,70 +62,66 @@ node_configs:
 
   - name: R1
     cmds:
+      - cmd: sysctl -w net.ipv6.conf.all.keep_addr_on_down=1
+      - cmd: sysctl -w net.ipv6.conf.default.keep_addr_on_down=1
+      - cmd: sysctl -w net.ipv6.conf.net0.keep_addr_on_down=1
+
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
-      - cmd: ip addr flush dev net0
-      - cmd: ip addr add fe80::110:2/64 dev net0
-      - cmd: ip addr add cafe:110::2/64 dev net0
       - cmd: ip link set dev net0 address 52:54:00:01:10:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
+          -c ' ipv6 address cafe:110::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.1'
+          -c ' ospf6 router-id 10.255.0.201'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
   - name: R2
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
-      - cmd: ip addr flush dev net0
-      - cmd: ip addr add fe80::111:2/64 dev net0
-      - cmd: ip addr add cafe:111::2/64 dev net0
       - cmd: ip link set dev net0 address 52:54:00:01:11:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
+          -c ' ipv6 address cafe:111::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.2'
+          -c ' ospf6 router-id 10.255.0.202'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
   - name: R3
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
-      - cmd: ip addr flush dev net0
-      - cmd: ip addr add fe80::120:2/64 dev net0
-      - cmd: ip addr add cafe:120::2/64 dev net0
       - cmd: ip link set dev net0 address 52:54:00:01:20:2
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
+          -c ' ipv6 address cafe:120::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.3'
+          -c ' ospf6 router-id 10.255.0.203'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
   - name: R4
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip addr flush dev net0
-      - cmd: ip addr add fe80::121:2/64 dev net0
-      - cmd: ip addr add cafe:121::2/64 dev net0
       - cmd: ip link set dev net0 address 52:54:00:01:21:2
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
+          -c ' ipv6 address cafe:121::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.4'
+          -c ' ospf6 router-id 10.255.0.204'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -133,21 +129,17 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: sh -c "disable_seg6_router.py | sh"
-      - cmd: ip addr flush dev net0
-      - cmd: ip addr add fe80::210:2/64 dev net0
-      - cmd: ip addr add cafe:210::2/64 dev net0
       - cmd: ip link set dev net0 address 52:54:00:02:10:2
-      - cmd: ip addr flush dev net1
-      - cmd: ip addr add fe80::211:2/64 dev net1
-      - cmd: ip addr add cafe:211::2/64 dev net1
       - cmd: ip link set dev net1 address 52:54:00:02:11:2
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
           -c 'int net0'
+          -c ' ipv6 address cafe:210::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'int net1'
+          -c ' ipv6 address cafe:211::2/64'
           -c ' ipv6 ospf6 network point-to-point'
           -c ' exit'
           -c 'router ospf6'
