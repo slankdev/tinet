@@ -155,6 +155,12 @@ def generate_koko_physnet():
 def generate_detach_physif_from_docker():
   print(text__detach_physif_from_docker)
 
+def precmd():
+    if 'precmd' in appinfo.data:
+      for node in appinfo.data['precmd']:
+        for cmd in node['cmds']:
+          print('{}'.format(cmd['cmd']))
+
 def command_ps(args):
   print('docker ps --format "table {{.ID}}\\t{{.Names}}"')
 
@@ -178,6 +184,7 @@ def command_up(args):
           print('{}'.format(cmd['cmd']))
 
   print("set -ue")
+  precmd()
   generate_mount_docker_netns()
   generate_kokobr()
   generate_kokobr_netns()
@@ -372,6 +379,7 @@ def command_down(args):
         for cmd in node['cmds']:
           print('{}'.format(cmd['cmd']))
 
+  precmd()
   generate_mount_docker_netns()
   generate_detach_physif_from_docker()
 
@@ -399,6 +407,7 @@ def command_down(args):
   postfini()
 
 def command_pull(args):
+  precmd()
   print('{}()'.format(sys._getframe().f_code.co_name))
   print('\n######################')
   print('# PULL DOCKER IMAGES #')
@@ -463,6 +472,7 @@ def command_conf(args):
     sys.exit(1)
 
   print("set -ue")
+  precmd()
   preconf(appinfo.data)
   print('\n################')
   print('# NODE CONFIG  #')
@@ -482,14 +492,17 @@ def command_conf(args):
   postconf(appinfo.data)
 
 def command_upconf(args):
+  precmd()
   command_up(args)
   command_conf(args)
 
 def command_reconf(args):
+  precmd()
   command_reup(args)
   command_conf(args)
 
 def command_reup(args):
+  precmd()
   command_down(args)
   command_up(args)
 
@@ -497,6 +510,7 @@ def command_version(args):
   print(appinfo.version)
 
 def command_test(args):
+  precmd()
   test_name = args.NAME
   print('\n#####################')
   print('# INTEGRATION TEST  #')
