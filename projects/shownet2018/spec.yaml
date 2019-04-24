@@ -119,7 +119,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.110'
+          -c ' ospf6 router-id 10.255.1.10'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -138,7 +138,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.111'
+          -c ' ospf6 router-id 10.255.1.11'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -157,7 +157,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.120'
+          -c ' ospf6 router-id 10.255.1.20'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -176,7 +176,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.121'
+          -c ' ospf6 router-id 10.255.1.21'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -195,7 +195,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.130'
+          -c ' ospf6 router-id 10.255.1.30'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -214,7 +214,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.131'
+          -c ' ospf6 router-id 10.255.1.31'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -233,7 +233,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.140'
+          -c ' ospf6 router-id 10.255.1.40'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -252,7 +252,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.141'
+          -c ' ospf6 router-id 10.255.1.41'
           -c ' interface net0 area 0.0.0.0'
           -c ' exit'
 
@@ -280,7 +280,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.101'
+          -c ' ospf6 router-id 10.255.2.10'
           -c ' interface net0 area 0.0.0.0'
           -c ' interface net1 area 0.0.0.0'
           -c ' exit'
@@ -309,7 +309,7 @@ node_configs:
           -c ' !ipv6 ospf6 bfd'
           -c ' exit'
           -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.102'
+          -c ' ospf6 router-id 10.255.2.20'
           -c ' interface net0 area 0.0.0.0'
           -c ' interface net1 area 0.0.0.0'
           -c ' exit'
