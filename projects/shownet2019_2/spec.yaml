@@ -12,14 +12,14 @@ nodes:
   - name: P1
     image: slankdev/ovs
     interfaces:
-      - { name: to_R10_net0, type: direct, args: H1#vlan110 }
-      - { name: to_R11_net0, type: direct, args: H1#vlan111 }
-      - { name: to_R20_net0, type: direct, args: H1#vlan120 }
-      - { name: to_R21_net0, type: direct, args: H1#vlan121 }
-      - { name: to_R30_net0, type: direct, args: H1#vlan130 }
-      - { name: to_R31_net0, type: direct, args: H1#vlan131 }
-      - { name: to_R40_net0, type: direct, args: H1#vlan140 }
-      - { name: to_R41_net0, type: direct, args: H1#vlan141 }
+      - { name: to_R10_net0, type: direct, args: H1#vlan0110 }
+      - { name: to_R11_net0, type: direct, args: H1#vlan0111 }
+      - { name: to_R20_net0, type: direct, args: H1#vlan0120 }
+      - { name: to_R21_net0, type: direct, args: H1#vlan0121 }
+      - { name: to_R30_net0, type: direct, args: H1#vlan0130 }
+      - { name: to_R31_net0, type: direct, args: H1#vlan0131 }
+      - { name: to_R40_net0, type: direct, args: H1#vlan0140 }
+      - { name: to_R41_net0, type: direct, args: H1#vlan0141 }
       - { name: to_F1_net0 , type: direct, args: F1#net0 }
       - { name: to_F1_net1 , type: direct, args: F1#net1 }
       - { name: to_F2_net0 , type: direct, args: F2#net0 }
@@ -41,16 +41,16 @@ nodes:
   - name: H1
     image: slankdev/frr
     interfaces:
+      - { name: vlan0110, type: direct, args: P1#to_R10_net0 }
+      - { name: vlan0111, type: direct, args: P1#to_R11_net0 }
+      - { name: vlan0120, type: direct, args: P1#to_R20_net0 }
+      - { name: vlan0121, type: direct, args: P1#to_R21_net0 }
+      - { name: vlan0130, type: direct, args: P1#to_R30_net0 }
+      - { name: vlan0131, type: direct, args: P1#to_R31_net0 }
+      - { name: vlan0140, type: direct, args: P1#to_R40_net0 }
+      - { name: vlan0141, type: direct, args: P1#to_R41_net0 }
       - { name: to_user, type: direct, args: U1#net0 }
       - { name: to_inet, type: direct, args: I1#net0 }
-      - { name: vlan110, type: direct, args: P1#to_R10_net0 }
-      - { name: vlan111, type: direct, args: P1#to_R11_net0 }
-      - { name: vlan120, type: direct, args: P1#to_R20_net0 }
-      - { name: vlan121, type: direct, args: P1#to_R21_net0 }
-      - { name: vlan130, type: direct, args: P1#to_R30_net0 }
-      - { name: vlan131, type: direct, args: P1#to_R31_net0 }
-      - { name: vlan140, type: direct, args: P1#to_R40_net0 }
-      - { name: vlan141, type: direct, args: P1#to_R41_net0 }
 
   - name: F1
     image: slankdev/frr
@@ -101,10 +101,22 @@ node_configs:
           ovs-vsctl add-port ovs0 $ATTACH_NETIF
           trunks=110,120,130,140,111,121,131,141,210,220,230,240,211,221,231,241
 
+
+  - name: U1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip addr add face::2/64 dev net0
+
+  - name: I1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip addr add beaf::2/64 dev net0
+
   - name: H1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-
       - cmd: ip link add func1_up type vrf table 10
       - cmd: ip link add func1_dn type vrf table 11
       - cmd: ip link add func2_up type vrf table 20
@@ -115,8 +127,46 @@ node_configs:
       - cmd: ip link add func4_dn type vrf table 41
       - cmd: ip link add inet type vrf table 90
       - cmd: ip link add user type vrf table 91
-
-      # - cmd: ip
+      - cmd: ip link set vlan0110 vrf func1_up
+      - cmd: ip link set vlan0111 vrf func1_dn
+      - cmd: ip link set vlan0120 vrf func2_up
+      - cmd: ip link set vlan0121 vrf func2_dn
+      - cmd: ip link set vlan0130 vrf func3_up
+      - cmd: ip link set vlan0131 vrf func3_dn
+      - cmd: ip link set vlan0140 vrf func4_up
+      - cmd: ip link set vlan0141 vrf func4_dn
+      - cmd: ip link set to_user vrf user
+      - cmd: ip link set to_inet vrf inet
+      - cmd: ip link set func1_up up
+      - cmd: ip link set func1_dn up
+      - cmd: ip link set func2_up up
+      - cmd: ip link set func2_dn up
+      - cmd: ip link set func3_up up
+      - cmd: ip link set func3_dn up
+      - cmd: ip link set func4_up up
+      - cmd: ip link set func4_dn up
+      - cmd: ip link set user up
+      - cmd: ip link set inet up
+      - cmd: ip link set vlan0110 up
+      - cmd: ip link set vlan0111 up
+      - cmd: ip link set vlan0120 up
+      - cmd: ip link set vlan0121 up
+      - cmd: ip link set vlan0130 up
+      - cmd: ip link set vlan0131 up
+      - cmd: ip link set vlan0140 up
+      - cmd: ip link set vlan0141 up
+      - cmd: ip link set to_user up
+      - cmd: ip link set to_inet up
+      - cmd: ip addr add cafe:110::2/64 dev vlan0110
+      - cmd: ip addr add cafe:120::2/64 dev vlan0120
+      - cmd: ip addr add cafe:130::2/64 dev vlan0130
+      - cmd: ip addr add cafe:140::2/64 dev vlan0140
+      - cmd: ip addr add cafe:111::2/64 dev vlan0111
+      - cmd: ip addr add cafe:121::2/64 dev vlan0121
+      - cmd: ip addr add cafe:131::2/64 dev vlan0131
+      - cmd: ip addr add cafe:141::2/64 dev vlan0141
+      - cmd: ip addr add face::1/64 dev to_user
+      - cmd: ip addr add beaf::1/64 dev to_inet
 
   - name: F1
     cmds:
