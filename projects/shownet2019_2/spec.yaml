@@ -107,12 +107,14 @@ node_configs:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: sh -c "disable_seg6_router.py | sh"
       - cmd: ip addr add face::2/64 dev net0
+      - cmd: ip route add ::/0 via face::1
 
   - name: I1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: sh -c "disable_seg6_router.py | sh"
       - cmd: ip addr add beaf::2/64 dev net0
+      - cmd: ip route add ::/0 via beaf::1
 
   - name: H1
     cmds:
