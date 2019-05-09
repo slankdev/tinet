@@ -1,0 +1,338 @@
+
+postinit:
+  - cmds:
+      - cmd: docker cp $HOME/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF=enp24s0f0
+
+nodes:
+
+  - name: P1
+    image: slankdev/ovs
+    interfaces:
+      - { name: to_R10_net0, type: direct, args: R10#net0 }
+      - { name: to_R11_net0, type: direct, args: R11#net0 }
+      - { name: to_R20_net0, type: direct, args: R20#net0 }
+      - { name: to_R21_net0, type: direct, args: R21#net0 }
+      - { name: to_R30_net0, type: direct, args: R30#net0 }
+      - { name: to_R31_net0, type: direct, args: R31#net0 }
+      - { name: to_R40_net0, type: direct, args: R40#net0 }
+      - { name: to_R41_net0, type: direct, args: R41#net0 }
+      - { name: to_F1_net0 , type: direct, args: F1#net0 }
+      - { name: to_F1_net1 , type: direct, args: F1#net1 }
+      - { name: to_F2_net0 , type: direct, args: F2#net0 }
+      - { name: to_F2_net1 , type: direct, args: F2#net1 }
+      - { name: to_F3_net0 , type: direct, args: F3#net0 }
+      - { name: to_F3_net1 , type: direct, args: F3#net1 }
+      - { name: to_F4_net0 , type: direct, args: F4#net0 }
+      - { name: to_F4_net1 , type: direct, args: F4#net1 }
+      - { name: $ATTACH_NETIF, type: phys }
+
+  - name: R10
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R10_net0 } ]
+  - name: R11
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R11_net0 } ]
+  - name: R20
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R20_net0 } ]
+  - name: R21
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R21_net0 } ]
+  - name: R30
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R30_net0 } ]
+  - name: R31
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R31_net0 } ]
+  - name: R40
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R40_net0 } ]
+  - name: R41
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R41_net0 } ]
+
+  - name: F1
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F1_net0 }
+    - { name: net1, type: direct, args: P1#to_F1_net1 }
+  - name: F2
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F2_net0 }
+    - { name: net1, type: direct, args: P1#to_F2_net1 }
+  - name: F3
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F3_net0 }
+    - { name: net1, type: direct, args: P1#to_F3_net1 }
+  - name: F4
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F4_net0 }
+    - { name: net1, type: direct, args: P1#to_F4_net1 }
+
+
+node_configs:
+
+  - name: P1
+    cmds:
+      - cmd: ip link set $ATTACH_NETIF up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ip link set ovs0 up
+      - cmd: ovs-vsctl add-port ovs0 to_R10_net0 tag=110
+      - cmd: ovs-vsctl add-port ovs0 to_R11_net0 tag=111
+      - cmd: ovs-vsctl add-port ovs0 to_R20_net0 tag=120
+      - cmd: ovs-vsctl add-port ovs0 to_R21_net0 tag=121
+      - cmd: ovs-vsctl add-port ovs0 to_R30_net0 tag=130
+      - cmd: ovs-vsctl add-port ovs0 to_R31_net0 tag=131
+      - cmd: ovs-vsctl add-port ovs0 to_R40_net0 tag=140
+      - cmd: ovs-vsctl add-port ovs0 to_R41_net0 tag=141
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net0 tag=210
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net1 tag=211
+      - cmd: ovs-vsctl add-port ovs0 to_F2_net0 tag=220
+      - cmd: ovs-vsctl add-port ovs0 to_F2_net1 tag=221
+      - cmd: ovs-vsctl add-port ovs0 to_F3_net0 tag=230
+      - cmd: ovs-vsctl add-port ovs0 to_F3_net1 tag=231
+      - cmd: ovs-vsctl add-port ovs0 to_F4_net0 tag=240
+      - cmd: ovs-vsctl add-port ovs0 to_F4_net1 tag=241
+      - cmd: >-
+          ovs-vsctl add-port ovs0 $ATTACH_NETIF
+          trunks=110,120,130,140,111,121,131,141,210,220,230,240,211,221,231,241
+
+  - name: R10
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:110::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.10'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R11
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:111::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.11'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R20
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:120::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.20'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R21
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:121::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.21'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R30
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:130::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.30'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R31
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:131::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.31'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R40
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:140::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.40'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: R41
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:141::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.1.41'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' exit'
+
+  - name: F1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: ip link set dev net1 address 02:00:00:00:00:02
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:210::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:211::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.10'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
+
+  - name: F2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: ip link set dev net1 address 02:00:00:00:00:02
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:220::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:221::2/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' !ipv6 ospf6 bfd'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.20'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
+
+  - name: F3
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
+  - name: F4
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
