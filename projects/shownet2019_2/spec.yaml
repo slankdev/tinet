@@ -39,7 +39,7 @@ nodes:
     interfaces: [ { name: net0, type: direct, args: H1#to_inet } ]
 
   - name: H1
-    image: slankdev/frr
+    image: slankdev/bird
     interfaces:
       - { name: vlan0110, type: direct, args: P1#to_R10_net0 }
       - { name: vlan0111, type: direct, args: P1#to_R11_net0 }
