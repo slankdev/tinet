@@ -1,7 +1,8 @@
 
-# postinit:
-#   - cmds:
-#       - cmd: docker cp $HOME/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
+postinit:
+  - cmds:
+      - cmd: docker cp H1_bird6.conf H1:/root/bird6.conf
+      # - cmd: docker cp $HOME/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
 
 precmd:
   - cmds:
