@@ -1,0 +1,69 @@
+
+filter accept_func1_up { if net ~ [ fc::10/128 ] then accept; else { reject; } }
+filter accept_func2_up { if net ~ [ fc::20/128 ] then accept; else { reject; } }
+filter accept_func3_up { if net ~ [ fc::30/128 ] then accept; else { reject; } }
+filter accept_func4_up { if net ~ [ fc::40/128 ] then accept; else { reject; } }
+
+filter accept_func1_dn { if net ~ [ fc::11/128 ] then accept; else { reject; } }
+filter accept_func2_dn { if net ~ [ fc::21/128 ] then accept; else { reject; } }
+filter accept_func3_dn { if net ~ [ fc::31/128 ] then accept; else { reject; } }
+filter accept_func4_dn { if net ~ [ fc::41/128 ] then accept; else { reject; } }
+
+filter accept_user { if net ~ [ face::/64 ] then accept; else reject; }
+filter accept_inet { if net ~ [ beaf::/64 ] then accept; else reject; }
+
+filter accept_func1 {
+	if net ~ [ fc::10/128 ] then accept;
+	else { if net ~ [ fc::11/128 ] then accept; }
+	reject;
+}
+filter accept_func2 {
+	if net ~ [ fc::20/128 ] then accept;
+	else { if net ~ [ fc::21/128 ] then accept; }
+	reject;
+}
+filter accept_func3 {
+	if net ~ [ fc::30/128 ] then accept;
+	else { if net ~ [ fc::31/128 ] then accept; }
+	reject;
+}
+filter accept_func4 {
+	if net ~ [ fc::40/128 ] then accept;
+	else { if net ~ [ fc::41/128 ] then accept; }
+	reject;
+}
+filter accept_func_up {
+	if net ~ [ fc::10/128 ] then accept;
+	else {
+		if net ~ [ fc::20/128 ] then accept;
+		else {
+			if net ~ [ fc::30/128 ] then accept;
+			else {
+				if net ~ [ fc::40/128 ] then accept;
+			}
+		}
+	}
+	reject;
+}
+filter accept_func_dn {
+	if net ~ [ fc::11/128 ] then accept;
+	else {
+		if net ~ [ fc::21/128 ] then accept;
+		else {
+			if net ~ [ fc::31/128 ] then accept;
+			else {
+				if net ~ [ fc::41/128 ] then accept;
+			}
+		}
+	}
+	reject;
+}
+
+# protocol pipe user_get_func1_dn { table user; peer table func1_dn; export filter reject_all; import filter accept_func_dn; }
+# protocol pipe user_get_func2_dn { table user; peer table func2_dn; export filter reject_all; import filter accept_func_dn; }
+# protocol pipe user_get_func3_dn { table user; peer table func3_dn; export filter reject_all; import filter accept_func_dn; }
+# protocol pipe user_get_func4_dn { table user; peer table func4_dn; export filter reject_all; import filter accept_func_dn; }
+# protocol pipe inet_get_func1_up { table inet; peer table func1_up; export filter reject_all; import filter accept_func_up; }
+# protocol pipe inet_get_func2_up { table inet; peer table func2_up; export filter reject_all; import filter accept_func_up; }
+# protocol pipe inet_get_func3_up { table inet; peer table func3_up; export filter reject_all; import filter accept_func_up; }
+# protocol pipe inet_get_func4_up { table inet; peer table func4_up; export filter reject_all; import filter accept_func_up; }
