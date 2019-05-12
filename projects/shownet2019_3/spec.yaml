@@ -56,7 +56,7 @@ node_configs:
       - cmd: sh -c "disable_seg6_router.py | sh"
       - cmd: ip addr add face::2/64 dev net0
       - cmd: ip route add ::/0 via face::1
-      - cmd: ip route add beaf::2/128 encap seg6 mode inline segs fc::11,fc::21 dev net0
+      - cmd: ip route add beaf::2/128 encap seg6 mode inline segs fc1::1,fc1::2 dev net0
 
   - name: I1
     cmds:
@@ -125,8 +125,8 @@ node_configs:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip link set dev net0 address 02:00:00:00:00:06
       - cmd: ip link set dev net1 address 02:00:00:00:00:06
-      - cmd: ip addr add fc::10/128 dev lo
-      - cmd: ip addr add fc::11/128 dev lo
+      - cmd: ip addr add fc0::1/128 dev lo
+      - cmd: ip addr add fc1::1/128 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -153,8 +153,8 @@ node_configs:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip link set dev net0 address 02:00:00:00:00:06
       - cmd: ip link set dev net1 address 02:00:00:00:00:06
-      - cmd: ip addr add fc::20/128 dev lo
-      - cmd: ip addr add fc::21/128 dev lo
+      - cmd: ip addr add fc0::2/128 dev lo
+      - cmd: ip addr add fc1::2/128 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -181,8 +181,8 @@ node_configs:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip link set dev net0 address 02:00:00:00:00:06
       - cmd: ip link set dev net1 address 02:00:00:00:00:06
-      - cmd: ip addr add fc::30/128 dev lo
-      - cmd: ip addr add fc::31/128 dev lo
+      - cmd: ip addr add fc0::3/128 dev lo
+      - cmd: ip addr add fc1::3/128 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -209,8 +209,8 @@ node_configs:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip link set dev net0 address 02:00:00:00:00:06
       - cmd: ip link set dev net1 address 02:00:00:00:00:06
-      - cmd: ip addr add fc::40/128 dev lo
-      - cmd: ip addr add fc::41/128 dev lo
+      - cmd: ip addr add fc0::4/128 dev lo
+      - cmd: ip addr add fc1::4/128 dev lo
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
