@@ -56,10 +56,14 @@ node_configs:
       - cmd: ip addr add face::2/64 dev net0
       - cmd: ip addr add face::3/64 dev net0
       - cmd: ip addr add face::4/64 dev net0
+      - cmd: ip addr add face::5/64 dev net0
+      - cmd: ip addr add face::6/64 dev net0
       - cmd: ip route add ::/0 via face::1
       - cmd: ip route add beaf::2/128 encap seg6 mode inline segs fc1::1 dev net0
       - cmd: ip route add beaf::3/128 encap seg6 mode inline segs fc1::2 dev net0
       - cmd: ip route add beaf::4/128 encap seg6 mode inline segs fc1::2,fc1::1 dev net0
+      - cmd: ip route add beaf::5/128 encap seg6 mode inline segs fc1::3,fc1::2,fc1::1 dev net0
+      - cmd: ip route add beaf::6/128 encap seg6 mode inline segs fc1::4,fc1::2,fc1::1 dev net0
 
   - name: I1
     cmds:
@@ -67,10 +71,14 @@ node_configs:
       - cmd: ip addr add beaf::2/64 dev net0
       - cmd: ip addr add beaf::3/64 dev net0
       - cmd: ip addr add beaf::4/64 dev net0
+      - cmd: ip addr add beaf::5/64 dev net0
+      - cmd: ip addr add beaf::6/64 dev net0
       - cmd: ip route add ::/0 via beaf::1
       - cmd: ip route add face::2/128 encap seg6 mode inline segs fc0::1 dev net0
       - cmd: ip route add face::3/128 encap seg6 mode inline segs fc0::2 dev net0
       - cmd: ip route add face::4/128 encap seg6 mode inline segs fc0::2,fc0::1 dev net0
+      - cmd: ip route add face::5/128 encap seg6 mode inline segs fc0::3,fc0::2,fc0::1 dev net0
+      - cmd: ip route add face::6/128 encap seg6 mode inline segs fc0::4,fc0::2,fc0::1 dev net0
 
   - name: H1
     cmds:
