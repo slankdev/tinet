@@ -136,8 +136,12 @@ node_configs:
 
       - cmd: ip -6 route add beaf::/64 dev to_inet vrf func1_up
       - cmd: ip -6 route add beaf::/64 dev to_inet vrf func2_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func3_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func4_up
       - cmd: ip -6 route add face::/64 dev to_user vrf func1_dn
       - cmd: ip -6 route add face::/64 dev to_user vrf func2_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func3_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func4_dn
       - cmd: bird6 -c /root/bird6.conf
 
   - name: F1
