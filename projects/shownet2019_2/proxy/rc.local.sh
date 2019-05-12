@@ -20,14 +20,14 @@ sudo ip link add vlan0231 link $IF1 type vlan id 231
 sudo ip link add vlan0240 link $IF1 type vlan id 240
 sudo ip link add vlan0241 link $IF1 type vlan id 241
 
-sudo ip link set vlan0210 address 02:00:00:00:00:01
-sudo ip link set vlan0211 address 02:00:00:00:00:02
-sudo ip link set vlan0220 address 02:00:00:00:00:01
-sudo ip link set vlan0221 address 02:00:00:00:00:02
-sudo ip link set vlan0230 address 02:00:00:00:00:01
-sudo ip link set vlan0231 address 02:00:00:00:00:02
-sudo ip link set vlan0240 address 02:00:00:00:00:01
-sudo ip link set vlan0241 address 02:00:00:00:00:02
+sudo ip link set vlan0210 address 02:00:00:01:00:01
+sudo ip link set vlan0211 address 02:00:00:01:00:02
+sudo ip link set vlan0220 address 02:00:00:01:00:01
+sudo ip link set vlan0221 address 02:00:00:01:00:02
+sudo ip link set vlan0230 address 02:00:00:01:00:01
+sudo ip link set vlan0231 address 02:00:00:01:00:02
+sudo ip link set vlan0240 address 02:00:00:01:00:01
+sudo ip link set vlan0241 address 02:00:00:01:00:02
 
 sudo ip link add func1_up type vrf table 10
 sudo ip link add func1_dn type vrf table 11

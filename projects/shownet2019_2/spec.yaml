@@ -106,16 +106,34 @@ node_configs:
   - name: U1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
       - cmd: ip addr add face::2/64 dev net0
+      - cmd: ip addr add face::3/64 dev net0
+      - cmd: ip addr add face::4/64 dev net0
+      - cmd: ip addr add face::5/64 dev net0
+      - cmd: ip addr add face::6/64 dev net0
       - cmd: ip route add ::/0 via face::1
+
+      - cmd: ip route add beaf::2/128 encap seg6 mode inline segs fc1::1 dev net0
+      - cmd: ip route add beaf::3/128 encap seg6 mode inline segs fc1::2 dev net0
+      - cmd: ip route add beaf::4/128 encap seg6 mode inline segs fc1::2,fc1::1 dev net0
+      - cmd: ip route add beaf::5/128 encap seg6 mode inline segs fc1::3,fc1::2,fc1::1 dev net0
+      - cmd: ip route add beaf::6/128 encap seg6 mode inline segs fc1::4,fc1::2,fc1::1 dev net0
 
   - name: I1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
       - cmd: ip addr add beaf::2/64 dev net0
+      - cmd: ip addr add beaf::3/64 dev net0
+      - cmd: ip addr add beaf::4/64 dev net0
+      - cmd: ip addr add beaf::5/64 dev net0
+      - cmd: ip addr add beaf::6/64 dev net0
       - cmd: ip route add ::/0 via beaf::1
+
+      - cmd: ip route add face::2/128 encap seg6 mode inline segs fc0::1 dev net0
+      - cmd: ip route add face::3/128 encap seg6 mode inline segs fc0::2 dev net0
+      - cmd: ip route add face::4/128 encap seg6 mode inline segs fc0::2,fc0::1 dev net0
+      - cmd: ip route add face::5/128 encap seg6 mode inline segs fc0::3,fc0::2,fc0::1 dev net0
+      - cmd: ip route add face::6/128 encap seg6 mode inline segs fc0::4,fc0::2,fc0::1 dev net0
 
   - name: H1
     cmds:
@@ -171,47 +189,125 @@ node_configs:
       - cmd: ip addr add face::1/64 dev to_user
       - cmd: ip addr add beaf::1/64 dev to_inet
 
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func1_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func2_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func3_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func4_up
+      - cmd: ip -6 route add face::/64 dev to_user vrf func1_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func2_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func3_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func4_dn
+      - cmd: bird6 -c /root/bird6.conf
+
   - name: F1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
-      - cmd: ip link add br0 type bridge
-      - cmd: ip link set net0 master br0
-      - cmd: ip link set net1 master br0
-      - cmd: ip link set br0 up
-      - cmd: ip link set net0 up
-      - cmd: ip link set net1 up
+      - cmd: ip link set dev net0 address 02:00:00:00:00:06
+      - cmd: ip link set dev net1 address 02:00:00:00:00:06
+      - cmd: ip addr add fc0::1/128 dev lo
+      - cmd: ip addr add fc1::1/128 dev lo
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:110::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:111::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.10'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
 
   - name: F2
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
-      - cmd: ip link add br0 type bridge
-      - cmd: ip link set net0 master br0
-      - cmd: ip link set net1 master br0
-      - cmd: ip link set br0 up
-      - cmd: ip link set net0 up
-      - cmd: ip link set net1 up
+      - cmd: ip link set dev net0 address 02:00:00:00:00:06
+      - cmd: ip link set dev net1 address 02:00:00:00:00:06
+      - cmd: ip addr add fc0::2/128 dev lo
+      - cmd: ip addr add fc1::2/128 dev lo
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:120::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:121::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.20'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
 
   - name: F3
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
-      - cmd: ip link add br0 type bridge
-      - cmd: ip link set net0 master br0
-      - cmd: ip link set net1 master br0
-      - cmd: ip link set br0 up
-      - cmd: ip link set net0 up
-      - cmd: ip link set net1 up
+      - cmd: ip link set dev net0 address 02:00:00:00:00:06
+      - cmd: ip link set dev net1 address 02:00:00:00:00:06
+      - cmd: ip addr add fc0::3/128 dev lo
+      - cmd: ip addr add fc1::3/128 dev lo
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:130::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:131::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.30'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
 
   - name: F4
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: sh -c "disable_seg6_router.py | sh"
-      - cmd: ip link add br0 type bridge
-      - cmd: ip link set net0 master br0
-      - cmd: ip link set net1 master br0
-      - cmd: ip link set br0 up
-      - cmd: ip link set net0 up
-      - cmd: ip link set net1 up
+      - cmd: ip link set dev net0 address 02:00:00:00:00:06
+      - cmd: ip link set dev net1 address 02:00:00:00:00:06
+      - cmd: ip addr add fc0::4/128 dev lo
+      - cmd: ip addr add fc1::4/128 dev lo
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ipv6 address cafe:140::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ipv6 address cafe:141::1/64'
+          -c ' ipv6 ospf6 network point-to-point'
+          -c ' ipv6 ospf6 dead-interval 40'
+          -c ' ipv6 ospf6 hello-interval 10'
+          -c ' exit'
+          -c 'router ospf6'
+          -c ' ospf6 router-id 10.255.2.40'
+          -c ' interface net0 area 0.0.0.0'
+          -c ' interface net1 area 0.0.0.0'
+          -c ' exit'
 
