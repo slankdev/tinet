@@ -54,15 +54,23 @@ node_configs:
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip addr add face::2/64 dev net0
+      - cmd: ip addr add face::3/64 dev net0
+      - cmd: ip addr add face::4/64 dev net0
       - cmd: ip route add ::/0 via face::1
       - cmd: ip route add beaf::2/128 encap seg6 mode inline segs fc1::1 dev net0
+      - cmd: ip route add beaf::3/128 encap seg6 mode inline segs fc1::2 dev net0
+      - cmd: ip route add beaf::4/128 encap seg6 mode inline segs fc1::2,fc1::1 dev net0
 
   - name: I1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
       - cmd: ip addr add beaf::2/64 dev net0
+      - cmd: ip addr add beaf::3/64 dev net0
+      - cmd: ip addr add beaf::4/64 dev net0
       - cmd: ip route add ::/0 via beaf::1
       - cmd: ip route add face::2/128 encap seg6 mode inline segs fc0::1 dev net0
+      - cmd: ip route add face::3/128 encap seg6 mode inline segs fc0::2 dev net0
+      - cmd: ip route add face::4/128 encap seg6 mode inline segs fc0::2,fc0::1 dev net0
 
   - name: H1
     cmds:
@@ -119,7 +127,9 @@ node_configs:
       - cmd: ip addr add beaf::1/64 dev to_inet
 
       - cmd: ip -6 route add beaf::/64 dev to_inet vrf func1_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func2_up
       - cmd: ip -6 route add face::/64 dev to_user vrf func1_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func2_dn
       - cmd: bird6 -c /root/bird6.conf
 
   - name: F1
