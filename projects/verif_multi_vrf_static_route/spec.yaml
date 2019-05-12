@@ -1,0 +1,98 @@
+
+postinit:
+  - cmds:
+      - cmd: docker cp $HOME/dotfiles/bin/ovs-port.py P1:/usr/bin/ovs-port.py
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF=enp24s0f0
+
+nodes:
+
+  - name: P1
+    image: slankdev/ovs
+    interfaces:
+      - { name: to_R10_net0, type: direct, args: R10#net0 }
+      - { name: to_R11_net0, type: direct, args: R11#net0 }
+      - { name: to_F1_net0 , type: direct, args: F1#net0 }
+      - { name: to_F1_net1 , type: direct, args: F1#net1 }
+      - { name: $ATTACH_NETIF, type: phys }
+
+  - name: R10
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R10_net0 } ]
+  - name: R11
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: P1#to_R11_net0 } ]
+
+  - name: F1
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F1_net0 }
+    - { name: net1, type: direct, args: P1#to_F1_net1 }
+
+node_configs:
+
+  - name: P1
+    cmds:
+      - cmd: ip link set $ATTACH_NETIF up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ip link set ovs0 up
+      - cmd: ovs-vsctl add-port ovs0 to_R10_net0 tag=110
+      - cmd: ovs-vsctl add-port ovs0 to_R11_net0 tag=111
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net0 tag=210
+      - cmd: ovs-vsctl add-port ovs0 to_F1_net1 tag=211
+      - cmd: >-
+          ovs-vsctl add-port ovs0 $ATTACH_NETIF
+          trunks=110,111,210,211
+
+  - name: R10
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ip address 10.110.0.2/24'
+          -c ' ipv6 address cafe:110::2/64'
+          -c ' exit'
+          -c 'ipv6 route ::/0 cafe:110::1'
+          -c 'ip route 0.0.0.0/0 10.110.0.1'
+
+  - name: R11
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: /usr/lib/frr/frr start
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ip address 10.111.0.2/24'
+          -c ' ipv6 address cafe:111::2/64'
+          -c ' exit'
+          -c 'ip route 0.0.0.0/0 10.111.0.1'
+          -c 'ipv6 route ::/0 cafe:111::1'
+
+  - name: F1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link set dev net0 address 02:00:00:00:00:02
+      - cmd: ip link set dev net1 address 02:00:00:00:00:02
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'int net0'
+          -c ' ip address 10.210.0.2/24'
+          -c ' ipv6 address cafe:210::2/64'
+          -c ' exit'
+          -c 'int net1'
+          -c ' ip address 10.211.0.2/24'
+          -c ' ipv6 address cafe:211::2/64'
+          -c ' exit'
+          -c 'ipv6 route cafe:110::/64 cafe:210::1'
+          -c 'ipv6 route cafe:111::/64 cafe:211::1'
+          -c 'ip route 10.110.0.0/24 10.210.0.1'
+          -c 'ip route 10.111.0.0/24 10.211.0.1'
+
