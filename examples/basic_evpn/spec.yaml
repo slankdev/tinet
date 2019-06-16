@@ -74,6 +74,14 @@ node_configs:
           -c "  neighbor 10.255.0.2 update-source lo"
           -c "  neighbor 10.255.0.3 remote-as internal"
           -c "  neighbor 10.255.0.3 update-source lo"
+          -c "  address-family ipv4 unicast"
+          -c "   neighbor 10.255.0.1 activate"
+          -c "   neighbor 10.255.0.1 route-reflector-client"
+          -c "   neighbor 10.255.0.2 activate"
+          -c "   neighbor 10.255.0.2 route-reflector-client"
+          -c "   neighbor 10.255.0.3 activate"
+          -c "   neighbor 10.255.0.3 route-reflector-client"
+          -c "   exit-address-family"
           -c "  address-family l2vpn evpn"
           -c "   neighbor 10.255.0.1 activate"
           -c "   neighbor 10.255.0.1 route-reflector-client"
@@ -82,22 +90,27 @@ node_configs:
           -c "   neighbor 10.255.0.3 activate"
           -c "   neighbor 10.255.0.3 route-reflector-client"
           -c "   advertise-all-vni"
-          -c "  exit-address-family"
+          -c "   exit-address-family"
 
   - name: R1
     cmds:
-      # - cmd: ip link add br0 type bridge
-      # - cmd: ip link set dev br0 up
-      # - cmd: ip link set dev net1 master br0
-      # - cmd: ip link set dev net1 promisc on
-      # - cmd: ip link set dev net1 up
-      # - cmd: ip addr add 192.168.0.1/24 dev br0
-      # - cmd: >-
-      #     ip link add vxlan100 type vxlan id 100
-      #     dstport 4789 local 1.1.1.1
-      # - cmd: ip link set dev vxlan100 up
-      # - cmd: ip link set dev vxlan100 promisc on
-      # - cmd: ip link set dev vxlan100 master br0
+
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set dev br0 up
+      - cmd: ip addr add 10.100.0.1/24 dev br0
+      - cmd: >-
+          ip link add vxlan100 type vxlan id 100
+          dstport 4789 local 10.255.0.1
+
+      - cmd: ip link set dev net1 master br0
+      - cmd: ip link set dev net1 promisc on
+      - cmd: ip link set dev net1 up
+      - cmd: ip link set dev net2 master br0
+      - cmd: ip link set dev net2 promisc on
+      - cmd: ip link set dev net2 up
+      - cmd: ip link set dev vxlan100 master br0
+      - cmd: ip link set dev vxlan100 promisc on
+      - cmd: ip link set dev vxlan100 up
 
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -118,22 +131,27 @@ node_configs:
           -c "  address-family l2vpn evpn"
           -c "   neighbor 10.255.0.254 activate"
           -c "   advertise-all-vni"
-          -c "  exit-address-family"
+          -c "   exit-address-family"
 
   - name: R2
     cmds:
-      # - cmd: ip link add br0 type bridge
-      # - cmd: ip link set dev br0 up
-      # - cmd: ip link set dev net1 master br0
-      # - cmd: ip link set dev net1 promisc on
-      # - cmd: ip link set dev net1 up
-      # - cmd: ip addr add 192.168.0.10/24 dev br0
-      # - cmd: >-
-      #     ip link add vxlan100 type vxlan id 100
-      #     dstport 4789 local 2.2.2.2
-      # - cmd: ip link set dev vxlan100 up
-      # - cmd: ip link set dev vxlan100 promisc on
-      # - cmd: ip link set dev vxlan100 master br0
+
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set dev br0 up
+      - cmd: ip addr add 10.100.0.2/24 dev br0
+      - cmd: >-
+          ip link add vxlan100 type vxlan id 100
+          dstport 4789 local 10.255.0.2
+
+      - cmd: ip link set dev net1 master br0
+      - cmd: ip link set dev net1 promisc on
+      - cmd: ip link set dev net1 up
+      - cmd: ip link set dev net2 master br0
+      - cmd: ip link set dev net2 promisc on
+      - cmd: ip link set dev net2 up
+      - cmd: ip link set dev vxlan100 master br0
+      - cmd: ip link set dev vxlan100 promisc on
+      - cmd: ip link set dev vxlan100 up
 
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -178,6 +196,14 @@ node_configs:
           -c "   neighbor 10.255.0.254 activate"
           -c "   advertise-all-vni"
           -c "  exit-address-family"
+
+  - name: C1
+    cmds:
+      - cmd: ip addr add 10.100.0.10/24 dev net0
+
+  - name: C3
+    cmds:
+      - cmd: ip addr add 10.100.0.30/24 dev net0
 
 # test:
 #   - cmds:
