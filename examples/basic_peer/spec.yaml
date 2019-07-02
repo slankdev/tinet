@@ -1,11 +1,17 @@
 
+precmd:
+  - cmds:
+      - cmd: export IMAGE=slankdev/frr
+#       - cmd: export IMAGE=slankdev/gobgp
+#       - cmd: export IMAGE=slankdev/ubuntu:18.04
+
 nodes:
   - name: R0
-    image: slankdev/ubuntu:18.04
+    image: $IMAGE
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
   - name: R1
-    image: slankdev/ubuntu:18.04
+    image: $IMAGE
     interfaces:
       - { name: net0, type: direct, args: R0#net0 }
 
@@ -13,15 +19,17 @@ node_configs:
   - name: R0
     cmds:
       - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: /usr/lib/frr/frr start
       - cmd: ip addr add cafe::1/64 dev net0
   - name: R1
     cmds:
       - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: /usr/lib/frr/frr start
       - cmd: ip addr add cafe::2/64 dev net0
 
 test:
   - name: p2p
     cmds:
-    - cmd: docker exec R0 ping -c2 10.0.0.2
+    - cmd: echo slankdev slankdev
     - cmd: echo slankdev slankdev
 
