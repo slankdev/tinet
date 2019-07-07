@@ -57,3 +57,5 @@ RR(config)# ip route 10.0.0.2/32 192.2.0.1     // RTBH on
 RR(config)# no ip route 10.0.0.2/32 192.2.0.1  // RTBH off
 ```
 
+references
+- http://irs.ietf.to/past/docs_20071011/20071011-irs14-rtbh.pdf page4 discribe fine.
