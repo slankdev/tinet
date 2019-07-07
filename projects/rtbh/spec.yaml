@@ -44,12 +44,21 @@ node_configs:
       - cmd: >-
           vtysh -c "conf t"
           -c "router bgp 65001"
-          -c "bgp router-id 30.0.0.1"
-          -c "neighbor 30.0.0.2 remote-as 65002"
+          -c " bgp router-id 30.0.0.1"
+          -c " neighbor 30.0.0.2 remote-as 65002"
+          -c " bgp router-id 10.254.0.2"
+          -c " neighbor 10.254.0.2 remote-as 65001"
+          -c " network 10.0.0.0/8"
 
   - name: RR
     cmds:
       - cmd: ip addr add 10.254.0.2/24 dev net0
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c "conf t"
+          -c "router bgp 65001"
+          -c " bgp router-id 10.254.0.1"
+          -c " neighbor 10.254.0.1 remote-as 65001"
 
   - name: C1
     cmds:
@@ -64,8 +73,9 @@ node_configs:
       - cmd: >-
           vtysh -c "conf t"
           -c "router bgp 65002"
-          -c "bgp router-id 30.0.0.2"
-          -c "neighbor 30.0.0.1 remote-as 65001"
+          -c " bgp router-id 30.0.0.2"
+          -c " neighbor 30.0.0.1 remote-as 65001"
+          -c " network 20.0.0.0/8"
 
   - name: C2
     cmds:
