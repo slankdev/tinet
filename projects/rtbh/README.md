@@ -1,5 +1,5 @@
 
-# RTBH
+# RTBH: Remotely-Triggered Black Hole Routing
 
 ![](./topo.png)
 
