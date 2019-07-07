@@ -54,6 +54,8 @@ node_configs:
           -c " bgp router-id 10.254.0.2"
           -c " neighbor 10.254.0.2 remote-as 65001"
           -c " network 10.0.0.0/8"
+          -c " exit"
+          -c "ip route 192.2.0.1/32 blackhole"
 
   - name: RR
     cmds:
@@ -64,6 +66,11 @@ node_configs:
           -c "router bgp 65001"
           -c " bgp router-id 10.254.0.1"
           -c " neighbor 10.254.0.1 remote-as 65001"
+          -c " address-family ipv4 unicast"
+          -c "  redistribute static"
+          -c "  exit-address-family"
+          -c " exit"
+          -c "ip route 192.2.0.1/32 blackhole"
 
   - name: C1
     cmds:
@@ -81,6 +88,8 @@ node_configs:
           -c " bgp router-id 30.0.0.2"
           -c " neighbor 30.0.0.1 remote-as 65001"
           -c " network 20.0.0.0/8"
+          -c " exit"
+          -c "ip route 192.2.0.1/32 blackhole"
 
   - name: C2
     cmds:
