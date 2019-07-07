@@ -17,7 +17,7 @@ host# docker exec -it C2 ping 10.0.0.2 -i0.1
 
 check traffic
 ```
-R1# watch -i0.1 ip -s link
+R1# watch -n0.1 ip -s link
 
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
