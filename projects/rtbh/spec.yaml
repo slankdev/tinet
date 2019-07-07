@@ -2,6 +2,7 @@
 nodes:
   ## AS65001
   - name: R1
+    type: docker
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
@@ -10,18 +11,21 @@ nodes:
 
   ## AS65001
   - name: RR
+    type: docker
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R1#net2 }
 
   ## AS65001
   - name: C1
+    type: docker
     image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, args: R1#net1 }
 
   ## AS65002
   - name: R2
+    type: docker
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
@@ -29,6 +33,7 @@ nodes:
 
   ## AS65002
   - name: C2
+    type: docker
     image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, args: R2#net1 }
