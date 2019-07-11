@@ -1,0 +1,337 @@
+
+postinit:
+  - cmds:
+      - cmd: docker cp H1_bird6.conf H1:/root/bird6.conf
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF=enp24s0f0
+
+nodes:
+
+  - name: P1
+    image: slankdev/ovs
+    interfaces:
+      - { name: to_H1_vlan0701, type: direct, args: H1#vlan0701 }
+      - { name: to_H1_vlan0721, type: direct, args: H1#vlan0721 }
+      - { name: to_H1_vlan0702, type: direct, args: H1#vlan0702 }
+      - { name: to_H1_vlan0722, type: direct, args: H1#vlan0722 }
+      - { name: to_H1_vlan0703, type: direct, args: H1#vlan0703 }
+      - { name: to_H1_vlan0723, type: direct, args: H1#vlan0723 }
+      - { name: to_H1_vlan0704, type: direct, args: H1#vlan0704 }
+      - { name: to_H1_vlan0724, type: direct, args: H1#vlan0724 }
+      - { name: to_F1_net0 , type: direct, args: F1#net0 }
+      - { name: to_F1_net1 , type: direct, args: F1#net1 }
+      - { name: to_F2_net0 , type: direct, args: F2#net0 }
+      - { name: to_F2_net1 , type: direct, args: F2#net1 }
+      - { name: to_F3_net0 , type: direct, args: F3#net0 }
+      - { name: to_F3_net1 , type: direct, args: F3#net1 }
+      - { name: to_F4_net0 , type: direct, args: F4#net0 }
+      - { name: to_F4_net1 , type: direct, args: F4#net1 }
+      - { name: $ATTACH_NETIF, type: phys }
+
+  - name: U1
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: H1#to_user } ]
+
+  - name: I1
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: H1#to_inet } ]
+
+  - name: H1
+    image: slankdev/bird
+    interfaces:
+      - { name: vlan0701, type: direct, args: P1#to_H1_vlan0701 }
+      - { name: vlan0721, type: direct, args: P1#to_H1_vlan0721 }
+      - { name: vlan0702, type: direct, args: P1#to_H1_vlan0702 }
+      - { name: vlan0722, type: direct, args: P1#to_H1_vlan0722 }
+      - { name: vlan0703, type: direct, args: P1#to_H1_vlan0703 }
+      - { name: vlan0723, type: direct, args: P1#to_H1_vlan0723 }
+      - { name: vlan0704, type: direct, args: P1#to_H1_vlan0704 }
+      - { name: vlan0724, type: direct, args: P1#to_H1_vlan0724 }
+      - { name: to_user, type: direct, args: U1#net0 }
+      - { name: to_inet, type: direct, args: I1#net0 }
+
+  - name: F1
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F1_net0 }
+    - { name: net1, type: direct, args: P1#to_F1_net1 }
+  - name: F2
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F2_net0 }
+    - { name: net1, type: direct, args: P1#to_F2_net1 }
+  - name: F3
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F3_net0 }
+    - { name: net1, type: direct, args: P1#to_F3_net1 }
+  - name: F4
+    image: slankdev/frr
+    interfaces:
+    - { name: net0, type: direct, args: P1#to_F4_net0 }
+    - { name: net1, type: direct, args: P1#to_F4_net1 }
+
+
+node_configs:
+
+  - name: P1
+    cmds:
+
+      - cmd: ip link add br0 type bridge vlan_filtering 1
+      - cmd: ip link set br0 up
+
+      - cmd: ip link set $ATTACH_NETIF master br0
+      - cmd: ip link set to_H1_vlan0701 master br0
+      - cmd: ip link set to_H1_vlan0721 master br0
+      - cmd: ip link set to_H1_vlan0702 master br0
+      - cmd: ip link set to_H1_vlan0722 master br0
+      - cmd: ip link set to_H1_vlan0703 master br0
+      - cmd: ip link set to_H1_vlan0723 master br0
+      - cmd: ip link set to_H1_vlan0704 master br0
+      - cmd: ip link set to_H1_vlan0724 master br0
+      - cmd: ip link set to_F1_net0 master br0
+      - cmd: ip link set to_F1_net1 master br0
+      - cmd: ip link set to_F2_net0 master br0
+      - cmd: ip link set to_F2_net1 master br0
+      - cmd: ip link set to_F3_net0 master br0
+      - cmd: ip link set to_F3_net1 master br0
+      - cmd: ip link set to_F4_net0 master br0
+      - cmd: ip link set to_F4_net1 master br0
+
+      - cmd: ip link set $ATTACH_NETIF up
+      - cmd: ip link set to_H1_vlan0701 up
+      - cmd: ip link set to_H1_vlan0721 up
+      - cmd: ip link set to_H1_vlan0702 up
+      - cmd: ip link set to_H1_vlan0722 up
+      - cmd: ip link set to_H1_vlan0703 up
+      - cmd: ip link set to_H1_vlan0723 up
+      - cmd: ip link set to_H1_vlan0704 up
+      - cmd: ip link set to_H1_vlan0724 up
+      - cmd: ip link set to_F1_net0 up
+      - cmd: ip link set to_F1_net1 up
+      - cmd: ip link set to_F2_net0 up
+      - cmd: ip link set to_F2_net1 up
+      - cmd: ip link set to_F3_net0 up
+      - cmd: ip link set to_F3_net1 up
+      - cmd: ip link set to_F4_net0 up
+      - cmd: ip link set to_F4_net1 up
+
+      - cmd: bridge vlan add vid 701 dev to_H1_vlan0701 pvid 701 untagged
+      - cmd: bridge vlan add vid 721 dev to_H1_vlan0721 pvid 721 untagged
+      - cmd: bridge vlan add vid 702 dev to_H1_vlan0702 pvid 702 untagged
+      - cmd: bridge vlan add vid 722 dev to_H1_vlan0722 pvid 722 untagged
+      - cmd: bridge vlan add vid 703 dev to_H1_vlan0703 pvid 703 untagged
+      - cmd: bridge vlan add vid 723 dev to_H1_vlan0723 pvid 723 untagged
+      - cmd: bridge vlan add vid 704 dev to_H1_vlan0704 pvid 704 untagged
+      - cmd: bridge vlan add vid 724 dev to_H1_vlan0724 pvid 724 untagged
+      - cmd: bridge vlan add vid 601 dev to_F1_net0     pvid 601 untagged
+      - cmd: bridge vlan add vid 621 dev to_F1_net1     pvid 621 untagged
+      - cmd: bridge vlan add vid 602 dev to_F2_net0     pvid 602 untagged
+      - cmd: bridge vlan add vid 622 dev to_F2_net1     pvid 622 untagged
+      - cmd: bridge vlan add vid 603 dev to_F3_net0     pvid 603 untagged
+      - cmd: bridge vlan add vid 623 dev to_F3_net1     pvid 623 untagged
+      - cmd: bridge vlan add vid 604 dev to_F4_net0     pvid 604 untagged
+      - cmd: bridge vlan add vid 624 dev to_F4_net1     pvid 624 untagged
+
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0701
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0721
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0702
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0722
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0703
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0723
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0704
+      - cmd: bridge vlan del vid 1 dev to_H1_vlan0724
+      - cmd: bridge vlan del vid 1 dev to_F1_net0
+      - cmd: bridge vlan del vid 1 dev to_F1_net1
+      - cmd: bridge vlan del vid 1 dev to_F2_net0
+      - cmd: bridge vlan del vid 1 dev to_F2_net1
+      - cmd: bridge vlan del vid 1 dev to_F3_net0
+      - cmd: bridge vlan del vid 1 dev to_F3_net1
+      - cmd: bridge vlan del vid 1 dev to_F4_net0
+      - cmd: bridge vlan del vid 1 dev to_F4_net1
+
+      - cmd: bridge vlan add vid 601 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 621 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 602 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 622 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 603 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 623 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 604 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 624 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 701 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 721 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 702 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 722 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 703 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 723 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 704 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 724 dev $ATTACH_NETIF
+
+  - name: U1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add face::2/64 dev net0
+      - cmd: ip route add ::/0 via face::1
+
+      - cmd: ip addr add face::10/64 dev net0
+      - cmd: ip addr add face::20/64 dev net0
+      - cmd: ip addr add face::30/64 dev net0
+      - cmd: ip addr add face::40/64 dev net0
+      - cmd: ip route add beaf::10/128 encap seg6 mode inline segs fc1::1 dev net0
+      - cmd: ip route add beaf::20/128 encap seg6 mode inline segs fc1::2 dev net0
+      - cmd: ip route add beaf::30/128 encap seg6 mode inline segs fc1::3 dev net0
+      - cmd: ip route add beaf::40/128 encap seg6 mode inline segs fc1::4 dev net0
+
+      - cmd: ip addr add face::110/64 dev net0
+      - cmd: ip addr add face::120/64 dev net0
+      - cmd: ip addr add face::130/64 dev net0
+      - cmd: ip route add beaf::110/128 encap seg6 mode inline segs fc1::4,fc1::3 dev net0
+      - cmd: ip route add beaf::120/128 encap seg6 mode inline segs fc1::2,fc1::1 dev net0
+      - cmd: ip route add beaf::130/128 encap seg6 mode inline segs fc1::3,fc1::1 dev net0
+
+  - name: I1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add beaf::2/64 dev net0
+      - cmd: ip route add ::/0 via beaf::1
+
+      - cmd: ip addr add beaf::10/64 dev net0
+      - cmd: ip addr add beaf::20/64 dev net0
+      - cmd: ip addr add beaf::30/64 dev net0
+      - cmd: ip addr add beaf::40/64 dev net0
+      - cmd: ip route add face::10/128 encap seg6 mode inline segs fc0::1 dev net0
+      - cmd: ip route add face::20/128 encap seg6 mode inline segs fc0::2 dev net0
+      - cmd: ip route add face::30/128 encap seg6 mode inline segs fc0::3 dev net0
+      - cmd: ip route add face::40/128 encap seg6 mode inline segs fc0::4 dev net0
+
+      - cmd: ip addr add beaf::110/64 dev net0
+      - cmd: ip addr add beaf::120/64 dev net0
+      - cmd: ip addr add beaf::130/64 dev net0
+      - cmd: ip route add face::110/128 encap seg6 mode inline segs fc0::3,fc0::4 dev net0
+      - cmd: ip route add face::120/128 encap seg6 mode inline segs fc0::1,fc0::2 dev net0
+      - cmd: ip route add face::130/128 encap seg6 mode inline segs fc0::1,fc0::3 dev net0
+
+  - name: H1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+
+      ## Create VRFs
+      - cmd: ip link add func1_up type vrf table 10
+      - cmd: ip link add func1_dn type vrf table 11
+      - cmd: ip link add func2_up type vrf table 20
+      - cmd: ip link add func2_dn type vrf table 21
+      - cmd: ip link add func3_up type vrf table 30
+      - cmd: ip link add func3_dn type vrf table 31
+      - cmd: ip link add func4_up type vrf table 40
+      - cmd: ip link add func4_dn type vrf table 41
+      - cmd: ip link add inet type vrf table 90
+      - cmd: ip link add user type vrf table 91
+
+      ## Link up VRF-link
+      - cmd: ip link set func1_up up
+      - cmd: ip link set func1_dn up
+      - cmd: ip link set func2_up up
+      - cmd: ip link set func2_dn up
+      - cmd: ip link set func3_up up
+      - cmd: ip link set func3_dn up
+      - cmd: ip link set func4_up up
+      - cmd: ip link set func4_dn up
+      - cmd: ip link set user up
+      - cmd: ip link set inet up
+
+      ## Set Datapath-link on VRF
+      - cmd: ip link set vlan0701 vrf func1_up
+      - cmd: ip link set vlan0721 vrf func1_dn
+      - cmd: ip link set vlan0702 vrf func2_up
+      - cmd: ip link set vlan0722 vrf func2_dn
+      - cmd: ip link set vlan0703 vrf func3_up
+      - cmd: ip link set vlan0723 vrf func3_dn
+      - cmd: ip link set vlan0704 vrf func4_up
+      - cmd: ip link set vlan0724 vrf func4_dn
+      - cmd: ip link set to_user vrf user
+      - cmd: ip link set to_inet vrf inet
+
+      ## Link up Datapath-link
+      - cmd: ip link set vlan0701 up
+      - cmd: ip link set vlan0721 up
+      - cmd: ip link set vlan0702 up
+      - cmd: ip link set vlan0722 up
+      - cmd: ip link set vlan0703 up
+      - cmd: ip link set vlan0723 up
+      - cmd: ip link set vlan0704 up
+      - cmd: ip link set vlan0724 up
+      - cmd: ip link set to_user up
+      - cmd: ip link set to_inet up
+
+      ## Set interface address
+      - cmd: ip addr add 2001:3e8:0:701::12/64 dev vlan0701
+      - cmd: ip addr add 2001:3e8:0:721::12/64 dev vlan0721
+      - cmd: ip addr add 2001:3e8:0:702::12/64 dev vlan0702
+      - cmd: ip addr add 2001:3e8:0:722::12/64 dev vlan0722
+      - cmd: ip addr add 2001:3e8:0:703::12/64 dev vlan0703
+      - cmd: ip addr add 2001:3e8:0:723::12/64 dev vlan0723
+      - cmd: ip addr add 2001:3e8:0:704::12/64 dev vlan0704
+      - cmd: ip addr add 2001:3e8:0:724::12/64 dev vlan0724
+      - cmd: ip addr add face::1/64 dev to_user
+      - cmd: ip addr add beaf::1/64 dev to_inet
+
+      ## FOLLOWING is configuration about Route-Leaking for ServiceChain.
+      ## Very immportant but very complex... :(
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func1_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func2_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func3_up
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf func4_up
+      - cmd: ip -6 route add face::/64 dev to_user vrf func1_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func2_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func3_dn
+      - cmd: ip -6 route add face::/64 dev to_user vrf func4_dn
+      - cmd: ip -6 route add beaf::/64 dev to_inet vrf user
+      - cmd: ip -6 route add face::/64 dev to_user vrf inet
+      - cmd: bird6 -c /root/bird6.conf
+
+  - name: F1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
+  - name: F2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
+  - name: F3
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
+  - name: F4
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+
