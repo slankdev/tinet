@@ -1,0 +1,66 @@
+
+# precmd:
+#   - cmds:
+#       - cmd: export IMAGE=slankdev/frr
+#       - cmd: export IMAGE=slankdev/gobgp
+#       - cmd: export IMAGE=slankdev/ubuntu:18.04
+
+postinit:
+  - cmds:
+      - cmd: docker cp gobgpd.conf RR:/root/gobgpd.conf
+
+nodes:
+  - name: R1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: RR#net0 }
+  - name: RR
+    image: slankdev/gobgp
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: ip link add dum0 type dummy
+      - cmd: ip link add dum1 type dummy
+      - cmd: ip link add dum2 type dummy
+      - cmd: ip link add dum3 type dummy
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c "conf t"
+          -c "int dum0"
+          -c " ip addr 10.10.0.1/24"
+          -c " no shutdown"
+          -c " exit"
+          -c "int dum1"
+          -c " ip addr 10.11.0.1/24"
+          -c " no shutdown"
+          -c " exit"
+          -c "int dum2"
+          -c " ip addr 10.12.0.1/24"
+          -c " no shutdown"
+          -c " exit"
+          -c "int dum3"
+          -c " ip addr 10.13.0.1/24"
+          -c " no shutdown"
+          -c " exit"
+          -c "int net0"
+          -c " ip addr 10.0.0.1/24"
+          -c " no shutdown"
+          -c " exit"
+          -c "router bgp 100"
+          -c " bgp router-id 10.255.0.1"
+          -c " neighbor 10.0.0.2 remote-as 200"
+          -c " exit"
+  - name: RR
+    cmds:
+      - cmd: ip addr add 10.0.0.2/24 dev net0
+      - cmd: nohup gobgpd -f /root/gobgpd.conf &
+
+test:
+  - name: p2p
+    cmds:
+    - cmd: echo slankdev slankdev
+    - cmd: echo slankdev slankdev
+
