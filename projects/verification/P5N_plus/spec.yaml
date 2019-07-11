@@ -1,0 +1,147 @@
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF0=ens8f0
+      - cmd: export ATTACH_NETIF1=ens8f1
+      - cmd: export ATTACH_NETIF2=ens8f2
+      - cmd: export ATTACH_NETIF3=ens8f3
+      - cmd: export ATTACH_NETIF4=ens8f4
+      - cmd: export ATTACH_NETIF5=ens8f5
+      - cmd: export ATTACH_NETIF6=ens8f6
+      - cmd: export ATTACH_NETIF7=ens8f7
+
+nodes:
+  - name: R1
+    image: slankdev/ovs
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R2#net1 }
+      - { name: net2, type: direct, args: R3#net0 }
+      - { name: net3, type: direct, args: R3#net1 }
+      - { name: net4, type: direct, args: R4#net0 }
+      - { name: net5, type: direct, args: R4#net1 }
+      - { name: net6, type: direct, args: R5#net0 }
+      - { name: net7, type: direct, args: R5#net1 }
+      - { name: $ATTACH_NETIF0, type: phys }
+      - { name: $ATTACH_NETIF1, type: phys }
+      - { name: $ATTACH_NETIF2, type: phys }
+      - { name: $ATTACH_NETIF3, type: phys }
+      - { name: $ATTACH_NETIF4, type: phys }
+      - { name: $ATTACH_NETIF5, type: phys }
+      - { name: $ATTACH_NETIF6, type: phys }
+      - { name: $ATTACH_NETIF7, type: phys }
+
+  - name: R2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+      - { name: net1, type: direct, args: R1#net1 }
+      - { name: net2, type: direct, args: C1#net0 }
+  - name: R3
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net2 }
+      - { name: net1, type: direct, args: R1#net3 }
+      - { name: net2, type: direct, args: C2#net0 }
+  - name: R4
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net4 }
+      - { name: net1, type: direct, args: R1#net5 }
+  - name: R5
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net6 }
+      - { name: net1, type: direct, args: R1#net7 }
+
+  - name: C1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R2#net2 }
+  - name: C2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R3#net2 }
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: ip link set $ATTACH_NETIF0 up
+      - cmd: ip link set $ATTACH_NETIF1 up
+      - cmd: ip link set $ATTACH_NETIF2 up
+      - cmd: ip link set $ATTACH_NETIF3 up
+      - cmd: ip link set $ATTACH_NETIF4 up
+      - cmd: ip link set $ATTACH_NETIF5 up
+      - cmd: ip link set $ATTACH_NETIF6 up
+      - cmd: ip link set $ATTACH_NETIF7 up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ip link set ovs0 up
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=100
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=101
+      - cmd: ovs-vsctl add-port ovs0 net2 tag=102
+      - cmd: ovs-vsctl add-port ovs0 net3 tag=103
+      - cmd: ovs-vsctl add-port ovs0 net4 tag=104
+      - cmd: ovs-vsctl add-port ovs0 net5 tag=105
+      - cmd: ovs-vsctl add-port ovs0 net6 tag=106
+      - cmd: ovs-vsctl add-port ovs0 net7 tag=107
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF0 tag=100
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF1 tag=101
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF2 tag=102
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF3 tag=103
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF4 tag=104
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF5 tag=105
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF6 tag=106
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF7 tag=107
+
+  - name: R2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.20.0.1/24 dev net2
+      - cmd: ip -6 addr add 2001:10::2/64 dev net0
+      - cmd: ip -6 route add default via 2001:10::1
+      - cmd: ip -6 route add 2001:10::10 encap seg6local action End.DX4 nh4 10.20.0.2 dev net2
+      - cmd: ip -6 route add 2001:10::20 encap seg6local action End.DX4 nh4 10.20.0.3 dev net2
+      - cmd: ip -4 route add 10.30.0.2/32 encap seg6 mode encap segs cafe:31::10,2001:11::10 dev net0
+      - cmd: ip -4 route add 10.30.0.3/32 encap seg6 mode encap segs cafe:41::10,2001:11::20 dev net0
+  - name: R3
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.30.0.1/24 dev net2
+      - cmd: ip -6 addr add 2001:11::2/64 dev net0
+      - cmd: ip -6 route add default via 2001:11::1
+      - cmd: ip -6 route add 2001:11::10 encap seg6local action End.DX4 nh4 10.30.0.2 dev net2
+      - cmd: ip -6 route add 2001:11::20 encap seg6local action End.DX4 nh4 10.30.0.3 dev net2
+      - cmd: ip -4 route add 10.20.0.2/32 encap seg6 mode encap segs cafe:30::10,2001:10::10 dev net0
+      - cmd: ip -4 route add 10.20.0.3/32 encap seg6 mode encap segs cafe:40::10,2001:10::20 dev net0
+
+  - name: R4
+    cmds:
+      - cmd: ip link add br0 type bridge
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set br0 up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+  - name: R5
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: sh -c "disable_seg6_router.py | sh"
+      - cmd: ip addr add 30.0.0.2/24 dev net0
+      - cmd: ip addr add 30.1.0.2/24 dev net1
+      - cmd: ip route add 10.30.0.0/24 via 30.0.0.1
+      - cmd: ip route add 10.20.0.0/24 via 30.1.0.1
+
+  - name: C1
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.20.0.2/24 dev net0
+      - cmd: ip addr add 10.20.0.3/24 dev net0
+      - cmd: ip route add default via 10.20.0.1
+  - name: C2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.30.0.2/24 dev net0
+      - cmd: ip addr add 10.30.0.3/24 dev net0
+      - cmd: ip route add default via 10.30.0.1
+
+

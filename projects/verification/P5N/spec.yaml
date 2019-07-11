@@ -1,0 +1,82 @@
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF0=ens8f0
+      - cmd: export ATTACH_NETIF1=ens8f1
+      - cmd: export ATTACH_NETIF2=ens8f2
+      - cmd: export ATTACH_NETIF3=ens8f3
+
+nodes:
+  - name: R1
+    image: slankdev/ovs
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R3#net0 }
+      - { name: net2, type: direct, args: R4#net0 }
+      - { name: net3, type: direct, args: R5#net0 }
+      - { name: $ATTACH_NETIF0, type: phys }
+      - { name: $ATTACH_NETIF1, type: phys }
+      - { name: $ATTACH_NETIF2, type: phys }
+      - { name: $ATTACH_NETIF3, type: phys }
+  - name: R2
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net0 } ]
+  - name: R3
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
+  - name: R4
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net2 } ]
+  - name: R5
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net3 } ]
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: ip link set $ATTACH_NETIF0 up
+      - cmd: ip link set $ATTACH_NETIF1 up
+      - cmd: ip link set $ATTACH_NETIF2 up
+      - cmd: ip link set $ATTACH_NETIF3 up
+      - cmd: ovs-vsctl add-br ovs0
+      - cmd: ip link set ovs0 up
+      - cmd: ovs-vsctl add-port ovs0 net0 tag=100
+      - cmd: ovs-vsctl add-port ovs0 net1 tag=101
+      - cmd: ovs-vsctl add-port ovs0 net2 trunks=20,21
+      - cmd: ovs-vsctl add-port ovs0 net3 trunks=30,31
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF0 tag=100
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF1 tag=101
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF2 trunks=20,21
+      - cmd: ovs-vsctl add-port ovs0 $ATTACH_NETIF3 trunks=30,31
+
+  - name: R2
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.10.0.2/24 dev net0
+      - cmd: ip addr add 2001:10::2/64 dev net0
+      - cmd: ip route add default via 10.10.0.1
+      - cmd: ip -6 route add default via 2001:10::1
+  - name: R3
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.11.0.2/24 dev net0
+      - cmd: ip addr add 2001:11::2/64 dev net0
+      - cmd: ip route add default via 10.11.0.1
+      - cmd: ip -6 route add default via 2001:11::1
+  - name: R4
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link add net0.20 link net0 type vlan id 20
+      - cmd: ip link set net0.20 up
+      - cmd: ip addr add 10.20.0.2/24 dev net0.20
+      - cmd: ip route add default via 10.20.0.1
+
+  - name: R5
+    cmds:
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link add net0.30 link net0 type vlan id 30
+      - cmd: ip link set net0.30 up
+      - cmd: ip addr add 10.30.0.2/24 dev net0.30
+      - cmd: ip route add default via 10.30.0.1
+
+
