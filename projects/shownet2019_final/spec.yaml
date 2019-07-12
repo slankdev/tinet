@@ -175,21 +175,25 @@ node_configs:
       - cmd: ip addr add face::2/64 dev net0
       - cmd: ip route add ::/0 via face::1
 
+      ## Configurre Single-Chained-Route
       - cmd: ip addr add face::10/64 dev net0
       - cmd: ip addr add face::20/64 dev net0
       - cmd: ip addr add face::30/64 dev net0
       - cmd: ip addr add face::40/64 dev net0
-      - cmd: ip route add beaf::10/128 encap seg6 mode inline segs fc1::1 dev net0
-      - cmd: ip route add beaf::20/128 encap seg6 mode inline segs fc1::2 dev net0
-      - cmd: ip route add beaf::30/128 encap seg6 mode inline segs fc1::3 dev net0
-      - cmd: ip route add beaf::40/128 encap seg6 mode inline segs fc1::4 dev net0
+      - cmd: ip route add beaf::10/128 encap seg6 mode inline segs 2001:3e8:6b:1::0 dev net0
+      - cmd: ip route add beaf::20/128 encap seg6 mode inline segs 2001:3e8:6b:2::0 dev net0
+      - cmd: ip route add beaf::30/128 encap seg6 mode inline segs 2001:3e8:6b:3::0 dev net0
+      - cmd: ip route add beaf::40/128 encap seg6 mode inline segs 2001:3e8:6b:4::0 dev net0
 
+      ## Configurre Multi-Chained-Route
       - cmd: ip addr add face::110/64 dev net0
       - cmd: ip addr add face::120/64 dev net0
       - cmd: ip addr add face::130/64 dev net0
-      - cmd: ip route add beaf::110/128 encap seg6 mode inline segs fc1::4,fc1::3 dev net0
-      - cmd: ip route add beaf::120/128 encap seg6 mode inline segs fc1::2,fc1::1 dev net0
-      - cmd: ip route add beaf::130/128 encap seg6 mode inline segs fc1::3,fc1::1 dev net0
+      - cmd: ip addr add face::140/64 dev net0
+      - cmd: ip route add beaf::110/128 encap seg6 mode inline segs 2001:3e8:6b:1::0,2001:3e8:6b:2::0 dev net0
+      - cmd: ip route add beaf::120/128 encap seg6 mode inline segs 2001:3e8:6b:2::0,2001:3e8:6b:3::0 dev net0
+      - cmd: ip route add beaf::130/128 encap seg6 mode inline segs 2001:3e8:6b:3::0,2001:3e8:6b:4::0 dev net0
+      - cmd: ip route add beaf::140/128 encap seg6 mode inline segs 2001:3e8:6b:4::0,2001:3e8:6b:1::0 dev net0
 
   - name: I1
     cmds:
@@ -197,21 +201,25 @@ node_configs:
       - cmd: ip addr add beaf::2/64 dev net0
       - cmd: ip route add ::/0 via beaf::1
 
+      ## Configurre Single-Chained-Route
       - cmd: ip addr add beaf::10/64 dev net0
       - cmd: ip addr add beaf::20/64 dev net0
       - cmd: ip addr add beaf::30/64 dev net0
       - cmd: ip addr add beaf::40/64 dev net0
-      - cmd: ip route add face::10/128 encap seg6 mode inline segs fc0::1 dev net0
-      - cmd: ip route add face::20/128 encap seg6 mode inline segs fc0::2 dev net0
-      - cmd: ip route add face::30/128 encap seg6 mode inline segs fc0::3 dev net0
-      - cmd: ip route add face::40/128 encap seg6 mode inline segs fc0::4 dev net0
+      - cmd: ip route add face::10/128 encap seg6 mode inline segs 2001:3e8:6a:1::0 dev net0
+      - cmd: ip route add face::20/128 encap seg6 mode inline segs 2001:3e8:6a:2::0 dev net0
+      - cmd: ip route add face::30/128 encap seg6 mode inline segs 2001:3e8:6a:3::0 dev net0
+      - cmd: ip route add face::40/128 encap seg6 mode inline segs 2001:3e8:6a:4::0 dev net0
 
+      ## Configurre Multi-Chained-Route
       - cmd: ip addr add beaf::110/64 dev net0
       - cmd: ip addr add beaf::120/64 dev net0
       - cmd: ip addr add beaf::130/64 dev net0
-      - cmd: ip route add face::110/128 encap seg6 mode inline segs fc0::3,fc0::4 dev net0
-      - cmd: ip route add face::120/128 encap seg6 mode inline segs fc0::1,fc0::2 dev net0
-      - cmd: ip route add face::130/128 encap seg6 mode inline segs fc0::1,fc0::3 dev net0
+      - cmd: ip addr add beaf::140/64 dev net0
+      - cmd: ip route add face::110/128 encap seg6 mode inline segs 2001:3e8:6a:2::0,2001:3e8:6a:1::0 dev net0
+      - cmd: ip route add face::120/128 encap seg6 mode inline segs 2001:3e8:6a:3::0,2001:3e8:6a:2::0 dev net0
+      - cmd: ip route add face::130/128 encap seg6 mode inline segs 2001:3e8:6a:4::0,2001:3e8:6a:3::0 dev net0
+      - cmd: ip route add face::140/128 encap seg6 mode inline segs 2001:3e8:6a:1::0,2001:3e8:6a:4::0 dev net0
 
   - name: H1
     cmds:
