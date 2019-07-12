@@ -18,7 +18,7 @@ You should install docker before following.
 $ sudo apt install python3 python3-pip graphviz
 $ git clone https://github.com/slankdev/tinet && cd tinet
 $ sudo pip3 install -r requirement.txt
-$ sudo cp bin/tn /usr/local/tn
+$ sudo cp bin/tn /usr/local/bin/tn
 $ tn version
 ```
 

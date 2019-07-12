@@ -1,0 +1,76 @@
+
+precmd:
+  - cmds:
+      - cmd: export ATTACH_NETIF=ens8f0
+
+nodes:
+  - name: R1
+    image: slankdev/ubuntu:18.04
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R3#net0 }
+      - { name: net2, type: direct, args: R4#net0 }
+      - { name: net3, type: direct, args: R5#net0 }
+      - { name: $ATTACH_NETIF, type: phys }
+  - name: R2
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net0 } ]
+  - name: R3
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
+  - name: R4
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net2 } ]
+  - name: R5
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net3 } ]
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: ip link add br0 type bridge vlan_filtering 1
+      - cmd: ip link set br0 up
+      - cmd: ip link set $ATTACH_NETIF master br0
+      - cmd: ip link set net0 master br0
+      - cmd: ip link set net1 master br0
+      - cmd: ip link set net2 master br0
+      - cmd: ip link set net3 master br0
+      - cmd: ip link set $ATTACH_NETIF up
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 up
+      - cmd: ip link set net2 up
+      - cmd: ip link set net3 up
+      - cmd: bridge vlan add vid 100 dev net0 pvid 100 untagged
+      - cmd: bridge vlan add vid 101 dev net1 pvid 101 untagged
+      - cmd: bridge vlan add vid 102 dev net2 pvid 102 untagged
+      - cmd: bridge vlan add vid 103 dev net3 pvid 103 untagged
+      - cmd: bridge vlan del vid 1 dev net0
+      - cmd: bridge vlan del vid 1 dev net1
+      - cmd: bridge vlan del vid 1 dev net2
+      - cmd: bridge vlan del vid 1 dev net3
+      - cmd: bridge vlan add vid 100 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 101 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 102 dev $ATTACH_NETIF
+      - cmd: bridge vlan add vid 103 dev $ATTACH_NETIF
+
+  - name: R2
+    cmds:
+      - cmd: ip link set dev net0 address 52:54:00:22:22:22
+      - cmd: ip addr add 10.100.0.2/24 dev net0
+      - cmd: ip route add default via 10.100.0.1
+  - name: R3
+    cmds:
+      - cmd: ip link set dev net0 address 52:54:00:33:33:33
+      - cmd: ip addr add 10.101.0.2/24 dev net0
+      - cmd: ip route add default via 10.101.0.1
+  - name: R4
+    cmds:
+      - cmd: ip link set dev net0 address 52:54:00:44:44:44
+      - cmd: ip addr add 10.102.0.2/24 dev net0
+      - cmd: ip route add default via 10.102.0.1
+  - name: R5
+    cmds:
+      - cmd: ip link set dev net0 address 52:54:00:55:55:55
+      - cmd: ip addr add 10.103.0.2/24 dev net0
+      - cmd: ip route add default via 10.103.0.1
+
