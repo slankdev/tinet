@@ -335,3 +335,17 @@ node_configs:
       - cmd: ip link set net0 up
       - cmd: ip link set net1 up
 
+test:
+
+  # local link
+  - name: ping
+    cmds:
+      - cmd: docker exec H1 ping -I vlan0701 -c2 2001:3e8:0:701::51
+      - cmd: docker exec H1 ping -I vlan0702 -c2 2001:3e8:0:702::51
+      - cmd: docker exec H1 ping -I vlan0703 -c2 2001:3e8:0:703::51
+      - cmd: docker exec H1 ping -I vlan0704 -c2 2001:3e8:0:704::51
+      - cmd: docker exec H1 ping -I vlan0721 -c2 2001:3e8:0:721::51
+      - cmd: docker exec H1 ping -I vlan0722 -c2 2001:3e8:0:722::51
+      - cmd: docker exec H1 ping -I vlan0723 -c2 2001:3e8:0:723::51
+      - cmd: docker exec H1 ping -I vlan0724 -c2 2001:3e8:0:724::51
+
