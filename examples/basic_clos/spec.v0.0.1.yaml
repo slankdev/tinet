@@ -4,12 +4,12 @@ nodes:
     image: slankdev/frr
     interfaces:
       # - { name: net0, type: direct, args: Internet#net0 }
-      - { name: dn1, type: direct, args: Spine1#up1 }
-      - { name: dn2, type: direct, args: Spine2#up1 }
+      - { name: net1, type: direct, args: Spine1#dn1 }
+      - { name: net2, type: direct, args: Spine2#dn1 }
   - name: Spine1
     image: slankdev/frr
     interfaces:
-      - { name: up1, type: direct, args: Ext1#dn1 }
+      - { name: up1, type: direct, args: Ext1#net1 }
       - { name: dn1, type: direct, args: Leaf1#up1 }
       - { name: dn2, type: direct, args: Leaf2#up1 }
       - { name: dn3, type: direct, args: Leaf3#up1 }
@@ -17,7 +17,7 @@ nodes:
   - name: Spine2
     image: slankdev/frr
     interfaces:
-      - { name: up1, type: direct, args: Ext1#dn2 }
+      - { name: up1, type: direct, args: Ext1#net2 }
       - { name: dn1, type: direct, args: Leaf1#up2 }
       - { name: dn2, type: direct, args: Leaf2#up2 }
       - { name: dn3, type: direct, args: Leaf3#up2 }
@@ -27,85 +27,65 @@ nodes:
     interfaces:
       - { name: up1, type: direct, args: Spine1#dn1 }
       - { name: up2, type: direct, args: Spine2#dn1 }
-      - { name: dn1, type: direct, args: Serv1a#net0 }
-      - { name: dn2, type: direct, args: Serv2a#net0 }
+      - { name: dn1, type: direct, args: Serv1#net0 }
+      - { name: dn2, type: direct, args: Serv2#net0 }
   - name: Leaf2
     image: slankdev/frr
     interfaces:
       - { name: up1, type: direct, args: Spine1#dn2 }
       - { name: up2, type: direct, args: Spine2#dn2 }
-      - { name: dn1, type: direct, args: Serv3a#net0 }
-      - { name: dn2, type: direct, args: Serv4a#net0 }
+      - { name: dn1, type: direct, args: Serv3#net0 }
+      - { name: dn2, type: direct, args: Serv4#net0 }
   - name: Leaf3
     image: slankdev/frr
     interfaces:
       - { name: up1, type: direct, args: Spine1#dn3 }
       - { name: up2, type: direct, args: Spine2#dn3 }
-      - { name: dn1, type: direct, args: Serv1b#net0 }
-      - { name: dn2, type: direct, args: Serv2b#net0 }
+      - { name: dn1, type: direct, args: Serv3#net0 }
+      - { name: dn2, type: direct, args: Serv4#net0 }
   - name: Leaf4
     image: slankdev/frr
     interfaces:
       - { name: up1, type: direct, args: Spine1#dn4 }
       - { name: up2, type: direct, args: Spine2#dn4 }
-      - { name: dn1, type: direct, args: Serv3b#net0 }
-      - { name: dn2, type: direct, args: Serv4b#net0 }
-  - name: Serv1a
+      - { name: dn1, type: direct, args: Serv3#net0 }
+      - { name: dn2, type: direct, args: Serv4#net0 }
+  - name: Serv1
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf1#dn1 } ]
-  - name: Serv2a
+  - name: Serv2
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf1#dn2 } ]
-  - name: Serv3a
+  - name: Serv3
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf2#dn1 } ]
-  - name: Serv4a
+  - name: Serv4
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf2#dn2 } ]
-  - name: Serv1b
+  - name: Serv5
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf3#dn1 } ]
-  - name: Serv2b
+  - name: Serv6
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf3#dn2 } ]
-  - name: Serv3b
+  - name: Serv7
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf4#dn1 } ]
-  - name: Serv4b
+  - name: Serv8
     image: slankdev/frr
     interfaces: [ { name: net0, type: direct, args: Leaf4#dn2 } ]
 
 node_configs:
   - name: Ext1
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c "conf t"
-          -c "int lo" -c "ip addr 10.255.0.254/32"
-          -c "int dn1" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "int dn2" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "router bgp 65999"
-          -c " bgp router-id 10.255.0.254"
-          -c " bgp bestpath as-path multipath-relax"
-          -c " bgp bestpath compare-routerid"
-          -c " neighbor FABRIC peer-group"
-          -c " neighbor FABRIC remote-as external"
-          -c " neighbor dn1 interface peer-group FABRIC"
-          -c " neighbor dn2 interface peer-group FABRIC"
-          -c " address-family ipv4 unicast"
-          -c "  redistribute connected"
-          -c " exit-address-family"
+      - cmd: echo slankdev slankdev
   - name: Spine1
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
           -c "int lo" -c "ip addr 10.255.0.1/32"
-          -c "int up1" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn1" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn2" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn3" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
@@ -116,7 +96,6 @@ node_configs:
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
-          -c " neighbor up1 interface peer-group FABRIC"
           -c " neighbor dn1 interface peer-group FABRIC"
           -c " neighbor dn2 interface peer-group FABRIC"
           -c " neighbor dn3 interface peer-group FABRIC"
@@ -126,13 +105,11 @@ node_configs:
           -c " exit-address-family"
   - name: Spine2
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
           -c "int lo" -c "ip addr 10.255.0.2/32"
-          -c "int up1" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn1" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn2" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
           -c "int dn3" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
@@ -143,7 +120,6 @@ node_configs:
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
-          -c " neighbor up1 interface peer-group FABRIC"
           -c " neighbor dn1 interface peer-group FABRIC"
           -c " neighbor dn2 interface peer-group FABRIC"
           -c " neighbor dn3 interface peer-group FABRIC"
@@ -153,7 +129,6 @@ node_configs:
           -c " exit-address-family"
   - name: Leaf1
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -178,7 +153,6 @@ node_configs:
           -c " exit-address-family"
   - name: Leaf2
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -203,7 +177,6 @@ node_configs:
           -c " exit-address-family"
   - name: Leaf3
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -228,7 +201,6 @@ node_configs:
           -c " exit-address-family"
   - name: Leaf4
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -251,11 +223,8 @@ node_configs:
           -c " address-family ipv4 unicast"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv1a
+  - name: Serv1
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -272,11 +241,8 @@ node_configs:
           -c " address-family ipv4 unicast"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv2a
+  - name: Serv2
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -293,11 +259,8 @@ node_configs:
           -c " address-family ipv4 unicast"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv3a
+  - name: Serv3
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -312,13 +275,11 @@ node_configs:
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 3.3.3.3/32"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv4a
+  - name: Serv4
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -333,90 +294,83 @@ node_configs:
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 4.4.4.4/32"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv1b
+  - name: Serv5
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
-          -c "int lo" -c "ip addr 10.255.0.21/32"
+          -c "int lo" -c "ip addr 10.255.0.25/32"
           -c "int net0" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "router bgp 65021"
-          -c " bgp router-id 10.255.0.21"
+          -c "router bgp 65025"
+          -c " bgp router-id 10.255.0.25"
           -c " bgp bestpath as-path multipath-relax"
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 5.5.5.5/32"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv2b
+  - name: Serv6
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
-          -c "int lo" -c "ip addr 10.255.0.22/32"
+          -c "int lo" -c "ip addr 10.255.0.26/32"
           -c "int net0" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "router bgp 65022"
-          -c " bgp router-id 10.255.0.22"
+          -c "router bgp 65026"
+          -c " bgp router-id 10.255.0.26"
           -c " bgp bestpath as-path multipath-relax"
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 6.6.6.6/32"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv3b
+  - name: Serv7
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
-          -c "int lo" -c "ip addr 10.255.0.23/32"
+          -c "int lo" -c "ip addr 10.255.0.27/32"
           -c "int net0" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "router bgp 65023"
-          -c " bgp router-id 10.255.0.23"
+          -c "router bgp 65027"
+          -c " bgp router-id 10.255.0.27"
           -c " bgp bestpath as-path multipath-relax"
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 7.7.7.7/32"
           -c "  redistribute connected"
           -c " exit-address-family"
-  - name: Serv4b
+  - name: Serv8
     cmds:
-      - cmd: sysctl -w 'net.ipv4.fib_multipath_hash_policy=1'
-      - cmd: sh -c "cat /etc/hostname > index.html"
-      - cmd: nohup python3 -m http.server 80 &
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c "conf t"
-          -c "int lo" -c "ip addr 10.255.0.24/32"
+          -c "int lo" -c "ip addr 10.255.0.28/32"
           -c "int net0" -c "ipv6 nd ra-interval 1" -c "no ipv6 nd suppress-ra"
-          -c "router bgp 65024"
-          -c " bgp router-id 10.255.0.24"
+          -c "router bgp 65028"
+          -c " bgp router-id 10.255.0.28"
           -c " bgp bestpath as-path multipath-relax"
           -c " bgp bestpath compare-routerid"
           -c " neighbor FABRIC peer-group"
           -c " neighbor FABRIC remote-as external"
           -c " neighbor net0 interface peer-group FABRIC"
           -c " address-family ipv4 unicast"
+          -c "  network 8.8.8.8/32"
           -c "  redistribute connected"
           -c " exit-address-family"
 
