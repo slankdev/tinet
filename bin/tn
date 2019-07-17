@@ -14,6 +14,7 @@ class AppInfo:
   specfile = ''
   version = 'TiNet version 0.0 alpha'
   command = ''
+  namespace = ''
   data = []
   def __init__(self):
     self.specfile = 'spec.yaml'
@@ -27,6 +28,16 @@ class AppInfo:
     if self.name != '':
       sys.stderr.write('project-name isn\'t supported.\n')
       sys.exit(1)
+  def read_yaml(self, filename):
+    filename = appinfo.specfile
+    f = open(filename, "r+")
+    appinfo.data = yaml.load(f)
+    print('## Check META config')
+    if 'meta' in appinfo.data:
+        if 'namespace' in appinfo.data['meta']:
+          appinfo.namespace = appinfo.data['meta']['namespace']
+          print('# namespace was configured as {}'.format(appinfo.namespace))
+
 appinfo = AppInfo()
 
 template_spec='''
@@ -202,11 +213,11 @@ def command_up(args):
       nodetype = node.get('type', 'docker')
       if nodetype == 'docker':
         print('docker run -td --hostname {} --net=none '
-          '--name {} --rm --privileged {}'
-          .format(node['name'], node['name'],
+          '--name {}{} --rm --privileged {}'
+          .format(node['name'], appinfo.namespace, node['name'],
           node['image']))
       elif nodetype == 'netns':
-        print('ip netns add {}'.format(node['name']))
+        print('ip netns add {}{}'.format(appinfo.namespace, node['name']))
       else:
         print('unknown node-type {}'.format(node['type']))
         sys.exit(1)
@@ -214,7 +225,7 @@ def command_up(args):
   # CREATE SWITCHES
   if 'switches' in appinfo.data:
     for sw in appinfo.data['switches']:
-      print('ovs-vsctl add-br {} && ip link set {} up'.format(sw['name'], sw['name']));
+      print('ovs-vsctl add-br {}{} && ip link set {} up'.format(appinfo.namespace, sw['name'], sw['name']));
 
   links = []
   # CREATE Node to Node LINKS
@@ -239,24 +250,34 @@ def command_up(args):
       #        peer name net0 netns C1
       print('\n# connect {} to {}'.format(self.left_node_name, self.right_node_name))
       if self.left_node_type == 'docker':
-        print('mount_docker_netns {} {}'.format(
-          self.left_node_name, self.left_node_name))
+        print('mount_docker_netns {}{} {}{}'.format(
+          appinfo.namespace,
+          self.left_node_name,
+          appinfo.namespace,
+          self.left_node_name))
       if self.right_node_type == 'docker':
-        print('mount_docker_netns {} {}'.format(
-          self.right_node_name, self.right_node_name))
-      print('ip link add {} netns {} type veth peer name {} netns {}'.format(
+        print('mount_docker_netns {}{} {}{}'.format(
+          appinfo.namespace,
+          self.right_node_name,
+          appinfo.namespace,
+          self.right_node_name))
+      print('ip link add {} netns {}{} type veth peer name {} netns {}{}'.format(
         self.left_iface_name,
+        appinfo.namespace,
         self.left_node_name,
         self.right_iface_name,
+        appinfo.namespace,
         self.right_node_name))
-      print('ip netns exec {} ip link set {} up'.format(
+      print('ip netns exec {}{} ip link set {} up'.format(
+        appinfo.namespace,
         self.left_node_name, self.left_iface_name))
-      print('ip netns exec {} ip link set {} up'.format(
+      print('ip netns exec {}{} ip link set {} up'.format(
+        appinfo.namespace,
         self.right_node_name, self.right_iface_name))
       if self.left_node_type == 'docker':
-        print('ip netns del {}'.format(self.left_node_name))
+        print('ip netns del {}{}'.format(appinfo.namespace, self.left_node_name))
       if self.right_node_type == 'docker':
-        print('ip netns del {}'.format(self.right_node_name))
+        print('ip netns del {}{}'.format(appinfo.namespace, self.right_node_name))
     def check(self):
       if not (self.right_isset and self.left_isset):
         Exception('n2n_link state is not correct')
@@ -346,7 +367,7 @@ def command_up(args):
       for i in range(len(node['interfaces'])):
         iface = node['interfaces'][i]
         if (iface['type']=='phys'):
-          print('koko_physnet {} {}'.format(node['name'], iface['name']))
+          print('koko_physnet {}{} {}'.format(appinfo.namespace, node['name'], iface['name']))
 
   # Attach raw veth to Conitaner
   if 'nodes' in appinfo.data:
@@ -356,7 +377,7 @@ def command_up(args):
         if (iface['type']=='veth'):
           print('ip link add {} type veth peer name {}'.format(
               iface['name'], iface['args']))
-          print('koko_physnet {} {}'.format(node['name'], iface['name']))
+          print('koko_physnet {}{} {}'.format(appinfo.namespace, node['name'], iface['name']))
           print('ip link set {} up'.format(iface['args']))
   postinit()
 
@@ -391,19 +412,19 @@ def command_down(args):
       for i in range(len(node['interfaces'])):
         iface = node['interfaces'][i]
         if (iface['type']=='phys'):
-          print('detach_physif_from_docker {} {}'.format(node['name'], iface['name']))
+          print('detach_physif_from_docker {}{} {}'.format(appinfo.namespace, node['name'], iface['name']))
     for node in appinfo.data['nodes']:
       nodetype = node.get('type', 'docker')
       if nodetype=='docker':
-        print('docker stop {}'.format(node['name']))
+        print('docker stop {}{}'.format(appinfo.namespace, node['name']))
       elif nodetype=='netns':
-        print('ip netns del {}'.format(node['name']))
+        print('ip netns del {}{}'.format(appinfo.namespace, node['name']))
       else:
         print('unknown nodetype {}'.format(nodetype))
         sys.exit(1)
   if 'switches' in appinfo.data:
     for sw in appinfo.data['switches']:
-      print('ovs-vsctl del-br {}'.format(sw['name']));
+      print('ovs-vsctl del-br {}{}'.format(appinfo.namespace, sw['name']));
   postfini()
 
 def command_pull(args):
@@ -429,9 +450,9 @@ def command_exec(args):
   cmdstr = ''
   node_type = node.get('type', 'docker')
   if node_type == 'docker':
-    cmdstr = 'docker exec -it {}'.format(args.NODE)
+    cmdstr = 'docker exec -it {}{}'.format(appinfo.namespace, args.NODE)
   elif node_type == 'netns':
-    cmdstr = 'ip netns exec {}'.format(args.NODE)
+    cmdstr = 'ip netns exec {}{}'.format(appinfo.namespace, args.NODE)
   else:
     sys.stderr.write('no such node type...\n')
     sys.exit(1)
@@ -483,9 +504,9 @@ def command_conf(args):
       nodetype = get_node_type_from_nodes(node['name'], 'docker')
       for cmd in node['cmds']:
         if nodetype=='docker':
-          print('docker exec {} {} > /dev/null'.format(node['name'], cmd['cmd']))
+          print('docker exec {}{} {} > /dev/null'.format(appinfo.namespace, node['name'], cmd['cmd']))
         elif nodetype=='netns':
-          print('ip netns exec {} {} > /dev/null'.format(node['name'], cmd['cmd']))
+          print('ip netns exec {}{} {} > /dev/null'.format(appinfo.namespace, node['name'], cmd['cmd']))
         else:
           print('unknown node-type {}'.format(nodetype))
       print('echo {}::[config]::fin'.format(node['name']))
@@ -663,10 +684,7 @@ def main():
     'build', 'conf', 'upconf', 'reconf', 'reup', 'test', 'img'}
   if args.command in need_data:
     try:
-      filename = appinfo.specfile
-      f = open(filename, "r+")
-      # appinfo.data = yaml.load(f, Loader=yaml.FullLoader)
-      appinfo.data = yaml.load(f)
+      appinfo.read_yaml(appinfo.specfile)
     except IOError:
       sys.stderr.write('IOError: file {} not found.\n'.format(appinfo.specfile))
       sys.exit(1)
