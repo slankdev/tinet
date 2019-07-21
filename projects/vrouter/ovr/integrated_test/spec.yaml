@@ -8,7 +8,7 @@ postinit:
     - cmd: docker cp $HOME/git/vpp/build-root/libvppinfra_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/libvppinfra.deb
     - cmd: docker cp $HOME/git/vpp/build-root/vpp-plugin-core_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/vpp-plugin-core.deb
     - cmd: docker cp $HOME/git/vpp/build-root/vpp_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/vpp.deb
-    - cmd: docker cp $HOME/git/routerd/vpp/debian/output/routerd_0.0.0_amd64.deb slank_R1:/tmp/routerd.deb
+    - cmd: docker cp $HOME/git/routerd/src/build/routerd_0.0.0_amd64.deb slank_R1:/tmp/routerd.deb
 
 nodes:
   - name: R1
@@ -30,10 +30,10 @@ node_configs:
     cmds:
       - cmd: sh -c "echo create host-interface name net0 >> /etc/vpp/exec.vpp"
       - cmd: sh -c "echo create host-interface name net1 >> /etc/vpp/exec.vpp"
-      - cmd: sh -c "echo enable tap-inject >> /etc/vpp/exec.vpp"
       - cmd: dpkg -i /tmp/vpp.deb /tmp/vpp-plugin-core.deb /tmp/libvppinfra.deb /tmp/routerd.deb
       - cmd: nohup vpp -c /etc/vpp/startup.conf &
-      - cmd: nohup routerd & ## XXX
+      - cmd: nohup routerd &
+      - cmd: sleep 5
       - cmd: ip link set neo0 up
       - cmd: ip link set neo1 up
       - cmd: ip addr add 10.100.0.1/24 dev neo0
@@ -46,4 +46,12 @@ node_configs:
     cmds:
       - cmd: ip addr add 10.101.0.2/24 dev net0
       - cmd: ip route add default via 10.101.0.1
+
+test:
+  - name: ping
+    cmds:
+    - cmd: docker exec slank_R2 ping -f -c2 10.100.0.1
+    - cmd: docker exec slank_R3 ping -f -c2 10.101.0.1
+    - cmd: docker exec slank_R2 ping -f -c2 10.101.0.2
+    - cmd: docker exec slank_R3 ping -f -c2 10.100.0.2
 
