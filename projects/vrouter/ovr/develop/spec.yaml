@@ -26,11 +26,14 @@ node_configs:
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.100.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.2/32 dev lo
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'router ospf'
-      #     -c 'ospf router-id 10.255.0.2'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'router bgp 65002'
+          -c ' bgp router-id 10.255.0.2'
+          -c ' neighbor 10.100.0.1 remote-as external'
+          # -c ' neighbor 10.255.0.1 remote-as external'
+          # -c ' neighbor 10.255.0.1 update-source lo'
   - name: R3
     cmds:
       - cmd: ip link set veth1 down
@@ -38,9 +41,12 @@ node_configs:
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.101.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.3/32 dev lo
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'router ospf'
-      #     -c 'ospf router-id 10.255.0.3'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'router bgp 65003'
+          -c ' bgp router-id 10.255.0.3'
+          -c ' neighbor 10.101.0.1 remote-as external'
+          # -c ' neighbor 10.255.0.1 remote-as external'
+          # -c ' neighbor 10.255.0.1 update-source lo'
 

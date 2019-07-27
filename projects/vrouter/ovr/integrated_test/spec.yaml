@@ -1,14 +1,14 @@
 
-meta:
-  namespace: slank_
+# meta:
+#   namespace:
 
 ## Copy routerd.deb and vpp-plugin-core.deb to R1
 postinit:
   - cmds:
-    - cmd: docker cp $HOME/git/vpp/build-root/libvppinfra_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/libvppinfra.deb
-    - cmd: docker cp $HOME/git/vpp/build-root/vpp-plugin-core_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/vpp-plugin-core.deb
-    - cmd: docker cp $HOME/git/vpp/build-root/vpp_19.08-rc0~439-g10522f266_amd64.deb slank_R1:/tmp/vpp.deb
-    - cmd: docker cp $HOME/git/routerd/src/build/routerd_0.0.0_amd64.deb slank_R1:/tmp/routerd.deb
+    - cmd: docker cp $HOME/git/vpp/build-root/libvppinfra_19.08-rc0~439-g10522f266_amd64.deb R1:/tmp/libvppinfra.deb
+    - cmd: docker cp $HOME/git/vpp/build-root/vpp-plugin-core_19.08-rc0~439-g10522f266_amd64.deb R1:/tmp/vpp-plugin-core.deb
+    - cmd: docker cp $HOME/git/vpp/build-root/vpp_19.08-rc0~439-g10522f266_amd64.deb R1:/tmp/vpp.deb
+    - cmd: docker cp $HOME/git/routerd/src/build/routerd_0.0.0_amd64.deb R1:/tmp/routerd.deb
 
 nodes:
   - name: R1
@@ -28,6 +28,8 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      # - cmd: ip addr add 10.100.0.1/24 dev net0
+      # - cmd: ip addr add 10.101.0.1/24 dev net1
       - cmd: sh -c "echo create host-interface name net0 >> /etc/vpp/exec.vpp"
       - cmd: sh -c "echo create host-interface name net1 >> /etc/vpp/exec.vpp"
       - cmd: dpkg -i /tmp/vpp.deb /tmp/vpp-plugin-core.deb /tmp/libvppinfra.deb /tmp/routerd.deb
@@ -50,8 +52,8 @@ node_configs:
 test:
   - name: ping
     cmds:
-    - cmd: docker exec slank_R2 ping -f -c2 10.100.0.1
-    - cmd: docker exec slank_R3 ping -f -c2 10.101.0.1
-    - cmd: docker exec slank_R2 ping -f -c2 10.101.0.2
-    - cmd: docker exec slank_R3 ping -f -c2 10.100.0.2
+    - cmd: docker exec R2 ping -f -c2 10.100.0.1
+    - cmd: docker exec R3 ping -f -c2 10.101.0.1
+    - cmd: docker exec R2 ping -f -c2 10.101.0.2
+    - cmd: docker exec R3 ping -f -c2 10.100.0.2
 
