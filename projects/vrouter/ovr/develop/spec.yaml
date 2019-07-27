@@ -26,6 +26,7 @@ node_configs:
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.100.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.2/32 dev lo
+      - cmd: ip route add default via 10.100.0.1
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
@@ -41,6 +42,7 @@ node_configs:
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.101.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.3/32 dev lo
+      - cmd: ip route add default via 10.101.0.1
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
           vtysh -c 'conf t'
