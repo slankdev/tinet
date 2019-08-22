@@ -1,135 +1,34 @@
 
-postinit:
-  - cmds:
-    - cmd: docker exec R3 mkdir -p /etc/bird
-    - cmd: docker cp R3_bird6.conf R3:/etc/bird/bird6.conf
 
 nodes:
   - name: R1
-    image: slankdev/bird
+    image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, args: R3#net0 }
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: R3#net0 }
   - name: R2
-    image: slankdev/bird
-    interfaces:
-      - { name: net0, type: direct, args: R3#net1 }
-  - name: R3
-    # image: slankdev/bird
-    image: slankdev/ovs
+    image: slankdev/ubuntu:18.04
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
-      - { name: net1, type: direct, args: R2#net0 }
-      - { name: net2, type: direct, args: R4#net0 }
-      - { name: net3, type: direct, args: R4#net1 }
-      - { name: ens8f0, type: phys } #PP
-  - name: R4
-    image: slankdev/bird
+  - name: R3
+    image: slankdev/ubuntu:18.04
     interfaces:
-      - { name: net0, type: direct, args: R3#net2 }
-      - { name: net1, type: direct, args: R3#net3 }
+      - { name: net0, type: direct, args: R1#net1 }
 
 node_configs:
   - name: R1
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo'
-          -c ' ipv6 address fc00:1::1/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'int net0'
-          -c ' ipv6 address 2001:111::2/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.1'
-          -c ' interface net0 area 0.0.0.0'
-          -c ' interface lo area 0.0.0.0'
-          -c ' exit'
-
+      - cmd: ip addr add 10.0.5.1/24 dev net0
+      - cmd: ip addr add 2001:7::1/64 dev net1
+      - cmd: ip route add 10.0.7.0/24 encap seg6 mode encap segs 2001:7::2 dev net1
   - name: R2
     cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int lo'
-          -c ' ipv6 address fc00:2::1/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'int net0'
-          -c ' ipv6 address 2001:222::2/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.2'
-          -c ' interface net0 area 0.0.0.0'
-          -c ' interface lo area 0.0.0.0'
-          -c ' exit'
-
+      - cmd: ip addr add 10.0.5.2/24 dev net0
+      - cmd: ip route add default via 10.0.5.1
   - name: R3
     cmds:
-      - cmd: ip link add ens8f0.10 link ens8f0 type vlan id 10
-      - cmd: ip link add ens8f0.11 link ens8f0 type vlan id 11
-      - cmd: ip link add ens8f0.12 link ens8f0 type vlan id 12
-      - cmd: ip link add ens8f0.13 link ens8f0 type vlan id 13
-      - cmd: ip link set ens8f0.10 up
-      - cmd: ip link set ens8f0.11 up
-      - cmd: ip link set ens8f0.12 up
-      - cmd: ip link set ens8f0.13 up
-      - cmd: ovs-vsctl add-br ovs0
-      - cmd: ovs-vsctl add-port ovs0 net0 tag=10
-      - cmd: ovs-vsctl add-port ovs0 ens8f0.10 tag=10
-      - cmd: ovs-vsctl add-port ovs0 net1 tag=11
-      - cmd: ovs-vsctl add-port ovs0 ens8f0.11 tag=11
-      - cmd: ovs-vsctl add-port ovs0 net2 tag=12
-      - cmd: ovs-vsctl add-port ovs0 ens8f0.12 tag=12
-      - cmd: ovs-vsctl add-port ovs0 net3 tag=13
-      - cmd: ovs-vsctl add-port ovs0 ens8f0.13 tag=13
-
-      # - cmd: sh -c "enable_seg6_router.py | sh"
-      # - cmd: ip link add red type vrf table 10
-      # - cmd: ip link add blu type vrf table 20
-      # - cmd: ip link set dev red up
-      # - cmd: ip link set dev blu up
-      # - cmd: ip link set net0 vrf red
-      # - cmd: ip link set net2 vrf red
-      # - cmd: ip link set net1 vrf blu
-      # - cmd: ip link set net3 vrf blu
-      # - cmd: ip -6 addr add 2001:111::1/64 dev net0
-      # - cmd: ip -6 addr add 2001:222::1/64 dev net1
-      # - cmd: ip -6 addr add 2001:f10::1/64 dev net2
-      # - cmd: ip -6 addr add 2001:f11::1/64 dev net3
-      # - cmd: mkdir -p /run/bird
-      # - cmd: bird6 -c /etc/bird/bird6.conf
-
-  - name: R4
-    cmds:
       - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'int net0'
-          -c ' ipv6 address 2001:f10::2/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'int net1'
-          -c ' ipv6 address 2001:f11::2/64'
-          -c ' ipv6 ospf6 network point-to-point'
-          -c ' exit'
-          -c 'router ospf6'
-          -c ' ospf6 router-id 10.255.0.4'
-          -c ' interface net0 area 0.0.0.0'
-          -c ' interface net1 area 0.0.0.0'
-          -c ' exit'
-
-test:
-  - name: p2p
-    cmds:
-    # - cmd: docker exec R1 ping -c2 10.0.0.1
-    # - cmd: docker exec R1 ping -c2 10.0.0.2
-    # - cmd: docker exec R2 ping -c2 10.0.0.1
-    # - cmd: docker exec R2 ping -c2 10.0.0.2
+      - cmd: ip addr add 2001:7::2/64 dev net0
 
