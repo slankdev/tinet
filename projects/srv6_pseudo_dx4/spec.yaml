@@ -5,6 +5,7 @@ nodes:
     interfaces:
       - { name: net0, type: direct, args: C1#net0 }
       - { name: net1, type: direct, args: C2#net0 }
+      - { name: net2, type: direct, args: C3#net0 }
   - name: C1
     image: slankdev/frr
     interfaces:
@@ -13,6 +14,10 @@ nodes:
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R1#net1 }
+  - name: C3
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net2 }
 
 node_configs:
   - name: C1
@@ -22,17 +27,39 @@ node_configs:
       - cmd: ip addr add 2001::2/64 dev net0
       - cmd: ip -6 route add default via 2001::1
       - cmd: ip -4 route add default encap seg6 mode encap segs fc00:1::0 dev net0
+      - cmd: ip -4 route add 10.1.0.10/32 encap seg6 mode encap segs fc00:1::10 dev net0
+      - cmd: ip -4 route add 10.1.0.20/32 encap seg6 mode encap segs fc00:1::20 dev net0
   - name: C2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: ip addr add 10.1.0.2/24 dev net0
+      - cmd: ip addr add 10.1.0.10/24 dev net0
+      - cmd: ip addr add 10.1.0.20/24 dev net0
+  - name: C3
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.1.0.2/24 dev net0
+      - cmd: ip addr add 10.1.0.10/24 dev net0
+      - cmd: ip addr add 10.1.0.20/24 dev net0
   - name: R1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip link add red type vrf table 10
+      - cmd: ip link add blu type vrf table 20
       - cmd: ip addr add 2001::1/64 dev net0
       - cmd: ip addr add 10.0.0.1/24 dev net0
       - cmd: ip addr add 10.1.0.1/24 dev net1
-      - cmd: >-
-          ip route add fc00:1::/128 encap seg6local
-          action End.DX4 nh4 10.1.0.2 dev net1
+      - cmd: ip addr add 10.1.0.1/24 dev net2
+      - cmd: ip link set net1 vrf red
+      - cmd: ip link set net2 vrf blu
+      - cmd: ip link set red up
+      - cmd: ip link set blu up
+      - cmd: ip addr add 99.10.0.1/32 dev red
+      - cmd: ip addr add 99.20.0.1/32 dev blu
+      - cmd: ip route add default via 10.1.0.2 vrf red
+      - cmd: ip route add default via 10.1.0.2 vrf blu
+      - cmd: ip route add 99.10.0.1/32 dev red
+      - cmd: ip route add 99.20.0.1/32 dev red
+      - cmd: ip route add fc00:1::10/128 encap seg6local action End.DX4 nh4 99.10.0.1 dev net0
+      - cmd: ip route add fc00:1::20/128 encap seg6local action End.DX4 nh4 99.20.0.1 dev net1
 
