@@ -1,7 +1,7 @@
 
 # Pseudo End.DT4 Hacks
 
-configuration is written on [spec.yaml](spec.yaml)
+configuration is written on [spec.yaml](spec.yaml).
 following AA shows L2-topology of this example.
 ```
                                                         +--------+
