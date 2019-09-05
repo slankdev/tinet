@@ -41,3 +41,8 @@ $ docker exec R1 ip -d link show
     vrf table 20 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
 ```
 
+You can check the routing works fine with following cli
+```
+watch -n0.1 docker exec R1 ip -s link
+docker exec -it C1 ping 10.1.0.20 -f
+```
