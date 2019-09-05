@@ -1,0 +1,80 @@
+
+nodes:
+  - name: C1 # send traffic
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: S1#net0 }
+  - name: C2 # receive traffic
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: S3#net1 }
+  - name: R1 # performe T.Encaps
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: S1#net1 }
+      - { name: net1, type: direct, args: S2#net0 }
+  - name: R2 # performe End.dx4
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: S2#net1 }
+      - { name: net1, type: direct, args: S3#net0 }
+  - name: S1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: direct, args: R1#net0 }
+  - name: S2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net1 }
+      - { name: net1, type: direct, args: R2#net0 }
+  - name: S3
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R2#net1 }
+      - { name: net1, type: direct, args: C2#net0 }
+
+node_configs:
+  - name: C1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 172.19.0.1/16 dev net0
+      - cmd: ip route add default via 172.19.255.254
+  - name: C2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 172.21.0.1/16 dev net0
+      - cmd: ip route add default via 172.21.255.254
+  - name: S1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 172.19.255.254/16 dev net0
+      - cmd: ip addr add 192.168.200.254/16 dev net1
+      - cmd: ip route add default via 192.168.200.1
+  - name: S2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add fc00:1::2/64 dev net0
+      - cmd: ip addr add fc00:2::2/64 dev net1
+      - cmd: ip -6 route add default via fc00:2::1
+  - name: S3
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 192.168.203.254/16 dev net0
+      - cmd: ip addr add 172.21.255.254/16 dev net1
+      - cmd: ip route add default via 192.168.203.254
+  - name: R1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 192.168.200.1/24 dev net0
+      - cmd: ip addr add fc00:1::1/64 dev net1
+      - cmd: ip -6 route add default via fc00:1::2
+      - cmd: ip -4 route add default encap seg6 mode encap segs fc00:ffff::1 dev net1
+  - name: R2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add fc00:2::1/64 dev net0
+      - cmd: ip addr add 192.168.203.1/24 dev net1
+      - cmd: ip -4 route add default via 192.168.203.254
+      - cmd: ip -6 route add fc00:ffff::1 encap seg6local action End.DX4 nh4 192.168.203.254 dev net1
+

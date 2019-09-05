@@ -1,0 +1,38 @@
+
+nodes:
+  - name: R1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: C1#net0 }
+      - { name: net1, type: direct, args: C2#net0 }
+  - name: C1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+  - name: C2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net1 }
+
+node_configs:
+  - name: C1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.0.0.2/24 dev net0
+      - cmd: ip addr add 2001::2/64 dev net0
+      - cmd: ip -6 route add default via 2001::1
+      - cmd: ip -4 route add default encap seg6 mode encap segs fc00:1::0 dev net0
+  - name: C2
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 10.1.0.2/24 dev net0
+  - name: R1
+    cmds:
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001::1/64 dev net0
+      - cmd: ip addr add 10.0.0.1/24 dev net0
+      - cmd: ip addr add 10.1.0.1/24 dev net1
+      - cmd: >-
+          ip route add fc00:1::/128 encap seg6local
+          action End.DX4 nh4 10.1.0.2 dev net1
+
