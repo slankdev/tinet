@@ -3,6 +3,8 @@
 
 configuration is written on [spec.yaml](spec.yaml).
 following AA shows L2-topology of this example.
+In this example, R2 performs pseudo End.DT4 behaviour
+using vrf route-leaking.
 ```
                                                         +--------+
                                         10.1.0.0/24     |        |
