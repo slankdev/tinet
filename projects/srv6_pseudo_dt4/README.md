@@ -3,8 +3,9 @@
 
 configuration is written on [spec.yaml](spec.yaml).
 following AA shows L2-topology of this example.
-In this example, R2 performs pseudo End.DT4 behaviour
-using vrf route-leaking.
+In this example, container node R1 performs 
+pseudo End.DT4 behaviour using vrf route-leaking.
+I'm not sure this hacks is valid or not, sorry.
 ```
                                                         +--------+
                                         10.1.0.0/24     |        |
