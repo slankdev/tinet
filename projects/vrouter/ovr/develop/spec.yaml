@@ -1,54 +1,61 @@
 
 preinit:
   - cmds:
-      - cmd: ip link add veth0-host type veth peer name veth0
-      - cmd: ip link add veth1-host type veth peer name veth1
-      - cmd: ethtool -K veth0-host rx off tx off tso off gro off
-      - cmd: ethtool -K veth1-host rx off tx off tso off gro off
+      - cmd: ip link add veth-R2 type veth peer name veth0
+      - cmd: ip link add veth-R3 type veth peer name veth1
+      - cmd: ethtool -K veth-R2 rx off tx off tso off gro off
+      - cmd: ethtool -K veth-R3 rx off tx off tso off gro off
       - cmd: ethtool -K veth0 rx off tx off tso off gro off
       - cmd: ethtool -K veth1 rx off tx off tso off gro off
+
+postfini:
+  - cmds:
+      - cmd: ip link del veth0
+      - cmd: ip link del veth1
 
 nodes:
   - name: R2
     image: slankdev/frr
     interfaces:
-      - { name: veth0, type: phys }
+      - { name: veth-R2, type: phys }
   - name: R3
     image: slankdev/frr
     interfaces:
-      - { name: veth1, type: phys }
+      - { name: veth-R3, type: phys }
 
 node_configs:
   - name: R2
     cmds:
-      - cmd: ip link set veth0 down
-      - cmd: ip link set veth0 name net0
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link set veth-R2 down
+      - cmd: ip link set veth-R2 name net0
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.100.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.2/32 dev lo
       - cmd: ip route add default via 10.100.0.1
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'router bgp 65002'
-      #     -c ' bgp router-id 10.255.0.2'
-      #     -c ' neighbor 10.100.0.1 remote-as external'
-      #     # -c ' neighbor 10.255.0.1 remote-as external'
-      #     # -c ' neighbor 10.255.0.1 update-source lo'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'router bgp 65002'
+          -c ' bgp router-id 10.255.0.2'
+          -c ' neighbor 10.100.0.1 remote-as external'
+          -c ' neighbor 10.255.0.1 remote-as external'
+          -c ' neighbor 10.255.0.1 update-source lo'
   - name: R3
     cmds:
-      - cmd: ip link set veth1 down
-      - cmd: ip link set veth1 name net0
+      - cmd: sh -c "enable_seg6_router.py | sh"
+      - cmd: ip link set veth-R3 down
+      - cmd: ip link set veth-R3 name net0
       - cmd: ip link set net0 up
       - cmd: ip addr add 10.101.0.2/24 dev net0
       - cmd: ip addr add 10.255.0.3/32 dev lo
       - cmd: ip route add default via 10.101.0.1
-      # - cmd: /usr/lib/frr/frr start
-      # - cmd: >-
-      #     vtysh -c 'conf t'
-      #     -c 'router bgp 65003'
-      #     -c ' bgp router-id 10.255.0.3'
-      #     -c ' neighbor 10.101.0.1 remote-as external'
-      #     # -c ' neighbor 10.255.0.1 remote-as external'
-      #     # -c ' neighbor 10.255.0.1 update-source lo'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf t'
+          -c 'router bgp 65003'
+          -c ' bgp router-id 10.255.0.3'
+          -c ' neighbor 10.101.0.1 remote-as external'
+          -c ' neighbor 10.255.0.1 remote-as external'
+          -c ' neighbor 10.255.0.1 update-source lo'
 
