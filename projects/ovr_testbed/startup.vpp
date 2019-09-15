@@ -1,0 +1,32 @@
+
+create host-interface name veth0
+create host-interface name veth1
+
+set int state host-veth0 up
+set int state host-veth1 up
+create sub-interface host-veth0 10
+create sub-interface host-veth1 10
+create sub-interface host-veth0 20
+create sub-interface host-veth1 20
+
+ip table add 10
+ip table add 20
+set int ip table host-veth0.10 10
+set int ip table host-veth0.20 20
+set int ip table host-veth1.10 10
+set int ip table host-veth1.20 20
+
+set int state host-veth0.10 up
+set int state host-veth0.20 up
+set int ip addr host-veth0.10 10.10.0.1/24
+set int ip addr host-veth0.10 2001:10::1/64
+set int ip addr host-veth0.20 20.10.0.1/24
+set int ip addr host-veth0.20 2002:10::1/64
+
+set int state host-veth1.10 up
+set int state host-veth1.20 up
+set int ip addr host-veth1.10 10.11.0.1/24
+set int ip addr host-veth1.10 2001:11::1/64
+set int ip addr host-veth1.20 20.11.0.1/24
+set int ip addr host-veth1.20 2002:11::1/64
+
