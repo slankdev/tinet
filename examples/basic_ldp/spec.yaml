@@ -25,12 +25,6 @@ node_configs:
           -c ' ip address 10.0.0.1/24'
           -c ' ipv6 address 2001::1/64'
           -c '!'
-          -c 'router ospf'
-          -c ' ospf router-id 10.255.0.1'
-          -c ' network 10.255.0.1/32 area 0'
-          -c ' network 10.0.0.0/24 area 0'
-          -c ' passive-interface lo'
-          -c '!'
           -c 'mpls ldp'
           -c ' router-id 10.255.0.1'
           -c ' neighbor 10.255.0.2 password slank'
@@ -40,6 +34,7 @@ node_configs:
           -c '  label local advertise explicit-null'
           -c '  interface net0'
           -c '!'
+          -c 'ip route 10.255.0.2 10.0.0.2 net0'
 
   - name: R2
     cmds:
@@ -56,12 +51,6 @@ node_configs:
           -c ' ip address 10.0.0.2/24'
           -c ' ipv6 address 2001::2/64'
           -c '!'
-          -c 'router ospf'
-          -c ' ospf router-id 10.255.0.2'
-          -c ' network 10.255.0.2/32 area 0'
-          -c ' network 10.0.0.0/24 area 0'
-          -c ' passive-interface lo'
-          -c '!'
           -c 'mpls ldp'
           -c ' router-id 10.255.0.2'
           -c ' neighbor 10.255.0.1 password slank'
@@ -71,6 +60,7 @@ node_configs:
           -c '  label local advertise explicit-null'
           -c '  interface net0'
           -c '!'
+          -c 'ip route 10.255.0.1 10.0.0.1 net0'
 
 test:
   - name: p2p
