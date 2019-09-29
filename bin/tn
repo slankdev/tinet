@@ -31,7 +31,7 @@ class AppInfo:
   def read_yaml(self, filename):
     filename = appinfo.specfile
     f = open(filename, "r+")
-    appinfo.data = yaml.load(f)
+    appinfo.data = yaml.load(f, Loader=yaml.SafeLoader)
     print('## Check META config')
     if 'meta' in appinfo.data:
         if 'namespace' in appinfo.data['meta']:
