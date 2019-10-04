@@ -1,0 +1,49 @@
+
+nodes:
+  - name: R1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+  - name: R2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+
+node_configs:
+  - name: R1
+    cmds:
+      - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf te'
+          -c 'int net0'
+          -c ' ip address 10.0.0.1/24'
+          -c ' ipv6 address 2001::1/64'
+          -c '!'
+          -c 'router bgp 65001'
+          -c ' neighbor 10.0.0.2 remote-as external'
+          -c '!'
+
+  - name: R2
+    cmds:
+      - cmd: sh -c 'enable_seg6_router.py | sh'
+      - cmd: /usr/lib/frr/frr start
+      - cmd: >-
+          vtysh -c 'conf te'
+          -c 'int net0'
+          -c ' ip address 10.0.0.2/24'
+          -c ' ipv6 address 2001::2/64'
+          -c '!'
+          -c 'router bgp 65002'
+          -c ' neighbor 10.0.0.1 remote-as external'
+          -c ' !'
+          -c ' address-family ipv4 vpn'
+          -c '  neighbor 10.0.0.1 activate'
+          -c '!'
+
+test:
+  - name: p2p
+    cmds:
+    - cmd: echo slankdev slankdev
+    - cmd: echo slankdev slankdev
+
