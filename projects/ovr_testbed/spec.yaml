@@ -9,11 +9,11 @@ preinit:
       - cmd: ethtool -K veth1 rx off tx off tso off gro off
 
 nodes:
-  - name: R1
-    image: slankdev/frr
-    interfaces:
-      - { name: veth0, type: phys }
-      - { name: veth1, type: phys }
+  # - name: R1
+  #   image: slankdev/frr
+  #   interfaces:
+  #     - { name: veth0, type: phys }
+  #     - { name: veth1, type: phys }
   - name: R2
     image: slankdev/frr
     interfaces:
@@ -24,33 +24,33 @@ nodes:
       - { name: veth-R3, type: phys }
 
 node_configs:
-  - name: R1
-    cmds:
-      - cmd: sh -c "enable_seg6_router.py | sh"
-      - cmd: ip link set veth0 down
-      - cmd: ip link set veth0 name eth1
-      - cmd: ip link set veth1 down
-      - cmd: ip link set veth1 name eth2
-      - cmd: ip link set eth1 up
-      - cmd: ip link set eth2 up
-
-      - cmd: /usr/lib/frr/frr start
-      - cmd: >-
-          vtysh -c 'conf t'
-          -c 'interface lo'
-          -c ' ip address 10.255.0.1/32'
-          -c '!'
-          -c 'interface eth1'
-          -c ' ip address 10.12.0.1/24'
-          -c '!'
-          -c 'interface eth2'
-          -c ' ip address 10.13.0.1/24'
-          -c '!'
-          -c 'router bgp 65001'
-          -c ' bgp router-id 10.255.0.1'
-          -c ' neighbor 10.12.0.2 remote-as external'
-          -c ' neighbor 10.13.0.2 remote-as external'
-          -c ' !'
+  # - name: R1
+  #   cmds:
+  #     - cmd: sh -c "enable_seg6_router.py | sh"
+  #     - cmd: ip link set veth0 down
+  #     - cmd: ip link set veth0 name eth1
+  #     - cmd: ip link set veth1 down
+  #     - cmd: ip link set veth1 name eth2
+  #     - cmd: ip link set eth1 up
+  #     - cmd: ip link set eth2 up
+  #
+  #     - cmd: /usr/lib/frr/frr start
+  #     - cmd: >-
+  #         vtysh -c 'conf t'
+  #         -c 'interface lo'
+  #         -c ' ip address 10.255.0.1/32'
+  #         -c '!'
+  #         -c 'interface eth1'
+  #         -c ' ip address 10.12.0.1/24'
+  #         -c '!'
+  #         -c 'interface eth2'
+  #         -c ' ip address 10.13.0.1/24'
+  #         -c '!'
+  #         -c 'router bgp 65001'
+  #         -c ' bgp router-id 10.255.0.1'
+  #         -c ' neighbor 10.12.0.2 remote-as external'
+  #         -c ' neighbor 10.13.0.2 remote-as external'
+  #         -c ' !'
 
   - name: R2
     cmds:
@@ -87,7 +87,7 @@ node_configs:
       - cmd: ip link set veth-R3 down
       - cmd: ip link set veth-R3 name eth1
       - cmd: ip link set eth1 up
-      
+
       - cmd: ip link add dum0 type dummy
       - cmd: ip link set dum0 up
       - cmd: ip addr add 10.99.3.1/24 dev dum0
