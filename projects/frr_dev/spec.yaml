@@ -4,10 +4,20 @@ nodes:
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: C1#net0 }
   - name: R2
     image: slankdev/frr
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
+      - { name: net1, type: direct, args: C2#net0 }
+  - name: C1
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R1#net1 }
+  - name: C2
+    image: slankdev/frr
+    interfaces:
+      - { name: net0, type: direct, args: R2#net1 }
 
 node_configs:
   - name: R1
@@ -19,6 +29,9 @@ node_configs:
           -c 'int net0'
           -c ' ip address 10.0.0.1/24'
           -c ' ipv6 address 2001::1/64'
+          -c '!'
+          -c 'int net1'
+          -c ' ip address 20.0.0.1/24'
           -c '!'
           -c 'router bgp 65001'
           -c ' neighbor 10.0.0.2 remote-as external'
@@ -34,12 +47,24 @@ node_configs:
           -c ' ip address 10.0.0.2/24'
           -c ' ipv6 address 2001::2/64'
           -c '!'
+          -c 'int net1'
+          -c ' ip address 20.1.0.1/24'
+          -c '!'
           -c 'router bgp 65002'
           -c ' neighbor 10.0.0.1 remote-as external'
           -c ' !'
           -c ' address-family ipv4 vpn'
           -c '  neighbor 10.0.0.1 activate'
           -c '!'
+
+  - name: C1
+    cmds:
+      - cmd: ip addr replace 20.0.0.2/24 dev net0
+      - cmd: ip route replace default via 20.0.0.1
+  - name: C2
+    cmds:
+      - cmd: ip addr replace 20.1.0.2/24 dev net0
+      - cmd: ip route replace default via 20.1.0.1
 
 test:
   - name: p2p
