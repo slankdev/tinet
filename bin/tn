@@ -218,6 +218,7 @@ def command_up(args):
           node['image']))
       elif nodetype == 'netns':
         print('ip netns add {}{}'.format(appinfo.namespace, node['name']))
+        print('ip netns exec {}{} ip link set lo up'.format(appinfo.namespace, node['name']))
       else:
         print('unknown node-type {}'.format(node['type']))
         sys.exit(1)
