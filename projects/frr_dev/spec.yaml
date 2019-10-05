@@ -142,15 +142,11 @@ node_configs:
           -c '  export vpn'
           -c '  import vpn'
           -c '  rd vpn export 65002:1'
-          -c '  rt vpn both 65002:1'
+          -c '  rt vpn both 65001:1'
           -c '  label vpn export auto'
           -c '  redistribute connected'
           -c ' exit-address-family'
           -c '!'
-
-  #- cmd: ip route replace 20.1.0.0/24 encap mpls label 80 inet 10.0.0.1
-  #- cmd: ip route replace 20.3.0.0/24 encap mpls label 80 inet 10.0.0.1
-  #- cmd: ip route replace 20.5.0.0/24 encap mpls label 80 inet 10.0.0.1
 
   - name: C1
     cmds:
