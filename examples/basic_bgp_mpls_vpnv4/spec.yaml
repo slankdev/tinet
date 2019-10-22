@@ -50,6 +50,7 @@ node_configs:
       - cmd: ip link set net1 vrf vrf1
       - cmd: ip link set net2 vrf vrf2
       - cmd: ip link set net3 vrf vrf3
+      - cmd: tcpdump -ni net0 -w /tmp/R1.in.pcap &
 
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
@@ -127,6 +128,7 @@ node_configs:
       - cmd: ip link set net1 vrf vrf1
       - cmd: ip link set net2 vrf vrf2
       - cmd: ip link set net3 vrf vrf3
+      - cmd: tcpdump -ni net0 -w /tmp/R2.in.pcap &
 
       - cmd: /usr/lib/frr/frr start
       - cmd: >-
