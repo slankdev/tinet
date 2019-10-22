@@ -26,6 +26,7 @@ node_configs:
           -c ' !'
           -c '!'
           -c 'do write'
+      - cmd: /usr/lib/frr/frrinit.sh stop
 
   - name: R2
     cmds:
@@ -41,4 +42,5 @@ node_configs:
           -c ' !'
           -c '!'
           -c 'do write'
+      - cmd: /usr/lib/frr/frrinit.sh stop
 
