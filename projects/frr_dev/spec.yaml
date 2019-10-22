@@ -1,54 +1,44 @@
 
 nodes:
+
   - name: R1
-    image: slankdev/frr
+    image: slankdev/frr-dev-slankdev:7.3
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
-      - { name: net1, type: direct, args: C1#net0 }
+
   - name: R2
-    image: slankdev/frr
+    image: slankdev/frr-dev-slankdev:7.3
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
-      - { name: net1, type: direct, args: C2#net0 }
-  - name: C1
-    image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
-  - name: C2
-    image: slankdev/frr
-    interfaces: [ { name: net0, type: direct, args: R2#net1 } ]
 
 node_configs:
   - name: R1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip addr add 2001::1/64 dev net0
+      - cmd: touch /etc/frr/frr.conf
+      - cmd: /usr/lib/frr/frrinit.sh start
+      - cmd: >-
+          vtysh -c 'conf te'
+          -c 'router bgp 65001'
+          -c ' bgp router-id 10.255.0.1'
+          -c ' neighbor 2001::2 remote-as 65002'
+          -c ' !'
+          -c '!'
+          -c 'do write'
 
   - name: R2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frr start
+      - cmd: ip addr add 2001::2/64 dev net0
+      - cmd: touch /etc/frr/frr.conf
+      - cmd: /usr/lib/frr/frrinit.sh start
       - cmd: >-
           vtysh -c 'conf te'
-          -c 'int lo'
-          -c ' ip address 10.255.0.2/32'
-          -c '!'
-          -c 'int net0'
-          -c ' ipv6 address 2001::2/64'
-          -c '!'
-          -c 'int net1'
-          -c ' ip address 20.2.0.1/24'
-          -c '!'
           -c 'router bgp 65002'
           -c ' bgp router-id 10.255.0.2'
           -c ' neighbor 2001::1 remote-as 65001'
           -c ' !'
           -c '!'
-
-  - name: C1
-    cmds:
-      - cmd: ip addr replace 20.1.0.2/24 dev net0
-      - cmd: ip route replace default via 20.1.0.1
-  - name: C2
-    cmds:
-      - cmd: ip addr replace 20.2.0.2/24 dev net0
-      - cmd: ip route replace default via 20.2.0.1
+          -c 'do write'
 
