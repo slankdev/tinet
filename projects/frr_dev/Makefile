@@ -38,3 +38,8 @@ rere:
 
 sh:
 	docker exec -it R1 vtysh -c 'show bgp sum'
+
+taillog:
+	docker exec -it R1 touch /tmp/frr.log
+	docker exec -it R1 tail -f /tmp/frr.log
+
