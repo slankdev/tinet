@@ -35,3 +35,6 @@ rere:
 	make -C /home/vagrant/git/frr.slankdev
 	sudo make -C /home/vagrant/git/frr.slankdev install
 	make -C . re
+
+sh:
+	docker exec -it R1 vtysh -c 'show bgp sum'
