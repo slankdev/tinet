@@ -17,6 +17,14 @@ reload:
 	docker exec R1 /usr/lib/frr/frrinit.sh restart
 	docker exec R2 /usr/lib/frr/frrinit.sh restart
 
+stop:
+	docker exec R1 /usr/lib/frr/frrinit.sh stop
+	docker exec R2 /usr/lib/frr/frrinit.sh stop
+
+start:
+	docker exec R1 /usr/lib/frr/frrinit.sh start
+	docker exec R2 /usr/lib/frr/frrinit.sh start
+
 capture:
 	docker exec R1 pkill tcpdump | true
 	docker exec R2 pkill tcpdump | true
