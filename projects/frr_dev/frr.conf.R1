@@ -1,7 +1,10 @@
 hostname R1
 log file /tmp/frr.log
 !
+debug bgp vpn label
 debug bgp vpn leak-from-vrf
+debug bgp vpn leak-to-vrf
+debug bgp vpn rmap-event
 !
 int net0
  ipv6 address 2001::1/64
