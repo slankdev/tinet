@@ -68,5 +68,5 @@ sh_run:
 
 taillog:
 	docker exec -it R1 touch /tmp/frr.log
-	docker exec -it R1 tail -f /tmp/frr.log
+	docker exec -it R1 tail -f /tmp/frr.log -n0
 
