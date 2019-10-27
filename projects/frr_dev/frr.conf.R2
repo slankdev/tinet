@@ -9,6 +9,9 @@ int net0
 int net1 vrf vrf1
  ip address 20.2.0.1/24
 !
+int net2 vrf vrf2
+ ip address 30.2.0.1/24
+!
 router bgp 65002
  bgp router-id 10.255.0.2
  neighbor 2001::1 remote-as 65001
