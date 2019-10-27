@@ -37,6 +37,10 @@ node_configs:
   - name: R1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: sh -c 'echo 100000 > /proc/sys/net/mpls/platform_labels'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net0/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net1/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net2/input'
       - cmd: ip link add vrf1 type vrf table 10
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
@@ -48,6 +52,10 @@ node_configs:
   - name: R2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: sh -c 'echo 100000 > /proc/sys/net/mpls/platform_labels'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net0/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net1/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net2/input'
       - cmd: ip link add vrf1 type vrf table 10
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
