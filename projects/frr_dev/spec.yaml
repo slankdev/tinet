@@ -1,46 +1,53 @@
 
+postinit:
+  - cmds:
+      - cmd: docker cp R1_frr.conf R1:/etc/frr/frr.conf
+      - cmd: docker cp R2_frr.conf R2:/etc/frr/frr.conf
+
 nodes:
 
   - name: R1
     image: slankdev/frr-dev-slankdev:7.3
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
     image: slankdev/frr-dev-slankdev:7.3
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
+      - { name: net1, type: direct, args: C2#net0 }
+
+  - name: C1
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
+  - name: C2
+    image: slankdev/frr
+    interfaces: [ { name: net0, type: direct, args: R2#net1 } ]
 
 node_configs:
   - name: R1
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: ip addr add 2001::1/64 dev net0
+      - cmd: ip link add vrf1 type vrf table 10
+      - cmd: ip link set vrf1 up
+      - cmd: ip link set net1 vrf vrf1
       - cmd: touch /etc/frr/frr.conf
-      - cmd: /usr/lib/frr/frrinit.sh start
-      - cmd: >-
-          vtysh -c 'conf te'
-          -c 'router bgp 65001'
-          -c ' bgp router-id 10.255.0.1'
-          -c ' neighbor 2001::2 remote-as 65002'
-          -c ' !'
-          -c '!'
-          -c 'do write'
-      - cmd: /usr/lib/frr/frrinit.sh stop
 
   - name: R2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: ip addr add 2001::2/64 dev net0
+      - cmd: ip link add vrf1 type vrf table 10
+      - cmd: ip link set vrf1 up
+      - cmd: ip link set net1 vrf vrf1
       - cmd: touch /etc/frr/frr.conf
-      - cmd: /usr/lib/frr/frrinit.sh start
-      - cmd: >-
-          vtysh -c 'conf te'
-          -c 'router bgp 65002'
-          -c ' bgp router-id 10.255.0.2'
-          -c ' neighbor 2001::1 remote-as 65001'
-          -c ' !'
-          -c '!'
-          -c 'do write'
-      - cmd: /usr/lib/frr/frrinit.sh stop
+
+  - name: C1
+    cmds:
+      - cmd: ip addr replace 20.1.0.2/24 dev net0
+      - cmd: ip route replace default via 20.1.0.1
+  - name: C2
+    cmds:
+      - cmd: ip addr replace 20.2.0.2/24 dev net0
+      - cmd: ip route replace default via 20.2.0.1
 
