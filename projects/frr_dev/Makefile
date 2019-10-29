@@ -2,30 +2,28 @@
 help:
 	@echo help
 
-install:
-	make -C . install_config
-	make -C . install_frr
+build:
+	make -C /home/vagrant/git/frr.slankdev
+	sudo make -C /home/vagrant/git/frr.slankdev install
 
-install_frr:
+install:
 	docker exec R1 rm -rf /usr/lib/frr
-	docker cp frr.conf.R1 R1:/etc/frr/frr.conf
 	docker cp /usr/lib/frr R1:/usr/lib/frr
 	docker cp /usr/bin/vtysh R1:/usr/bin/vtysh
 	\
 	docker exec R2 rm -rf /usr/lib/frr
-	docker cp frr.conf.R2 R2:/etc/frr/frr.conf
 	docker cp /usr/lib/frr R2:/usr/lib/frr
 	docker cp /usr/bin/vtysh R2:/usr/bin/vtysh
 
-install_config:
+config_default:
 	docker cp frr.conf.R1 R1:/etc/frr/frr.conf
 	docker cp frr.conf.R2 R2:/etc/frr/frr.conf
 
-install_config_mpls_only:
+config_mpls_only:
 	docker cp frr.conf.mpls.R1 R1:/etc/frr/frr.conf
 	docker cp frr.conf.mpls.R2 R2:/etc/frr/frr.conf
 
-install_config_srv6_only:
+config_srv6_only:
 	docker cp frr.conf.srv6.R1 R1:/etc/frr/frr.conf
 	docker cp frr.conf.srv6.R2 R2:/etc/frr/frr.conf
 
@@ -54,10 +52,28 @@ nocapture:
 	docker cp R2:/tmp/r2.pcap /vagrant/r2.pcap
 
 rere:
-	make -C /home/vagrant/git/frr.slankdev
-	sudo make -C /home/vagrant/git/frr.slankdev install
-	make -C . install_frr
-	make -C . install_config_srv6_only
+	make -C . build
+	make -C . install
+	make -C . reload
+
+rere_srv6:
+	make -C . build
+	make -C . install
+	make -C . config_srv6_only
+	make -C . reload
+
+rere_mpls:
+	make -C . build
+	make -C . install
+	make -C . config_mpls_only
+	make -C . reload
+
+reload_srv6:
+	make -C . config_srv6_only
+	make -C . reload
+
+reload_mpls:
+	make -C . config_mpls_only
 	make -C . reload
 
 sh_bgp_sum:
@@ -69,4 +85,15 @@ sh_run:
 taillog:
 	docker exec -it R1 touch /tmp/frr.log
 	docker exec -it R1 tail -f /tmp/frr.log -n0
+taillog_R2:
+	docker exec -it R2 touch /tmp/frr.log
+	docker exec -it R2 tail -f /tmp/frr.log -n0
+
+cleanlog:
+	docker exec -it R1 bash -c "echo > /tmp/frr.log"
+	docker exec -it R1 bash -c "echo > /tmp/frr.log"
+catlog:
+	docker exec R1 cat /tmp/frr.log
+catlog_R2:
+	docker exec R2 cat /tmp/frr.log
 
