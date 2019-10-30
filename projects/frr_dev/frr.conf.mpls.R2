@@ -33,7 +33,8 @@ router bgp 65002 vrf vrf1
  !
  address-family ipv4 unicast
   redistribute connected
-  label vpn export auto
+  !label vpn export auto
+  label vpn export 17
   rd vpn export 65002:1
   rt vpn both 100:1
   export vpn
