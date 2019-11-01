@@ -47,6 +47,8 @@ node_configs:
       - cmd: ip link add vrf2 type vrf table 20
       - cmd: ip link set vrf2 up
       - cmd: ip link set net2 vrf vrf2
+      - cmd: ip route add 169.254.99.10 dev vrf1
+      - cmd: ip route add 169.254.99.20 dev vrf2
       - cmd: touch /etc/frr/frr.conf
 
   - name: R2
@@ -62,6 +64,8 @@ node_configs:
       - cmd: ip link add vrf2 type vrf table 20
       - cmd: ip link set vrf2 up
       - cmd: ip link set net2 vrf vrf2
+      - cmd: ip route add 169.254.99.10 dev vrf1
+      - cmd: ip route add 169.254.99.20 dev vrf2
       - cmd: touch /etc/frr/frr.conf
 
   - name: C1

@@ -84,9 +84,11 @@ sh_run:
 
 taillog:
 	docker exec -it R1 touch /tmp/frr.log
+	docker exec -it R1 chown frr.frr /tmp/frr.log
 	docker exec -it R1 tail -f /tmp/frr.log -n0
 taillog_R2:
 	docker exec -it R2 touch /tmp/frr.log
+	docker exec -it R2 chown frr.frr /tmp/frr.log
 	docker exec -it R2 tail -f /tmp/frr.log -n0
 
 cleanlog:
@@ -96,4 +98,9 @@ catlog:
 	docker exec R1 cat /tmp/frr.log
 catlog_R2:
 	docker exec R2 cat /tmp/frr.log
+
+tn_reconf:
+	tn reconf | sudo sh
+	make -C . install
+	make -C . config_srv6_only
 
