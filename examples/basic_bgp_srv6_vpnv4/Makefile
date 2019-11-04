@@ -67,12 +67,18 @@ tn_reconf:
 	make -C . config_srv6_only
 
 sh_route_vrfs:
+	@echo -e '\n[[R1-glb]]'
+	@docker exec R1 ip route list
+	@docker exec R1 ip -6 route list
 	@echo -e '\n[[R1-vrf1]]'
 	@docker exec R1 ip route list vrf vrf1
 	@echo -e '\n[[R1-vrf2]]'
 	@docker exec R1 ip route list vrf vrf2
 	@echo -e '\n[[R1-vrf3]]'
 	@docker exec R1 ip route list vrf vrf3
+	@echo -e '\n[[R2-glb]]'
+	@docker exec R2 ip route list
+	@docker exec R2 ip -6 route list
 	@echo -e '\n[[R2-vrf1]]'
 	@docker exec R2 ip route list vrf vrf1
 	@echo -e '\n[[R2-vrf2]]'
