@@ -6,12 +6,12 @@ build:
 	make -C /home/vagrant/git/frr.slankdev
 	sudo make -C /home/vagrant/git/frr.slankdev install
 
-install_curr:
+install_clos:
 	docker exec clos rm -rf /usr/lib/frr
 	docker cp /usr/lib/frr clos:/usr/lib/frr
 	docker cp /usr/bin/vtysh clos:/usr/bin/vtysh
 
-install:
+install_router:
 	docker exec R1 rm -rf /usr/lib/frr
 	docker cp /usr/lib/frr R1:/usr/lib/frr
 	docker cp /usr/bin/vtysh R1:/usr/bin/vtysh
