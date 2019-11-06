@@ -1,0 +1,31 @@
+hostname clos
+log file /tmp/frr.log
+!
+debug bgp vpn label
+debug bgp vpn leak-from-vrf
+debug bgp vpn leak-to-vrf
+debug bgp vpn rmap-event
+!
+int net0
+ ipv6 address 2001:1::2/64
+!
+int net1
+ ipv6 address 2001:2::2/64
+!
+router bgp 65010
+ bgp router-id 10.255.0.10
+ neighbor 2001:1::1 remote-as 65001
+ neighbor 2001:2::1 remote-as 65002
+ !
+ address-family ipv6 unicast
+  neighbor 2001:1::1 activate
+  neighbor 2001:2::1 activate
+ exit-address-family
+ !
+ address-family ipv4 vpn
+  neighbor 2001:1::1 activate
+  neighbor 2001:2::1 activate
+ exit-address-family
+!
+line vty
+!
