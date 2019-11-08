@@ -38,5 +38,9 @@ router bgp 65002 vrf vrf1
   import srv6-vpn
  exit-address-family
 !
+segment-routing-ipv6
+ encapsulation source-address 2001:2::
+ locator prefix 2001:2::/64
+!
 line vty
 !
