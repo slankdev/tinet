@@ -1,10 +1,12 @@
 
+FRRDIR=$(HOME)/git/frr
+
 help:
 	@echo help
 
 build:
-	make -C /home/vagrant/git/frr.slankdev
-	sudo make -C /home/vagrant/git/frr.slankdev install
+	make -C $(FRRDIR)
+	sudo make -C $(FRRDIR) install
 
 install:
 	docker exec R1 rm -rf /usr/lib/frr
@@ -69,5 +71,5 @@ taillog_R2:
 tn_reconf:
 	tn reconf | sudo sh
 	make -C . install
-	make -C . config_srv6_only
+	make -C . config
 
