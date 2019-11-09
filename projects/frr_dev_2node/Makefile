@@ -59,9 +59,10 @@ re:
 	make -C . restart
 
 rere:
+	make -C . stop
 	make -C . build
 	make -C . install
-	make -C . restart
+	make -C . start
 
 taillog_R1:
 	while :; do \
@@ -78,8 +79,8 @@ taillog_R2:
 
 tn_reconf:
 	tn reconf | sudo sh
-	make -C . install
 	make -C . config_srv6_only
+	make -C . rere
 
 sh_route_vrfs:
 	@echo
@@ -96,8 +97,5 @@ sh_route_vrfs:
 	docker exec R2 ip route list vrf vrf1
 	@echo
 
-c:
-	docker exec R1 vtysh -c 'show bgp ipv4 srv6-vpn'
-	docker exec R1 vtysh -c 'show bgp ipv4 srv6-vpn 30.1.0.0/24'
-	docker exec R1 vtysh -c 'show bgp ipv4 srv6-vpn 30.2.0.0/24'
-	docker exec R1 vtysh -c 'show bgp attribute-info'
+sh:
+	docker exec R1 vtysh -c 'show run'

@@ -6,6 +6,7 @@ debug bgp vpn leak-from-vrf
 debug bgp vpn leak-to-vrf
 debug bgp vpn rmap-event
 debug bgp vpn adv-prefix-sid
+debug bgp bestpath 30.2.0.0/24
 !
 int net0
  ipv6 address 2001::1/64
@@ -37,6 +38,10 @@ router bgp 65001 vrf vrf1
   export srv6-vpn
   import srv6-vpn
  exit-address-family
+!
+segment-routing-ipv6
+ encapsulation source-address 2001:1::
+ locator prefix 2001:1::/64
 !
 line vty
 !
