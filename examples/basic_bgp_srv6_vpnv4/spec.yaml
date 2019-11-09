@@ -2,7 +2,7 @@
 nodes:
 
   - name: R1
-    image: slankdev/frr-dev-slankdev:7.3
+    image: slankdev/frr-7.3:slankdev-support-mpbgp-vpnv4-srv6-cplane
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
       - { name: net1, type: direct, args: C1#net0 }
@@ -10,7 +10,7 @@ nodes:
       - { name: net3, type: direct, args: C5#net0 }
 
   - name: R2
-    image: slankdev/frr-dev-slankdev:7.3
+    image: slankdev/frr-7.3:slankdev-support-mpbgp-vpnv4-srv6-cplane
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: C2#net0 }
