@@ -23,6 +23,9 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      - cmd: sh -c 'echo 100000 > /proc/sys/net/mpls/platform_labels'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net0/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net1/input'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: touch /etc/frr/frr.conf
 
@@ -33,6 +36,9 @@ node_configs:
 
   - name: R2
     cmds:
+      - cmd: sh -c 'echo 100000 > /proc/sys/net/mpls/platform_labels'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net0/input'
+      - cmd: sh -c 'echo 1 > /proc/sys/net/mpls/conf/net1/input'
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: touch /etc/frr/frr.conf
 
