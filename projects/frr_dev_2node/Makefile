@@ -90,8 +90,8 @@ taillog_R2:
 
 tn_reconf:
 	tn reconf | sudo sh
-	make -C . config_srv6_only
-	make -C . rere
+	make -C . config
+	make -C . install
 
 c:
 	docker exec -it R1 vtysh -c 'conf t' \
