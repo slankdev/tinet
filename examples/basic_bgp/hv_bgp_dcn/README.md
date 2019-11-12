@@ -1,7 +1,8 @@
 
 # HV route advertisement study for BGP-DCN
 
-- [GOOD reference by @ukinau](https://qiita.com/ukinau/items/cb25588fb0c276a009dc)
+- [GOOD reference about routing-info manupulation by @ukinau](https://engineering.linecorp.com/ja/blog/openstack-summit-vancouver-2018-recap-2-2/)
+- [GOOD reference about proxy arp by @ukinau](https://qiita.com/ukinau/items/cb25588fb0c276a009dc)
 
 ![](topo.png)
 
