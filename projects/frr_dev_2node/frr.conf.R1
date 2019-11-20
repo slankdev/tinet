@@ -23,6 +23,11 @@ router bgp 65001
   redistribute static
  exit-address-family
  !
+ address-family ipv6 unicast
+  neighbor 2001::2 activate
+  network 2001:1::/64
+ exit-address-family
+ !
  address-family ipv4 vpn
   neighbor 2001::2 activate
 	segment-routing-ipv6
