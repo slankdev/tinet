@@ -26,20 +26,20 @@ node_configs:
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: touch /etc/frr/frr.conf
 
-      - cmd: ip link add vrf1 type vrf table 10
+      - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: ip route add 169.254.99.10 dev vrf1
+      - cmd: ip route add 169.254.99.1 dev vrf1
 
   - name: R2
     cmds:
       - cmd: bash -c "enable_seg6_router.py | sh"
       - cmd: touch /etc/frr/frr.conf
 
-      - cmd: ip link add vrf1 type vrf table 10
+      - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: ip route add 169.254.99.10 dev vrf1
+      - cmd: ip route add 169.254.99.1 dev vrf1
 
   - name: C1
     cmds:
