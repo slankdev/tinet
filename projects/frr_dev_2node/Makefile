@@ -49,6 +49,11 @@ taillog_R1:
 		docker exec -it R1 tail -f /tmp/frr.log -n0; \
 		sleep 1 ; done
 
+ping_C1:
+	while :; do \
+		docker exec -it C1 ping 30.2.0.2; \
+		sleep 1 ; done
+
 getcapture:
 	make -C . stop
 	make -C . capture
