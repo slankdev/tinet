@@ -211,12 +211,18 @@ def command_up(args):
   if 'nodes' in appinfo.data:
     for node in appinfo.data['nodes']:
       nodetype = node.get('type', 'docker')
+      net_base = node.get('net_base', None)
       if nodetype == 'docker':
-        print('docker run -td --hostname {} --net=none '
+        if net_base == None:
+          net_base = 'none'
+        print('docker run -td --hostname {} --net {} '
           '--name {}{} --rm --privileged {}'
-          .format(node['name'], appinfo.namespace, node['name'],
+          .format(node['name'], net_base, appinfo.namespace, node['name'],
           node['image']))
       elif nodetype == 'netns':
+        if net_base != None:
+          print('You cannot use net_base with type: netns')
+          sys.exit(1)
         print('ip netns add {}{}'.format(appinfo.namespace, node['name']))
         print('ip netns exec {}{} ip link set lo up'.format(appinfo.namespace, node['name']))
       else:
