@@ -61,3 +61,15 @@ getcapture:
 	sleep 3
 	make -C . nocapture
 
+tnreconf:
+	tn reconf | sudo sh
+	make config
+	make install
+	make start
+
+rerere: build tnreconf
+
+sh:
+	docker exec R1 ip -6 r
+	@echo
+	docker exec R1 vtysh -c 'show ipv6 route'

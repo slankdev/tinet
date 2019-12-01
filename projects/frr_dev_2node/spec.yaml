@@ -2,13 +2,14 @@
 nodes:
 
   - name: R1
-    image: slankdev/frr-dev:latest
+    # image: slankdev/frr-dev:latest
+    image: slankdev/frr-dev:draft-ietf-bess-srv6-services
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
       - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
-    image: slankdev/frr-dev:latest
+    image: slankdev/frr-dev:draft-ietf-bess-srv6-services
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: C2#net0 }
