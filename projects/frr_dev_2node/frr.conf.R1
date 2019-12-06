@@ -15,17 +15,18 @@ int net1 vrf vrf1
 !
 router bgp 1
  bgp router-id 1.0.0.0
- neighbor 2001::2 remote-as 1
+ neighbor 2001::2 remote-as 2
  neighbor 2001::2 capability extended-nexthop
  !
- address-family ipv6 unicast
-  neighbor 2001::2 activate
-  network 2001:1::/64
- exit-address-family
+ !address-family ipv6 unicast
+ ! neighbor 2001::2 activate
+ ! network 2001:1::/64
+ !exit-address-family
  !
  address-family ipv4 vpn
   neighbor 2001::2 activate
-	segment-routing-ipv6
+  !segment-routing-ipv6
+  segment-routing-ipv6 service-pre-04
  exit-address-family
 !
 router bgp 1 vrf vrf1

@@ -1,4 +1,6 @@
 
+re: stop build install start
+
 help:
 	@echo help
 

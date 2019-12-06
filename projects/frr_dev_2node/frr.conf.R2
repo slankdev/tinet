@@ -18,17 +18,18 @@ router bgp 2
  neighbor 2001::1 remote-as 1
  neighbor 2001::1 capability extended-nexthop
  !
- address-family ipv6 unicast
-  neighbor 2001::1 activate
-  network 2001:2::/64
- exit-address-family
+ !address-family ipv6 unicast
+ ! neighbor 2001::1 activate
+ ! network 2001:2::/64
+ !exit-address-family
  !
  address-family ipv4 vpn
   neighbor 2001::1 activate
-	segment-routing-ipv6
+  !segment-routing-ipv6
+  segment-routing-ipv6 service-pre-04
  exit-address-family
 !
-router bgp 1 vrf vrf1
+router bgp 2 vrf vrf1
  bgp router-id 2.0.0.0
  !
  address-family ipv4 unicast
