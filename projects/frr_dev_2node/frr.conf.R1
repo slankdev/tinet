@@ -13,15 +13,10 @@ int net0
 int net1 vrf vrf1
  ip address 30.1.0.1/24
 !
-router bgp 65001
- bgp router-id 10.255.0.1
- neighbor 2001::2 remote-as 65002
+router bgp 1
+ bgp router-id 1.0.0.0
+ neighbor 2001::2 remote-as 1
  neighbor 2001::2 capability extended-nexthop
- !
- address-family ipv4 unicast
-  redistribute connected
-  redistribute static
- exit-address-family
  !
  address-family ipv6 unicast
   neighbor 2001::2 activate
@@ -33,13 +28,13 @@ router bgp 65001
 	segment-routing-ipv6
  exit-address-family
 !
-router bgp 65001 vrf vrf1
- bgp router-id 10.255.0.1
+router bgp 1 vrf vrf1
+ bgp router-id 1.0.0.0
  !
  address-family ipv4 unicast
   redistribute connected
   sid vpn export locator default
-  rd vpn export 65001:1
+  rd vpn export 1:1
   rt vpn both 100:1
   export vpn
   import vpn
