@@ -1,6 +1,4 @@
 
-re: stop build install start
-
 help:
 	@echo help
 
@@ -42,13 +40,20 @@ nocapture:
 	docker cp R2:/tmp/r2.pcap /vagrant/r2.pcap
 
 restart: stop start
-rere: stop build install start
+re: stop build install start
 
 taillog_R1:
 	while :; do \
 		docker exec -it R1 touch /tmp/frr.log; \
 		docker exec -it R1 chown frr.frr /tmp/frr.log; \
 		docker exec -it R1 tail -f /tmp/frr.log -n0; \
+		sleep 1 ; done
+
+taillog_R2:
+	while :; do \
+		docker exec -it R2 touch /tmp/frr.log; \
+		docker exec -it R2 chown frr.frr /tmp/frr.log; \
+		docker exec -it R2 tail -f /tmp/frr.log -n0; \
 		sleep 1 ; done
 
 ping_C1:
@@ -69,9 +74,4 @@ tnreconf:
 	make install
 	make start
 
-rerere: build tnreconf
-
-sh:
-	docker exec R1 ip -6 r
-	@echo
-	docker exec R1 vtysh -c 'show ipv6 route'
+include test.mk

@@ -18,10 +18,10 @@ router bgp 2
  neighbor 2001::1 remote-as 1
  neighbor 2001::1 capability extended-nexthop
  !
- !address-family ipv6 unicast
- ! neighbor 2001::1 activate
- ! network 2001:2::/64
- !exit-address-family
+ address-family ipv6 unicast
+  neighbor 2001::1 activate
+  network 2001:2::/64
+ exit-address-family
  !
  address-family ipv4 vpn
   neighbor 2001::1 activate
@@ -41,9 +41,14 @@ router bgp 2 vrf vrf1
   import vpn
  exit-address-family
 !
+ip prefix-list P seq 1 permit 169.254.1.0/24
+ip prefix-list P seq 2 permit 169.254.2.0/24
+ip prefix-list P seq 3 permit 169.254.3.0/24
+!
 segment-routing-ipv6
  encapsulation source-address 2001:2::
  locator prefix 2001:2::/64
+ pseudo-dt4-dummy-ip P
 !
 line vty
 !
