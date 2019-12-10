@@ -74,4 +74,4 @@ tnreconf:
 	make install
 	make start
 
-include test.mk
+#include test.mk
