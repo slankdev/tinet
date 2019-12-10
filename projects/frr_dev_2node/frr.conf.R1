@@ -25,8 +25,8 @@ router bgp 1
  !
  address-family ipv4 vpn
   neighbor 2001::2 activate
-  !segment-routing-ipv6
-  segment-routing-ipv6 service-pre-04
+  segment-routing-ipv6
+  !segment-routing-ipv6 service-pre-04
  exit-address-family
 !
 router bgp 1 vrf vrf1

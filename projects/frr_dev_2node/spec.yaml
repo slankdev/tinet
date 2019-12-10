@@ -2,14 +2,15 @@
 nodes:
 
   - name: R1
-    image: slankdev/frr-dev:latest
+    image: slankdev/frr-dev:gdb
+    # image: slankdev/frr-dev:latest
     # image: slankdev/frr-dev:draft-ietf-bess-srv6-services
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
       - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
-    image: slankdev/frr-dev:latest
+    image: slankdev/frr-dev:gdb
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: C2#net0 }
@@ -30,7 +31,6 @@ node_configs:
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: ip route add 169.254.99.1 dev vrf1
 
   - name: R2
     cmds:
@@ -40,7 +40,6 @@ node_configs:
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: ip route add 169.254.99.1 dev vrf1
 
   - name: C1
     cmds:

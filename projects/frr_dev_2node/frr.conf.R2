@@ -1,11 +1,11 @@
 hostname R2
 log file /tmp/frr.log
 !
-debug bgp vpn label
-debug bgp vpn leak-from-vrf
-debug bgp vpn leak-to-vrf
-debug bgp vpn rmap-event
-debug bgp vpn adv-prefix-sid
+!debug bgp vpn label
+!debug bgp vpn leak-from-vrf
+!debug bgp vpn leak-to-vrf
+!debug bgp vpn rmap-event
+!debug bgp vpn adv-prefix-sid
 !
 int net0
  ipv6 address 2001::2/64
@@ -25,8 +25,8 @@ router bgp 2
  !
  address-family ipv4 vpn
   neighbor 2001::1 activate
-  !segment-routing-ipv6
-  segment-routing-ipv6 service-pre-04
+  segment-routing-ipv6
+  !segment-routing-ipv6 service-pre-04
  exit-address-family
 !
 router bgp 2 vrf vrf1
