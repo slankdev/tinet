@@ -20,6 +20,7 @@ router bgp 2
  bgp bestpath as-path multipath-relax
  neighbor FAB peer-group
  neighbor FAB remote-as external
+ neighbor FAB capability extended-nexthop
  neighbor net0 interface peer-group FAB
  !
  address-family ipv6 unicast

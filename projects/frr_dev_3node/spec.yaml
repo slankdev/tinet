@@ -53,6 +53,7 @@ node_configs:
           -c " bgp bestpath as-path multipath-relax"
           -c " neighbor FAB peer-group"
           -c " neighbor FAB remote-as external"
+          -c " neighbor FAB capability extended-nexthop"
           -c " neighbor net0 interface peer-group FAB"
           -c " neighbor net1 interface peer-group FAB"
           -c " !"
