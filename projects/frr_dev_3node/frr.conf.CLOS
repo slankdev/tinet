@@ -32,6 +32,7 @@ router bgp 10
  !
  address-family ipv4 vpn
   neighbor FAB activate
+  segment-routing-ipv6
  exit-address-family
 !
 line vty
