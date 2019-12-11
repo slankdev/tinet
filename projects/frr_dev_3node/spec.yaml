@@ -1,6 +1,7 @@
 
 postinit:
   - cmds:
+    - cmd: docker cp frr.conf.CLOS CLOS:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R2 R2:/etc/frr/frr.conf
 
@@ -35,57 +36,35 @@ node_configs:
 
   - name: CLOS
     cmds:
+      - cmd: ip link set net0 down
+      - cmd: ip link set net0 address 52:54:00:ee:ee:11
+      - cmd: ip link set net0 up
+      - cmd: ip link set net1 down
+      - cmd: ip link set net1 address 52:54:00:ee:ee:22
+      - cmd: ip link set net1 up
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: /usr/lib/frr/frrinit.sh start
-      - cmd: >-
-          vtysh -c "conf t"
-          -c "int net0"
-          -c "  ipv6 nd ra-interval 1"
-          -c "  no ipv6 nd suppress-ra"
-          -c "  exit"
-          -c "int net1"
-          -c "  ipv6 nd ra-interval 1"
-          -c "  no ipv6 nd suppress-ra"
-          -c "  exit"
-          -c "router bgp 10"
-          -c " bgp router-id 10.252.0.1"
-          -c " no bgp default ipv4-unicast"
-          -c " bgp bestpath as-path multipath-relax"
-          -c " neighbor FAB peer-group"
-          -c " neighbor FAB remote-as external"
-          -c " neighbor FAB capability extended-nexthop"
-          -c " neighbor net0 interface peer-group FAB"
-          -c " neighbor net1 interface peer-group FAB"
-          -c " !"
-          -c " address-family ipv6 unicast"
-          -c "  neighbor FAB activate"
-          -c " exit-address-family"
-          -c " !"
-          -c " address-family ipv4 vpn"
-          -c "  neighbor FAB activate"
-          -c " exit-address-family"
-      - cmd: vtysh -c "write mem"
+      - cmd: /usr/lib/frr/frrinit.sh restart
 
   - name: R1
     cmds:
+      - cmd: ip link set net0 down
+      - cmd: ip link set net0 address 52:54:00:11:11:11
+      - cmd: ip link set net0 up
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: touch /etc/frr/frr.conf
-
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-
       - cmd: /usr/lib/frr/frrinit.sh restart
 
   - name: R2
     cmds:
+      - cmd: ip link set net0 down
+      - cmd: ip link set net0 address 52:54:00:22:22:22
+      - cmd: ip link set net0 up
       - cmd: bash -c "enable_seg6_router.py | sh"
-      - cmd: touch /etc/frr/frr.conf
-
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-
       - cmd: /usr/lib/frr/frrinit.sh restart
 
   - name: C1

@@ -8,25 +8,32 @@ build:
 	sudo make -C $(FRR_DIR) install -j8
 
 install:
-	docker exec R1 rm -rf /usr/lib/frr
-	docker cp /usr/lib/frr R1:/usr/lib/frr
-	docker cp /usr/bin/vtysh R1:/usr/bin/vtysh
-	\
-	docker exec R2 rm -rf /usr/lib/frr
-	docker cp /usr/lib/frr R2:/usr/lib/frr
-	docker cp /usr/bin/vtysh R2:/usr/bin/vtysh
+	docker exec CLOS rm -rf /usr/lib/frr
+	docker cp /usr/lib/frr CLOS:/usr/lib/frr
+	docker cp /usr/bin/vtysh CLOS:/usr/bin/vtysh
+	#\
+	#docker exec R1 rm -rf /usr/lib/frr
+	#docker cp /usr/lib/frr R1:/usr/lib/frr
+	#docker cp /usr/bin/vtysh R1:/usr/bin/vtysh
+	#\
+	#docker exec R2 rm -rf /usr/lib/frr
+	#docker cp /usr/lib/frr R2:/usr/lib/frr
+	#docker cp /usr/bin/vtysh R2:/usr/bin/vtysh
 
 config:
-	docker cp frr.conf.R1 R1:/etc/frr/frr.conf
-	docker cp frr.conf.R2 R2:/etc/frr/frr.conf
+	docker cp frr.conf.CLOS CLOS:/etc/frr/frr.conf
+	#docker cp frr.conf.R1 R1:/etc/frr/frr.conf
+	#docker cp frr.conf.R2 R2:/etc/frr/frr.conf
 
 stop:
-	docker exec R1 /usr/lib/frr/frrinit.sh stop
-	docker exec R2 /usr/lib/frr/frrinit.sh stop
+	docker exec CLOS /usr/lib/frr/frrinit.sh stop
+	#docker exec R1 /usr/lib/frr/frrinit.sh stop
+	#docker exec R2 /usr/lib/frr/frrinit.sh stop
 
 start:
-	docker exec R1 /usr/lib/frr/frrinit.sh start
-	docker exec R2 /usr/lib/frr/frrinit.sh start
+	docker exec CLOS /usr/lib/frr/frrinit.sh start
+	#docker exec R1 /usr/lib/frr/frrinit.sh start
+	#docker exec R2 /usr/lib/frr/frrinit.sh start
 
 capture:
 	docker exec -d R1 tcpdump -ni net0 -w /tmp/r1.pcap
@@ -40,6 +47,13 @@ nocapture:
 
 restart: stop start
 re: stop build install start
+
+taillog_CLOS:
+	while :; do \
+		docker exec -it CLOS touch /tmp/frr.log; \
+		docker exec -it CLOS chown frr.frr /tmp/frr.log; \
+		docker exec -it CLOS tail -f /tmp/frr.log -n0; \
+		sleep 1 ; done
 
 taillog_R1:
 	while :; do \
