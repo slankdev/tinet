@@ -7,19 +7,19 @@ postinit:
 nodes:
 
   - name: CLOS
-    image: slankdev/frr-dev:disable-prefix-sid
+    image: slankdev/centos-frr-dev:7
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
 
   - name: R1
-    image: slankdev/fedora-frr-dev:31
+    image: slankdev/centos-frr-dev:7
     interfaces:
       - { name: net0, type: direct, args: CLOS#net0 }
       - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
-    image: slankdev/fedora-frr-dev:31
+    image: slankdev/centos-frr-dev:7
     interfaces:
       - { name: net0, type: direct, args: CLOS#net1 }
       - { name: net1, type: direct, args: C2#net0 }

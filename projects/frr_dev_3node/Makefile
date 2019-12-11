@@ -2,9 +2,10 @@
 help:
 	@echo help
 
+FRR_DIR=$(HOME)/git/frr
 build:
-	make -C /home/vagrant/git/frr.slankdev
-	sudo make -C /home/vagrant/git/frr.slankdev install
+	make -C $(FRR_DIR) -j8
+	sudo make -C $(FRR_DIR) install -j8
 
 install:
 	docker exec R1 rm -rf /usr/lib/frr
@@ -65,11 +66,5 @@ getcapture:
 	make -C . start
 	sleep 3
 	make -C . nocapture
-
-tnreconf:
-	tn reconf | sudo sh
-	make config
-	make install
-	make start
 
 #include test.mk
