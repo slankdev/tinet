@@ -212,13 +212,19 @@ def command_up(args):
     for node in appinfo.data['nodes']:
       nodetype = node.get('type', 'docker')
       net_base = node.get('net_base', None)
+
+      entrypoint = node.get('entrypoint', None)
+      entrypoint_option = ''
+      if entrypoint is not None:
+        entrypoint_option = '--entrypoint {}'.format(entrypoint)
+
       if nodetype == 'docker':
         if net_base == None:
           net_base = 'none'
         print('docker run -td --hostname {} --net {} '
-          '--name {}{} --rm --privileged {}'
+          '--name {}{} --rm --privileged {} {}'
           .format(node['name'], net_base, appinfo.namespace, node['name'],
-          node['image']))
+          entrypoint_option, node['image']))
       elif nodetype == 'netns':
         if net_base != None:
           print('You cannot use net_base with type: netns')
@@ -423,7 +429,7 @@ def command_down(args):
     for node in appinfo.data['nodes']:
       nodetype = node.get('type', 'docker')
       if nodetype=='docker':
-        print('docker stop {}{}'.format(appinfo.namespace, node['name']))
+        print('docker rm -f {}{}'.format(appinfo.namespace, node['name']))
       elif nodetype=='netns':
         print('ip netns del {}{}'.format(appinfo.namespace, node['name']))
       else:
