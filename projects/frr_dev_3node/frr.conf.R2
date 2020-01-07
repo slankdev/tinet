@@ -6,7 +6,6 @@ debug bgp vpn label
 debug bgp vpn leak-from-vrf
 debug bgp vpn leak-to-vrf
 debug bgp vpn rmap-event
-debug bgp vpn adv-prefix-sid
 !
 int net0
  ipv6 nd ra-interval 1

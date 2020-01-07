@@ -2,7 +2,7 @@
 help:
 	@echo help
 
-FRR_DIR=$(HOME)/git/frr
+FRR_DIR=/mnt/frr.slankdev.work
 build:
 	make -C $(FRR_DIR) -j8
 	sudo make -C $(FRR_DIR) install -j8

@@ -1,6 +1,7 @@
 
 postinit:
   - cmds:
+    - cmd: docker cp daemons.CLOS CLOS:/etc/frr/daemons
     - cmd: docker cp frr.conf.CLOS CLOS:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R2 R2:/etc/frr/frr.conf
@@ -8,19 +9,22 @@ postinit:
 nodes:
 
   - name: CLOS
-    image: slankdev/centos-frr-dev:7
+    image: hoge
+    # image: frr:centos-7-7046e42910
+    # image: frr:centos-7-8e5022cac9
+    entrypoint: 'bash'
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
 
   - name: R1
-    image: slankdev/centos-frr-dev:7
+    image: slankdev/tmp
     interfaces:
       - { name: net0, type: direct, args: CLOS#net0 }
       - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
-    image: slankdev/centos-frr-dev:7
+    image: slankdev/tmp
     interfaces:
       - { name: net0, type: direct, args: CLOS#net1 }
       - { name: net1, type: direct, args: C2#net0 }
@@ -36,13 +40,27 @@ node_configs:
 
   - name: CLOS
     cmds:
+
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
+      - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
+
       - cmd: ip link set net0 down
       - cmd: ip link set net0 address 52:54:00:ee:ee:11
       - cmd: ip link set net0 up
       - cmd: ip link set net1 down
       - cmd: ip link set net1 address 52:54:00:ee:ee:22
       - cmd: ip link set net1 up
-      - cmd: bash -c "enable_seg6_router.py | sh"
+
       - cmd: /usr/lib/frr/frrinit.sh restart
 
   - name: R1
