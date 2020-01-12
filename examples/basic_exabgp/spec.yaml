@@ -6,7 +6,8 @@ postinit:
 
 nodes:
   - name: R1
-    image: slankdev/centos-frr-dev:7
+    # image: slankdev/centos-frr-dev:7
+    image: slankdev/frr:centos-7-latest
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
   - name: R2
