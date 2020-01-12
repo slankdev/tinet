@@ -3,6 +3,11 @@ postinit:
   - cmds:
     - cmd: docker cp daemons.R1 R1:/etc/frr/daemons
     - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
+    - cmd: docker_mount_netns R2 r2
+
+postfini:
+  - cmds:
+    - cmd: ip netns del r2
 
 nodes:
   - name: R1
@@ -18,8 +23,10 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
       - cmd: /usr/lib/frr/frrinit.sh start
   - name: R2
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
       - cmd: ip addr add 10.0.0.2/24 dev net0
 

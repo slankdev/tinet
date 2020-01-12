@@ -10,3 +10,6 @@ getcapture:
 	killall tcpdump
 	killall python3
 
+show:
+	docker exec R1 vtysh -c 'sh bgp ipv4 uni'
+
