@@ -216,6 +216,8 @@ def command_up(args):
       volume_base = node.get('volume', '/tmp/tinet')
       tinet_volume_option = '-v {}:/tinet'.format(volume_base)
 
+      docker_run_extra_args = node.get('docker_run_extra_args', '')
+
       entrypoint = node.get('entrypoint', None)
       entrypoint_option = ''
       if entrypoint is not None:
@@ -225,9 +227,9 @@ def command_up(args):
         if net_base == None:
           net_base = 'none'
         print('docker run -td --hostname {} --net {} '
-          '--name {}{} --rm --privileged {} {} {}'
+          '--name {}{} --rm --privileged {} {} {} {}'
           .format(node['name'], net_base, appinfo.namespace, node['name'],
-          entrypoint_option, tinet_volume_option, node['image']))
+          entrypoint_option, tinet_volume_option, docker_run_extra_args, node['image']))
       elif nodetype == 'netns':
         if net_base != None:
           print('You cannot use net_base with type: netns')
