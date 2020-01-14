@@ -31,12 +31,10 @@ nodes:
       - { name: net1, type: direct, args: C1#net0, }
   - name: S1
     image: slankdev/ubuntu:18.04
-    interfaces:
-      - { name: net0, type: direct, args: R1#net0, }
+    interfaces: [ { name: net0, type: direct, args: R1#net0, } ]
   - name: C1
     image: slankdev/ubuntu:18.04
-    interfaces:
-      - { name: net0, type: direct, args: R1#net1, }
+    interfaces: [ { name: net0, type: direct, args: R1#net1, } ]
 
 node_configs:
   - name: R1
@@ -50,17 +48,14 @@ node_configs:
       - cmd: ip addr add 20.0.0.100/24 dev net0
       - cmd: ip addr add 20.0.0.101/24 dev net0
       - cmd: >-
-            iptables -t nat -A POSTROUTING
-            -s 10.0.0.2/32 -j SNAT -p tcp
-            --to-source 20.0.0.100:10000-10008
+            iptables -t nat -A POSTROUTING -s 10.0.0.2/32
+            -j SNAT -p tcp --to-source 20.0.0.100:10000-10008
       - cmd: >-
-            iptables -t nat -A POSTROUTING
-            -s 10.0.0.3/32 -j SNAT -p tcp
-            --to-source 20.0.0.100:20000-20008
+            iptables -t nat -A POSTROUTING -s 10.0.0.3/32
+            -j SNAT -p tcp --to-source 20.0.0.100:20000-20008
       - cmd: >-
-            iptables -t nat -A POSTROUTING
-            -s 10.0.0.4/32 -j SNAT -p tcp
-            --to-source 20.0.0.101:30000-30008
+            iptables -t nat -A POSTROUTING -s 10.0.0.4/32
+            -j SNAT -p tcp --to-source 20.0.0.101:30000-30008
 
   - name: S1
     cmds:
