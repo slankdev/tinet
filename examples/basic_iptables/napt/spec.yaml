@@ -25,7 +25,7 @@
 
 nodes:
   - name: R1
-    image: slankdev/frr
+    image: slankdev/conntrack
     interfaces:
       - { name: net0, type: direct, args: S1#net0, }
       - { name: net1, type: direct, args: C1#net0, }
@@ -52,20 +52,21 @@ node_configs:
       - cmd: >-
             iptables -t nat -A POSTROUTING
             -s 10.0.0.2/32 -j SNAT -p tcp
-            --to-source 20.0.0.100:10000-10064
+            --to-source 20.0.0.100:10000-10008
       - cmd: >-
             iptables -t nat -A POSTROUTING
             -s 10.0.0.3/32 -j SNAT -p tcp
-            --to-source 20.0.0.100:10065-10128
+            --to-source 20.0.0.100:20000-20008
       - cmd: >-
             iptables -t nat -A POSTROUTING
             -s 10.0.0.4/32 -j SNAT -p tcp
-            --to-source 20.0.0.101:10000-10064
+            --to-source 20.0.0.101:30000-30008
 
   - name: S1
     cmds:
       - cmd: ip addr add 20.0.0.2/24 dev net0
       - cmd: ip route add default via 20.0.0.1
+      - cmd: nohup python3 -m http.server 80 &
   - name: C1
     cmds:
       - cmd: ip addr add 10.0.0.2/24 dev net0
