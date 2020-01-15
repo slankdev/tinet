@@ -3,6 +3,7 @@ postinit:
   - cmds:
     - cmd: docker cp daemons.R1 R1:/etc/frr/daemons
     - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
+    - cmd: docker cp exabgp.conf.R2 R2:/root/exabgp.conf
 
 nodes:
   - name: R1
