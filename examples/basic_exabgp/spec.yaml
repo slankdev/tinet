@@ -7,7 +7,8 @@ postinit:
 
 nodes:
   - name: R1
-    image: slankdev/centos-frr-dev:7
+    # image: slankdev/centos-frr-dev:7
+    image: slankdev/frr:centos-7-latest
     interfaces:
       - { name: net0, type: direct, args: R2#net0 }
   - name: R2
@@ -18,8 +19,10 @@ nodes:
 node_configs:
   - name: R1
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
       - cmd: /usr/lib/frr/frrinit.sh start
   - name: R2
     cmds:
+      - cmd: sysctl -w 'net.ipv6.conf.net0.disable_ipv6=0'
       - cmd: ip addr add 10.0.0.2/24 dev net0
 
