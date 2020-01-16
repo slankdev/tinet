@@ -41,6 +41,9 @@ class AppInfo:
 appinfo = AppInfo()
 
 template_spec='''
+meta:
+  namespace: ns_
+
 nodes:
   - name: C0
     type: docker #optional (default:docker)
