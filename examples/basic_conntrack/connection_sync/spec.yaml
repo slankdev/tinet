@@ -57,6 +57,8 @@ node_configs:
           -c " exit-address-family"
           -c "!"
           -c "do write"
+      - cmd: sh -c "echo It works > index.html"
+      - cmd: nohup python3 -m http.server 80 &
   - name: C2
     cmds:
       - cmd: ip addr add 10.0.0.1/32 dev lo
