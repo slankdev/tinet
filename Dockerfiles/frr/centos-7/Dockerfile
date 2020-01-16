@@ -8,7 +8,7 @@ RUN yum install -y git autoconf automake libtool make \
   python-devel systemd-devel python-sphinx libcap-devel \
 	sudo iproute traceroute iputils bash-completion tcpdump \
 	wireshark gdb wget vim libunwind libunwind-devel \
-	iptables-services \
+	iptables-services python3 \
 	https://ci1.netdef.org/artifact/LIBYANG-YANGRELEASE/shared/build-10/CentOS-7-x86_64-Packages/libyang-0.16.111-0.x86_64.rpm \
 	https://ci1.netdef.org/artifact/LIBYANG-YANGRELEASE/shared/build-10/CentOS-7-x86_64-Packages/libyang-debuginfo-0.16.111-0.x86_64.rpm \
 	https://ci1.netdef.org/artifact/LIBYANG-YANGRELEASE/shared/build-10/CentOS-7-x86_64-Packages/libyang-devel-0.16.111-0.x86_64.rpm \
