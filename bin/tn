@@ -41,6 +41,11 @@ class AppInfo:
 appinfo = AppInfo()
 
 template_spec='''
+
+postinit:
+  - cmds:
+    - cmd: echo slankdev
+
 meta:
   namespace: ns_
 
