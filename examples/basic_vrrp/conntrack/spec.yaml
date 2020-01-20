@@ -1,4 +1,11 @@
 
+postinit:
+  - cmds:
+    - cmd: docker exec R1 mkdir -p /etc/keepalived
+    - cmd: docker exec R2 mkdir -p /etc/keepalived
+    - cmd: docker cp keepalived.conf.R1 R1:/etc/keepalived/keepalived.conf
+    - cmd: docker cp keepalived.conf.R2 R2:/etc/keepalived/keepalived.conf
+
 nodes:
   - name: R1
     image: slankdev/conntrack:centos-7
@@ -38,10 +45,14 @@ node_configs:
     cmds:
       - cmd: ip addr add 10.0.0.1/24 dev net0
       - cmd: ip addr add 10.1.0.1/24 dev net1
+      - cmd: keepalived -f /etc/keepalived/keepalived.conf
+
   - name: R2
     cmds:
       - cmd: ip addr add 10.0.0.2/24 dev net0
       - cmd: ip addr add 10.1.0.2/24 dev net1
+      - cmd: keepalived -f /etc/keepalived/keepalived.conf
+
   - name: C1
     cmds:
       - cmd: ip addr add 10.0.0.10/24 dev net0
