@@ -123,3 +123,4 @@ node_configs:
       - cmd: ip tunnel add tun-nat2 mode ipip local 10.255.0.3 remote 10.255.0.2 dev net0
       - cmd: ip addr add 10.254.0.3/32 peer 10.254.0.2/32 dev tun-nat2
       - cmd: ip link set tun-nat2 up
+
