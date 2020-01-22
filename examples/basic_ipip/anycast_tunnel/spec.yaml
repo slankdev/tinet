@@ -45,6 +45,7 @@ node_configs:
           -c " address-family ipv4 unicast"
           -c "  redistribute connected"
           -c " exit-address-family"
+
   - name: N1
     cmds:
       - cmd: ip addr add 10.255.0.1/32 dev lo
@@ -70,6 +71,7 @@ node_configs:
       - cmd: ip tunnel add tun-nat3 mode ipip local 10.255.0.1 remote 10.255.0.3 dev net0
       - cmd: ip addr add 10.254.0.1/32 peer 10.254.0.3/32 dev tun-nat3
       - cmd: ip link set tun-nat3 up
+
   - name: N2
     cmds:
       - cmd: ip addr add 10.255.0.2/32 dev lo
