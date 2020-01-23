@@ -183,6 +183,16 @@ def precmd():
 def command_ps(args):
   print('docker ps --format "table {{.ID}}\\t{{.Names}}"')
 
+def postinit():
+  print('\n#####################')
+  print('# POST-INIT COMMANDS #')
+  print('#####################')
+  if 'postinit' in appinfo.data:
+    for node in appinfo.data['postinit']:
+      for cmd in node['cmds']:
+        print('{}'.format(cmd['cmd']))
+
+
 def command_up(args):
   def preinit():
     print('\n#####################')
@@ -190,15 +200,6 @@ def command_up(args):
     print('#####################')
     if 'preinit' in appinfo.data:
       for node in appinfo.data['preinit']:
-        for cmd in node['cmds']:
-          print('{}'.format(cmd['cmd']))
-
-  def postinit():
-    print('\n#####################')
-    print('# POST-INIT COMMANDS #')
-    print('#####################')
-    if 'postinit' in appinfo.data:
-      for node in appinfo.data['postinit']:
         for cmd in node['cmds']:
           print('{}'.format(cmd['cmd']))
 
@@ -574,6 +575,11 @@ def command_test(args):
         return
     print('test \'{}\' was not found'.format(test_name))
 
+def command_postinit(args):
+  print("set -ue")
+  precmd()
+  postinit()
+
 def command_init(args):
   print(template_spec)
 
@@ -690,6 +696,10 @@ def main():
           help='Generate topology png file')
   parser_img.set_defaults(func=command_img)
 
+  parser_postinit = subparsers.add_parser('postinit',
+          help='Generate post init script')
+  parser_postinit.set_defaults(func=command_postinit)
+
   args = parser.parse_args()
 
   # print('------------')
@@ -707,7 +717,8 @@ def main():
   appinfo.command=args.command
 
   need_data = {'ps', 'up', 'down', 'pull', 'exec',
-    'build', 'conf', 'upconf', 'reconf', 'reup', 'test', 'img'}
+    'build', 'conf', 'upconf', 'reconf', 'reup', 'test', 'img',
+    'postinit'}
   if args.command in need_data:
     try:
       appinfo.read_yaml(appinfo.specfile)
