@@ -1,5 +1,5 @@
 
-# nftables study
+# nftables study (MASQ)
 
 check nft is enabled (m is OK)
 ```

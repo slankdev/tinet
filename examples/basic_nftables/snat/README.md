@@ -1,5 +1,5 @@
 
-# nftables study
+# nftables study (SNAT)
 
 check nft is enabled (m is OK)
 ```
