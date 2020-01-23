@@ -5,13 +5,19 @@ nodes:
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: NS1#net0 }
-      - { name: net2, type: direct, args: NS1#net0 }
-      - { name: net3, type: direct, args: NS1#net0 }
+      - { name: net2, type: direct, args: NS2#net0 }
+      - { name: net3, type: direct, args: NS3#net0 }
+      - { name: net4, type: direct, args: KVS#net0 }
 
   - name: R1
     image: slankdev/coredns:centos-7
     interfaces:
       - { name: net0, type: direct, args: S1#net0 }
+
+  - name: KVS
+    image: slankdev/etcd:centos-7
+    interfaces:
+      - { name: net0, type: direct, args: S1#net4 }
 
   - name: NS1
     image: slankdev/coredns:centos-7
