@@ -4,8 +4,8 @@
   forward . 8.8.8.8
 }
 
-example.local {
-  etcd example.local {
+ichihara.org {
+  etcd ichihara.org {
     path /skydns
     endpoint http://10.0.0.100:2379
   }
