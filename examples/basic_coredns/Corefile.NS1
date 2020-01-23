@@ -10,3 +10,8 @@ ichihara.org {
     endpoint http://10.0.0.100:2379
   }
 }
+
+emacs.org {
+}
+sublimetext.com {
+}
