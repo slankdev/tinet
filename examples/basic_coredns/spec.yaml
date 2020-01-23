@@ -1,0 +1,22 @@
+
+nodes:
+  - name: NS1
+    image: slankdev/coredns:centos-7
+    net_base: bridge
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+  - name: R1
+    image: slankdev/coredns:centos-7
+    interfaces:
+      - { name: net0, type: direct, args: NS1#net0 }
+
+node_configs:
+  - name: NS1
+    cmds:
+      - cmd: ip addr add 10.0.0.254/24 dev net0
+      - cmd: nohup coredns -conf /Corefile &
+  - name: R1
+    cmds:
+      - cmd: ip addr add 10.0.0.1/24 dev net0
+      - cmd: sh -c 'echo nameserver 10.0.0.254 > /etc/resolv.conf'
+
