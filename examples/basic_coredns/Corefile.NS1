@@ -4,9 +4,9 @@
   forward . 8.8.8.8
 }
 
-ichihara.org:53 {
-  etcd ichihaara.org {
-    path /sekai1
-    endpoint http://10.0.0.100
+example.local {
+  etcd example.local {
+    path /skydns
+    endpoint http://10.0.0.100:2379
   }
 }
