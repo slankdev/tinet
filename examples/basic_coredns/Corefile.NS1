@@ -1,0 +1,12 @@
+.:53 {
+  errors
+  log
+  forward . 8.8.8.8
+}
+
+ichihara.org:53 {
+  etcd ichihaara.org {
+    path /sekai1
+    endpoint http://10.0.0.100
+  }
+}

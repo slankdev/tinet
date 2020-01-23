@@ -1,4 +1,10 @@
 
+postinit:
+  - cmds:
+      - cmd: docker cp Corefile.NS1 NS1:/Corefile
+      # - cmd: docker cp Corefile.NS2 NS2:/Corefile
+      # - cmd: docker cp Corefile.NS3 NS3:/Corefile
+
 nodes:
   - name: S1
     image: slankdev/coredns:centos-7
@@ -36,6 +42,7 @@ nodes:
       - { name: net0, type: direct, args: S1#net3 }
 
 node_configs:
+
   - name: S1
     cmds:
       - cmd: ip link add br0 type bridge
@@ -45,10 +52,15 @@ node_configs:
       - cmd: ip link set net2 master br0
       - cmd: ip link set net3 master br0
 
+  - name: KVS
+    cmds:
+      - cmd: ip addr add 10.0.0.100/24 dev net0
+
   - name: NS1
     cmds:
       - cmd: ip addr add 10.0.0.254/24 dev net0
       - cmd: nohup coredns -conf /Corefile &
+
   - name: R1
     cmds:
       - cmd: ip addr add 10.0.0.1/24 dev net0
