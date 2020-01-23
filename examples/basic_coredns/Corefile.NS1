@@ -6,7 +6,7 @@
 
 ichihara.org {
   etcd ichihara.org {
-    path /skydns
+    path /dns-server01
     endpoint http://10.0.0.100:2379
   }
 }
