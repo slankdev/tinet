@@ -1,0 +1,110 @@
+
+postinit:
+  - cmds:
+    - cmd: docker cp daemons.CLOS CLOS1:/etc/frr/daemons
+    - cmd: docker cp frr.conf.CLOS1 CLOS1:/etc/frr/frr.conf
+    - cmd: docker cp daemons.CLOS CLOS2:/etc/frr/daemons
+    - cmd: docker cp frr.conf.CLOS2 CLOS2:/etc/frr/frr.conf
+    - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
+    - cmd: docker cp frr.conf.R2 R2:/etc/frr/frr.conf
+
+nodes:
+
+  - name: CLOS1
+    image: frr:centos-7-e496b42030
+    entrypoint: 'bash'
+    interfaces:
+      - { name: net0, type: direct, args: R1#net0 }
+      - { name: net1, type: direct, args: CLOS2#net1 }
+
+  - name: CLOS2
+    image: frr:centos-7-e496b42030
+    entrypoint: 'bash'
+    interfaces:
+      - { name: net0, type: direct, args: R2#net0 }
+      - { name: net1, type: direct, args: CLOS1#net1 }
+
+  - name: R1
+    image: slankdev/tmp
+    interfaces:
+      - { name: net0, type: direct, args: CLOS1#net0 }
+      - { name: net1, type: direct, args: C1#net0 }
+
+  - name: R2
+    image: slankdev/tmp
+    interfaces:
+      - { name: net0, type: direct, args: CLOS2#net0 }
+      - { name: net1, type: direct, args: C2#net0 }
+
+  - name: C1
+    image: slankdev/ubuntu:18.04
+    interfaces: [ { name: net0, type: direct, args: R1#net1 } ]
+  - name: C2
+    image: slankdev/ubuntu:18.04
+    interfaces: [ { name: net0, type: direct, args: R2#net1 } ]
+
+node_configs:
+
+  - name: CLOS1
+    cmds:
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
+      - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
+      - cmd: /usr/lib/frr/frrinit.sh restart
+
+  - name: CLOS2
+    cmds:
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
+      - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
+      - cmd: /usr/lib/frr/frrinit.sh restart
+
+  - name: R1
+    cmds:
+      - cmd: ip link set net0 down
+      - cmd: ip link set net0 address 52:54:00:11:11:11
+      - cmd: ip link set net0 up
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip link add vrf1 type vrf table 1
+      - cmd: ip link set vrf1 up
+      - cmd: ip link set net1 vrf vrf1
+      - cmd: /usr/lib/frr/frrinit.sh restart
+
+  - name: R2
+    cmds:
+      - cmd: ip link set net0 down
+      - cmd: ip link set net0 address 52:54:00:22:22:22
+      - cmd: ip link set net0 up
+      - cmd: bash -c "enable_seg6_router.py | sh"
+      - cmd: ip link add vrf1 type vrf table 1
+      - cmd: ip link set vrf1 up
+      - cmd: ip link set net1 vrf vrf1
+      - cmd: /usr/lib/frr/frrinit.sh restart
+
+  - name: C1
+    cmds:
+      - cmd: ip addr replace 30.1.0.2/24 dev net0
+      - cmd: ip route replace default via 30.1.0.1
+  - name: C2
+    cmds:
+      - cmd: ip addr replace 30.2.0.2/24 dev net0
+      - cmd: ip route replace default via 30.2.0.1
+

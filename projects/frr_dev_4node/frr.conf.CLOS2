@@ -1,0 +1,38 @@
+hostname CLOS2
+log file /tmp/frr.log
+!
+!debug bgp nht
+!debug bgp vpn label
+!debug bgp vpn leak-from-vrf
+!debug bgp vpn leak-to-vrf
+!debug bgp vpn rmap-event
+!
+int net0
+ ipv6 nd ra-interval 1
+ no ipv6 nd suppress-ra
+!
+int net1
+ ipv6 nd ra-interval 1
+ no ipv6 nd suppress-ra
+!
+router bgp 11
+ bgp router-id 10.252.0.2
+ no bgp default ipv4-unicast
+ bgp bestpath as-path multipath-relax
+ neighbor FAB peer-group
+ neighbor FAB remote-as external
+ neighbor FAB capability extended-nexthop
+ neighbor net0 interface peer-group FAB
+ neighbor net1 interface peer-group FAB
+ !
+ address-family ipv6 unicast
+  neighbor FAB activate
+ exit-address-family
+ !
+ address-family ipv4 vpn
+  neighbor FAB activate
+  segment-routing-ipv6
+ exit-address-family
+!
+line vty
+!
