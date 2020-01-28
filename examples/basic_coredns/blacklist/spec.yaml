@@ -56,7 +56,10 @@ node_configs:
   - name: KVS
     cmds:
       - cmd: ip addr add 10.0.0.100/24 dev net0
-      - cmd: nohup etcd --listen-peer-urls="http://10.0.0.100:2380" --listen-client-urls="http://10.0.0.100:2379" --advertise-client-urls="http://10.0.0.100:2379" &
+      - cmd: >-
+          nohup etcd --listen-peer-urls="http://10.0.0.100:2380"
+          --listen-client-urls="http://10.0.0.100:2379"
+          --advertise-client-urls="http://10.0.0.100:2379" &
       - cmd: sleep 3
       - cmd: etcdctl --endpoints="http://10.0.0.100:2379" put /dns-server01/org/ichihara/test1/server01 '{"host":"99.1.0.1","port":80}'
       - cmd: etcdctl --endpoints="http://10.0.0.100:2379" put /dns-server01/org/ichihara/test1/server02 '{"host":"99.1.0.2","port":80}'
