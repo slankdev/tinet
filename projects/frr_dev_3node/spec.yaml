@@ -42,16 +42,12 @@ node_configs:
 
       - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
       - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
 
       - cmd: ip link set net0 down
       - cmd: ip link set net0 address 52:54:00:ee:ee:11
@@ -70,16 +66,12 @@ node_configs:
 
       - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
       - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
 
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
@@ -94,16 +86,12 @@ node_configs:
 
       - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
       - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
       - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
       - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
       - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
-      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
 
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
