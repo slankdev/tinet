@@ -1,6 +1,8 @@
 
 # CoreDNS example (very simple blacklist)
 
+![](topo.png)
+
 - Blacklisted
 	-	emacs.org
 	- sublimetext.com
