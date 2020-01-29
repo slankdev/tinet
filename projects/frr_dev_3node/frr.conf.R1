@@ -2,6 +2,9 @@ hostname R1
 log file /tmp/frr.log
 !
 !debug zebra rib detailed
+!debug bgp zebra
+!debug bgp neighbor-events
+!debug bgp updates
 !debug bgp nht
 !debug bgp vpn label
 !debug bgp vpn leak-from-vrf

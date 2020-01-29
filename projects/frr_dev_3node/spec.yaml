@@ -9,9 +9,8 @@ postinit:
 nodes:
 
   - name: CLOS
-    image: hoge
-    # image: frr:centos-7-7046e42910
-    # image: frr:centos-7-8e5022cac9
+    # image: frr:centos-7-e496b42030
+    image: slankdev/tmp
     entrypoint: 'bash'
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
@@ -68,7 +67,20 @@ node_configs:
       - cmd: ip link set net0 down
       - cmd: ip link set net0 address 52:54:00:11:11:11
       - cmd: ip link set net0 up
-      - cmd: bash -c "enable_seg6_router.py | sh"
+
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
+      - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
+
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
@@ -79,7 +91,20 @@ node_configs:
       - cmd: ip link set net0 down
       - cmd: ip link set net0 address 52:54:00:22:22:22
       - cmd: ip link set net0 up
-      - cmd: bash -c "enable_seg6_router.py | sh"
+
+      - cmd: sysctl -w net.ipv6.conf.all.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.all.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.all.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.all.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.default.forwarding=1
+      - cmd: sysctl -w net.ipv6.conf.default.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.default.seg6_enabled=1
+      - cmd: sysctl -w net.ipv4.conf.default.rp_filter=0
+      - cmd: sysctl -w net.ipv6.conf.net0.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net0.seg6_enabled=1
+      - cmd: sysctl -w net.ipv6.conf.net1.disable_ipv6=0
+      - cmd: sysctl -w net.ipv6.conf.net1.seg6_enabled=1
+
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
