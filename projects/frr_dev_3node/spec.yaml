@@ -1,7 +1,6 @@
 
 postinit:
   - cmds:
-    - cmd: docker cp daemons.CLOS CLOS:/etc/frr/daemons
     - cmd: docker cp frr.conf.CLOS CLOS:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R1 R1:/etc/frr/frr.conf
     - cmd: docker cp frr.conf.R2 R2:/etc/frr/frr.conf
@@ -9,21 +8,26 @@ postinit:
 nodes:
 
   - name: CLOS
+    image: frr:centos-7-bf7031aecd
     # image: frr:centos-7-e496b42030
-    image: slankdev/tmp
+    # image: slankdev/tmp
     entrypoint: 'bash'
     interfaces:
       - { name: net0, type: direct, args: R1#net0 }
       - { name: net1, type: direct, args: R2#net0 }
 
   - name: R1
-    image: slankdev/tmp
+    image: frr:centos-7-bf7031aecd
+    # image: slankdev/tmp
+    entrypoint: 'bash'
     interfaces:
       - { name: net0, type: direct, args: CLOS#net0 }
       - { name: net1, type: direct, args: C1#net0 }
 
   - name: R2
-    image: slankdev/tmp
+    image: frr:centos-7-bf7031aecd
+    # image: slankdev/tmp
+    entrypoint: 'bash'
     interfaces:
       - { name: net0, type: direct, args: CLOS#net1 }
       - { name: net1, type: direct, args: C2#net0 }
@@ -56,7 +60,8 @@ node_configs:
       - cmd: ip link set net1 address 52:54:00:ee:ee:22
       - cmd: ip link set net1 up
 
-      - cmd: /usr/lib/frr/frrinit.sh restart
+      - cmd: sed -i -e 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+      - cmd: /usr/lib/frr/frrinit.sh start
 
   - name: R1
     cmds:
@@ -76,7 +81,9 @@ node_configs:
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: /usr/lib/frr/frrinit.sh restart
+
+      - cmd: sed -i -e 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+      - cmd: /usr/lib/frr/frrinit.sh start
 
   - name: R2
     cmds:
@@ -96,7 +103,9 @@ node_configs:
       - cmd: ip link add vrf1 type vrf table 1
       - cmd: ip link set vrf1 up
       - cmd: ip link set net1 vrf vrf1
-      - cmd: /usr/lib/frr/frrinit.sh restart
+
+      - cmd: sed -i -e 's/bgpd=no/bgpd=yes/' /etc/frr/daemons
+      - cmd: /usr/lib/frr/frrinit.sh start
 
   - name: C1
     cmds:
